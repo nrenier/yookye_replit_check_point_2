@@ -1,5 +1,28 @@
 import axios from 'axios';
-import { FormValues } from "@/components/preference-form"; // Assuming FormValues is exported from preference-form.tsx
+import type { z } from 'zod';
+
+// Definizione del tipo FormValues
+export type FormValues = {
+  passioni: string[];
+  luoghiDaNonPerdere: string;
+  luoghiSpecifici?: string;
+  tipoDestinazioni: string;
+  ritmoViaggio: string;
+  livelloSistemazione: string;
+  tipologiaSistemazione: string[];
+  numAdulti: string | number;
+  numBambini: string | number;
+  numNeonati: string | number;
+  numCamere: string | number;
+  tipologiaViaggiatore: string;
+  checkInDate: Date;
+  checkOutDate: Date;
+  localitaArrivoPartenza: string;
+  dettagliArrivoPartenza?: string;
+  budget: string;
+  serviziSpeciali?: string;
+  email: string;
+};
 
 const API_URL = '/api'; // Your backend API base URL
 

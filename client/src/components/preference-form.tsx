@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import { submitPreferences } from "@/lib/api";
 
 import {
   Form,
@@ -83,7 +84,7 @@ const formSchema = z.object({
   email: z.string().email("Inserisci un indirizzo email valido"),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+export type FormValues = z.infer<typeof formSchema>;
 
 export default function PreferenceForm() {
   const { toast } = useToast();
@@ -126,17 +127,34 @@ export default function PreferenceForm() {
     setShowTravelDetails(value === "si");
   };
 
-  const onSubmit = (data: FormValues) => {
-    toast({
-      title: "Preferenze inviate",
-      description: "Le tue preferenze sono state inviate con successo. Ti contatteremo presto!",
-    });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    console.log(data);
-    // Qui potete inviare i dati al backend
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setIsSubmitting(true);
+      
+      // Chiamata all'API per inviare le preferenze
+      const result = await submitPreferences(data);
+      
+      toast({
+        title: "Preferenze inviate",
+        description: "Le tue preferenze sono state inviate con successo. Ti contatteremo presto!",
+      });
 
-    // Reindirizza alla home dopo l'invio
-    setTimeout(() => navigate("/"), 2000);
+      console.log("Risposta API:", result);
+      
+      // Reindirizza alla home dopo l'invio
+      setTimeout(() => navigate("/"), 2000);
+    } catch (error) {
+      console.error("Errore durante l'invio delle preferenze:", error);
+      toast({
+        title: "Errore",
+        description: "Si è verificato un errore durante l'invio delle preferenze. Riprova più tardi.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Lista delle opzioni per le passioni
@@ -931,8 +949,16 @@ export default function PreferenceForm() {
           <Button 
             type="submit"
             className="w-full bg-yookve-red hover:bg-red-700 text-white py-6"
+            disabled={isSubmitting}
           >
-            Invia
+            {isSubmitting ? (
+              <>
+                <span className="mr-2">Invio in corso...</span>
+                <span className="animate-spin">⏳</span>
+              </>
+            ) : (
+              "Invia"
+            )}
           </Button>
         </form>
       </Form>
