@@ -27,6 +27,47 @@ export type FormValues = {
 
 // Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
 const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST API URL from .env
+const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
+const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
+
+// Token e timestamp di scadenza
+let accessToken: string | null = null;
+let tokenExpiryTime = 0;
+
+// Funzione per ottenere un token valido
+const getAccessToken = async (): Promise<string> => {
+  // Se il token esiste ed è ancora valido (considerando 5 minuti di margine)
+  if (accessToken && tokenExpiryTime > Date.now() + 300000) {
+    return accessToken;
+  }
+
+  // Altrimenti richiediamo un nuovo token
+  try {
+    console.log("Richiedo nuovo token di accesso");
+    const response = await axios.post(`${API_URL}/auth/token`, 
+      new URLSearchParams({
+        username: API_USERNAME,
+        password: API_PASSWORD
+      }), 
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    );
+
+    // Salva il token e imposta la scadenza (assumiamo che duri 1 ora)
+    accessToken = response.data.access_token;
+    // Imposta la scadenza a 1 ora dal momento attuale
+    tokenExpiryTime = Date.now() + (60 * 60 * 1000);
+    
+    console.log("Token ottenuto con successo");
+    return accessToken;
+  } catch (error) {
+    console.error("Errore nell'ottenere il token:", error);
+    throw new Error("Impossibile ottenere il token di autenticazione");
+  }
+};
 
 // Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
 const mapFormToSearchInput = (data: FormValues) => {
@@ -83,17 +124,21 @@ const mapFormToSearchInput = (data: FormValues) => {
 
 export const submitPreferences = async (preferenceData: FormValues) => {
   try {
+    // Ottieni un token valido prima della richiesta
+    const token = await getAccessToken();
+    
     // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
     const searchData = mapFormToSearchInput(preferenceData);
     
     console.log("Invio richiesta all'endpoint di ricerca:", `${API_URL}/search`);
     console.log("Dati inviati:", searchData);
     
-    // Utilizza l'endpoint /search come specificato nello Swagger
+    // Utilizza l'endpoint /search come specificato nello Swagger con il token di autenticazione
     const response = await axios.post(`${API_URL}/search`, searchData, {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
     
