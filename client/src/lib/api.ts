@@ -80,6 +80,7 @@ const mapFormToSearchInput = (data: FormValues) => {
       city: data.localitaArrivoPartenza,
       luoghi_specifici: !!data.luoghiSpecifici
     },
+    conosci_arrivo_e_partenza: data.localitaArrivoPartenza === "si",
     viaggiatori: {
       adults_number: Number(data.numAdulti),
       children_number: String(data.numBambini),
