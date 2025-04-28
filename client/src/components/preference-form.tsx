@@ -172,15 +172,15 @@ export default function PreferenceForm() {
 
   // Lista delle opzioni per le passioni
   const passioniOptions = [
-    { id: "storia", label: "Storia e arte" },
+    //{ id: "storia", label: "Storia e arte" },
     { id: "archeologia", label: "Siti archeologici" },
     { id: "musei", label: "Musei e gallerie" },
     { id: "architettura", label: "Monumenti e architetture" },
-    { id: "food_wine", label: "Food & Wine" },
+    //{ id: "food_wine", label: "Food & Wine" },
     { id: "cantine", label: "Visite alle cantine" },
     { id: "wine_country", label: "Soggiorni nella Wine Country" },
     { id: "corsi_cucina", label: "Corsi di cucina" },
-    { id: "vacanze_attive", label: "Vacanze attive" },
+    //{ id: "vacanze_attive", label: "Vacanze attive" },
     { id: "trekking", label: "Trekking tour" },
     { id: "ebike", label: "Tour in e-bike" },
     { id: "bicicletta", label: "Tour in bicicletta" },
