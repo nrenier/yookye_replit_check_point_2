@@ -47,7 +47,7 @@ const getAccessToken = async (): Promise<string> => {
   try {
     const tokenEndpoint = `${API_URL}/api/auth/token`;
     console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
-    
+
     const response = await axios.post(tokenEndpoint, 
       new URLSearchParams({
         username: API_USERNAME,
@@ -64,7 +64,7 @@ const getAccessToken = async (): Promise<string> => {
     accessToken = response.data.access_token;
     // Imposta la scadenza a 1 ora dal momento attuale
     tokenExpiryTime = Date.now() + (60 * 60 * 1000);
-    
+
     console.log("Token ottenuto con successo");
     return accessToken;
   } catch (error) {
@@ -83,8 +83,8 @@ const mapFormToSearchInput = (data: FormValues) => {
     conosci_arrivo_e_partenza: data.localitaArrivoPartenza === "si",
     viaggiatori: {
       adults_number: Number(data.numAdulti),
-      children_number: String(data.numBambini),
-      baby_number: String(data.numNeonati)
+      children_number: Number(data.numBambini || 0),
+      baby_number: Number(data.numNeonati || 0)
     },
     date: {
       check_in_time: format(data.checkInDate, 'yyyy-MM-dd'),
@@ -131,14 +131,14 @@ export const submitPreferences = async (preferenceData: FormValues) => {
   try {
     // Ottieni un token valido prima della richiesta
     const token = await getAccessToken();
-    
+
     // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
     const searchData = mapFormToSearchInput(preferenceData);
-    
+
     const searchEndpoint = `${API_URL}/api/search`;
     console.log("Invio richiesta all'endpoint di ricerca:", searchEndpoint);
     console.log("Dati inviati:", searchData);
-    
+
     // Utilizza l'endpoint /search come specificato nello Swagger con il token di autenticazione
     const response = await axios.post(searchEndpoint, searchData, {
       headers: {
@@ -147,9 +147,9 @@ export const submitPreferences = async (preferenceData: FormValues) => {
         'Authorization': `Bearer ${token}`
       }
     });
-    
+
     console.log("Risposta ricevuta dall'endpoint /search:", response.data);
-    
+
     // Salva anche il record delle preferenze nel sistema locale
     try {
       await axios.post(`/api/preferences`, preferenceData);
@@ -157,11 +157,11 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       console.warn("Errore nel salvataggio delle preferenze locali:", prefError);
       // Continuiamo comunque perché l'operazione principale è la ricerca
     }
-    
+
     return response.data;
   } catch (error) {
     console.error('Error submitting preferences:', error);
-    
+
     // Log dettagliato dell'errore per il debugging
     if (axios.isAxiosError(error)) {
       console.error('Dettagli errore:', {
@@ -175,7 +175,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
         }
       });
     }
-    
+
     throw error;
   }
 };
