@@ -25,6 +25,11 @@ PORT = int(os.getenv("PORT", "5000"))
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 SECRET_KEY = os.getenv("SECRET_KEY", "yookve_flask_secret_key")
 
+# Configurazione External Travel API
+TRAVEL_API_URL = os.getenv("TRAVEL_API_URL")
+TRAVEL_API_USERNAME = os.getenv("TRAVEL_API_USERNAME")
+TRAVEL_API_PASSWORD = os.getenv("TRAVEL_API_PASSWORD")
+
 # Nomi degli indici OpenSearch
 INDEX_USERS = "users"
 INDEX_PREFERENCES = "preferences"
