@@ -1,0 +1,1200 @@
+openapi: 3.0.3
+info:
+  title: Virtual Expert API
+  description: |
+    API per la ricerca e prenotazione di alloggi ed esperienze per viaggi attraverso Yookye.
+    Questa API consente di avviare ricerche di alloggi ed esperienze in base a vari criteri, 
+    monitorare lo stato delle ricerche e recuperare i risultati.
+  version: 1.0.0
+tags:
+  - name: auth
+    description: Autenticazione e gestione utenti
+  - name: admin
+    description: Funzionalità di amministrazione
+  - name: search
+    description: Ricerca di alloggi/esperienze
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/auth/token:
+    post:
+      tags:
+        - auth
+      summary: Login
+      description: Effettua l'autenticazione e ottiene un token di accesso
+      operationId: loginForAccessToken
+      security: []  # Nessuna autenticazione richiesta
+      requestBody:
+        description: Credenziali di accesso
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: Username o email dell'utente
+                password:
+                  type: string
+                  description: Password dell'utente
+                  format: password
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Login riuscito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '401':
+          description: Credenziali non valide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_CREDENTIALS
+                detail: Credenziali non valide
+
+  /api/auth/logout:
+    post:
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      summary: Logout
+      description: Revoca il refresh token e invalida la sessione
+      operationId: logout
+      requestBody:
+        description: Refresh token da revocare
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Logout riuscito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout effettuato con successo
+
+  /api/auth/me:
+    get:
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      summary: Profilo utente
+      description: Ottiene le informazioni dell'utente autenticato
+      operationId: getUserMe
+      responses:
+        '200':
+          description: Informazioni utente recuperate con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_CREDENTIALS
+                detail: Credenziali di autenticazione non valide
+
+  /api/admin/register:
+    post:
+      tags:
+        - auth
+      security:
+        - bearerAuth: []
+      summary: Registrazione di un nuovo utente
+      description: Crea un nuovo account utente nel sistema
+      operationId: registerUser
+      requestBody:
+        description: Dati per la registrazione dell'utente
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '200':
+          description: Registrazione completata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Dati di registrazione non validi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                USERNAME_EXISTS:
+                  value:
+                    code: USERNAME_EXISTS
+                    detail: Username già in uso
+                EMAIL_EXISTS:
+                  value:
+                    code: EMAIL_EXISTS
+                    detail: Email già in uso
+        '422':
+          description: Errore di validazione
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: USER_CREATION_ERROR
+                detail: Errore durante la creazione dell'utente
+
+  /api/admin/users:
+    get:
+      tags:
+        - admin
+      security:
+        - bearerAuth: []
+      summary: Lista utenti
+      description: Ottiene la lista di tutti gli utenti (solo per amministratori)
+      operationId: getAllUsers
+      parameters:
+        - name: skip
+          in: query
+          description: Numero di record da saltare
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Numero massimo di record da restituire
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: Lista utenti recuperata con successo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permessi insufficienti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INSUFFICIENT_PERMISSIONS
+                detail: Permessi insufficienti per questa operazione
+
+  /api/admin/users/{user_id}:
+    get:
+      tags:
+        - admin
+      security:
+        - bearerAuth: []
+      summary: Dettaglio utente
+      description: Ottiene i dettagli di un utente tramite ID (solo per amministratori)
+      operationId: getUserById
+      parameters:
+        - name: user_id
+          in: path
+          description: ID dell'utente
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Utente recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permessi insufficienti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: USER_NOT_FOUND
+                detail: Utente non trovato
+    put:
+      tags:
+        - admin
+      summary: Aggiorna utente
+      description: Aggiorna i dati di un utente (solo per amministratori)
+      operationId: updateUser
+      parameters:
+        - name: user_id
+          in: path
+          description: ID dell'utente
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Dati utente da aggiornare
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Utente aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permessi insufficienti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - admin
+      summary: Elimina utente
+      description: Elimina un utente dal sistema (solo per amministratori)
+      operationId: deleteUser
+      parameters:
+        - name: user_id
+          in: path
+          description: ID dell'utente
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Utente eliminato con successo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Utente eliminato con successo
+        '400':
+          description: Richiesta non valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: CANNOT_DELETE_SELF
+                detail: Non è possibile eliminare il proprio account
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Permessi insufficienti
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Utente non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/search:
+    post:
+      tags:
+        - search
+      security:
+        - bearerAuth: []
+      summary: Avvia una nuova ricerca di alloggi
+      description: Avvia un nuovo job di ricerca alloggi in base ai criteri forniti
+      operationId: searchAccommodations
+      requestBody:
+        description: Criteri di ricerca per gli alloggi
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccommodationSearchInput'
+      responses:
+        '200':
+          description: Ricerca avviata con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Richiesta non valida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                EMPTY_INPUT:
+                  value:
+                    code: EMPTY_INPUT
+                    detail: Input di ricerca non valido o vuoto
+                INVALID_JSON:
+                  value:
+                    code: INVALID_JSON
+                    detail: Errore nel formato JSON
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Errore di validazione
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              example:
+                code: SCHEMA_VALIDATION_ERROR
+                detail: I dati forniti non rispettano lo schema richiesto
+                errors:
+                  - campo: luoghi_da_non_perdere.city
+                    tipo_errore: value_error.missing
+                    messaggio: Campo richiesto mancante
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: SERVER_ERROR
+                detail: Errore imprevisto nell'elaborazione della richiesta
+  
+  /api/search/{job_id}:
+    get:
+      tags:
+        - search
+      security:
+        - bearerAuth: []
+      summary: Controlla lo stato di una ricerca
+      description: Recupera lo stato attuale di un job di ricerca
+      operationId: getJobStatus
+      parameters:
+        - name: job_id
+          in: path
+          description: ID del job di ricerca
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Stato recuperato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '400':
+          description: ID del job non valido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: INVALID_JOB_ID
+                detail: Il formato dell'ID del job non è valido
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: ACCESS_DENIED
+                detail: Non hai il permesso di accedere a questo job
+        '404':
+          description: Job non trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: JOB_NOT_FOUND
+                detail: Job non trovato
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: STATUS_CHECK_ERROR
+                detail: Errore durante il recupero dello stato del job
+
+  /api/search/{job_id}/result:
+    get:
+      tags:
+        - search
+      security:
+        - bearerAuth: []
+      summary: Recupera i risultati di una ricerca
+      description: Recupera i risultati di un job di ricerca completato
+      operationId: getJobResult
+      parameters:
+        - name: job_id
+          in: path
+          description: ID del job di ricerca
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Risultati recuperati con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+        '400':
+          description: Errore nella richiesta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                INVALID_JOB_ID:
+                  value:
+                    code: INVALID_JOB_ID
+                    detail: Il formato dell'ID del job non è valido
+                JOB_NOT_COMPLETED:
+                  value:
+                    code: JOB_NOT_COMPLETED
+                    detail: Il job non è ancora completato
+        '401':
+          description: Non autenticato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Accesso negato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: ACCESS_DENIED
+                detail: Non hai il permesso di accedere a questo job
+        '404':
+          description: Job o risultati non trovati
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                JOB_NOT_FOUND:
+                  value:
+                    code: JOB_NOT_FOUND
+                    detail: Job non trovato
+                RESULT_FILE_NOT_FOUND:
+                  value:
+                    code: RESULT_FILE_NOT_FOUND
+                    detail: File di risultato non trovato in nessuna posizione prevista
+        '500':
+          description: Errore interno del server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                INVALID_RESULT_JSON:
+                  value:
+                    code: INVALID_RESULT_JSON
+                    detail: Il file di risultato contiene JSON non valido
+                RESULT_FILE_READ_ERROR:
+                  value:
+                    code: RESULT_FILE_READ_ERROR
+                    detail: Errore nella lettura del file di risultato
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Modelli per autenticazione e utenti
+    UserBase:
+      type: object
+      required:
+        - username
+        - email
+      properties:
+        username:
+          type: string
+          description: Nome utente univoco
+          example: johndoe
+        email:
+          type: string
+          format: email
+          description: Indirizzo email univoco
+          example: johndoe@example.com
+        full_name:
+          type: string
+          nullable: true
+          description: Nome completo dell'utente
+          example: John Doe
+        roles:
+          type: array
+          items:
+            type: string
+          description: Ruoli dell'utente
+          default: ["user"]
+          example: ["user"]
+
+    UserCreate:
+      allOf:
+        - $ref: '#/components/schemas/UserBase'
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+              format: password
+              description: Password dell'utente (minimo 8 caratteri)
+              example: secretpassword
+
+    UserUpdate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: true
+          description: Nuovo indirizzo email
+          example: newemail@example.com
+        full_name:
+          type: string
+          nullable: true
+          description: Nuovo nome completo
+          example: John Updated Doe
+        password:
+          type: string
+          format: password
+          nullable: true
+          description: Nuova password
+          example: newsecretpassword
+        disabled:
+          type: boolean
+          nullable: true
+          description: Stato account (abilitato/disabilitato)
+          example: false
+        roles:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: Nuovi ruoli
+          example: ["user", "admin"]
+
+    User:
+      allOf:
+        - $ref: '#/components/schemas/UserBase'
+        - type: object
+          required:
+            - user_id
+            - created_at
+            - updated_at
+          properties:
+            user_id:
+              type: string
+              description: ID univoco dell'utente
+              example: 1a2b3c4d5e6f7g8h9i0j
+            disabled:
+              type: boolean
+              description: Indica se l'account è disabilitato
+              default: false
+              example: false
+            created_at:
+              type: string
+              format: date-time
+              description: Data di creazione dell'account
+              example: "2023-01-01T12:00:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              description: Data dell'ultimo aggiornamento
+              example: "2023-01-01T12:00:00Z"
+            last_login:
+              type: string
+              format: date-time
+              nullable: true
+              description: Data dell'ultimo login
+              example: "2023-01-10T15:30:00Z"
+
+    Token:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_in
+        - refresh_token
+      properties:
+        access_token:
+          type: string
+          description: Token JWT di accesso
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          description: Tipo di token
+          example: bearer
+        expires_in:
+          type: integer
+          description: Tempo di validità del token in secondi
+          example: 86400
+        refresh_token:
+          type: string
+          description: Token per ottenere un nuovo access token
+          example: 1a2b3c4d5e6f7g8h9i0j...
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          description: Refresh token precedentemente ottenuto
+          example: 1a2b3c4d5e6f7g8h9i0j...
+
+    # Modelli di input per la ricerca
+    LuoghiDaNonPerdere:
+      type: object
+      required:
+        - city
+        - luoghi_specifici
+      properties:
+        city:
+          type: string
+          description: La città di destinazione
+          example: Firenze
+        luoghi_specifici:
+          type: boolean
+          description: Indicatore dei luoghi specifici
+          example: true
+
+    Viaggiatori:
+      type: object
+      required:
+        - adults_number
+        - children_number
+        - baby_number
+      properties:
+        adults_number:
+          type: integer
+          minimum: 1
+          description: Numero di adulti
+          example: 2
+        children_number:
+          type: string
+          description: Numero di bambini
+          example: "1"
+        baby_number:
+          type: string
+          description: Numero di neonati
+          example: "0"
+
+    Date:
+      type: object
+      required:
+        - check_in_time
+        - check_out_time
+      properties:
+        check_in_time:
+          type: string
+          format: date
+          description: Data di check-in in formato YYYY-MM-DD
+          example: "2025-04-01"
+        check_out_time:
+          type: string
+          format: date
+          description: Data di check-out in formato YYYY-MM-DD
+          example: "2025-04-05"
+
+    BudgetPerPersonaGiorno:
+      type: object
+      properties:
+        economico:
+          type: boolean
+          default: false
+          description: Budget economico
+          example: false
+        fascia_media:
+          type: boolean
+          default: false
+          description: Budget fascia media
+          example: true
+        comfort:
+          type: boolean
+          default: false
+          description: Budget comfort
+          example: false
+        lusso:
+          type: boolean
+          default: false
+          description: Budget lusso
+          example: false
+        ultra_lusso:
+          type: boolean
+          default: false
+          description: Budget ultra lusso
+          example: false
+
+    SistemazioneLivello:
+      type: object
+      properties:
+        fascia_media:
+          type: boolean
+          default: false
+          example: true
+        boutique:
+          type: boolean
+          default: false
+          example: false
+        eleganti:
+          type: boolean
+          default: false
+          example: false
+
+    SistemazioneTipologia:
+      type: object
+      properties:
+        hotel:
+          type: boolean
+          default: false
+          example: true
+        b&b:
+          type: boolean
+          default: false
+          example: false
+        agriturismo:
+          type: boolean
+          default: false
+          example: false
+        villa:
+          type: boolean
+          default: false
+          example: false
+        appartamento:
+          type: boolean
+          default: false
+          example: false
+        glamping:
+          type: boolean
+          default: false
+          example: false
+
+    Sistemazione:
+      type: object
+      required:
+        - livello
+        - tipologia
+      properties:
+        livello:
+          $ref: '#/components/schemas/SistemazioneLivello'
+        tipologia:
+          $ref: '#/components/schemas/SistemazioneTipologia'
+
+    InteressiStoriaArte:
+      type: object
+      properties:
+        musei_e_gallerie:
+          type: boolean
+          default: false
+          example: true
+        siti_archeologici:
+          type: boolean
+          default: false
+          example: false
+        monumenti_e_architettura:
+          type: boolean
+          default: false
+          example: true
+
+    InteressiFoodWine:
+      type: object
+      properties:
+        visite_alle_cantine:
+          type: boolean
+          default: false
+          example: false
+        corsi_di_cucina:
+          type: boolean
+          default: false
+          example: true
+        soggiorni_nella_wine_country:
+          type: boolean
+          default: false
+          example: false
+
+    InteressiVacanzeAttive:
+      type: object
+      properties:
+        trekking_di_più_giorni:
+          type: boolean
+          default: false
+          example: false
+        tour_in_e_bike_di_più_giorni:
+          type: boolean
+          default: false
+          example: false
+        sci_snowboard_di_più_giorni:
+          type: boolean
+          default: false
+          example: false
+
+    Interessi:
+      type: object
+      required:
+        - storia_e_arte
+        - Food_&_wine
+        - vacanze_attive
+      properties:
+        storia_e_arte:
+          $ref: '#/components/schemas/InteressiStoriaArte'
+        Food_&_wine:
+          $ref: '#/components/schemas/InteressiFoodWine'
+        vacanze_attive:
+          $ref: '#/components/schemas/InteressiVacanzeAttive'
+        vita_locale:
+          type: boolean
+          default: false
+          example: true
+        salute_e_benessere:
+          type: boolean
+          default: false
+          example: false
+
+    TipologiaViaggiatore:
+      type: object
+      properties:
+        family:
+          type: boolean
+          default: false
+          example: false
+        amici:
+          type: boolean
+          default: false
+          example: false
+        coppia:
+          type: boolean
+          default: false
+          example: true
+        single:
+          type: boolean
+          default: false
+          example: false
+
+    RitmoIdeale:
+      type: object
+      properties:
+        veloce:
+          type: boolean
+          default: false
+          example: false
+        moderato:
+          type: boolean
+          default: false
+          example: true
+        rilassato:
+          type: boolean
+          default: false
+          example: false
+
+    AccommodationSearchInput:
+      type: object
+      required:
+        - luoghi_da_non_perdere
+        - viaggiatori
+        - date
+        - budget_per_persona_giorno
+        - sistemazione
+      properties:
+        luoghi_da_non_perdere:
+          $ref: '#/components/schemas/LuoghiDaNonPerdere'
+        viaggiatori:
+          $ref: '#/components/schemas/Viaggiatori'
+        date:
+          $ref: '#/components/schemas/Date'
+        budget_per_persona_giorno:
+          $ref: '#/components/schemas/BudgetPerPersonaGiorno'
+        sistemazione:
+          $ref: '#/components/schemas/Sistemazione'
+        esigenze_particolari:
+          type: string
+          nullable: true
+          description: Eventuali esigenze particolari del viaggiatore
+          example: "Accessibilità per sedie a rotelle e camere silenziose lontane da strade trafficate"
+        interessi:
+          $ref: '#/components/schemas/Interessi'
+          nullable: true
+        tipologia_viaggiatore:
+          $ref: '#/components/schemas/TipologiaViaggiatore'
+          nullable: true
+        ritmo_ideale:
+          $ref: '#/components/schemas/RitmoIdeale'
+          nullable: true
+
+    # Modelli di output
+    SearchResponse:
+      type: object
+      required:
+        - job_id
+        - status
+        - message
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: ID univoco del job di ricerca
+          example: "0b2a5c87-53c3-41f6-863f-76636fe5122b"
+        status:
+          type: string
+          description: Stato corrente del job
+          enum: [STARTED, RUNNING, COMPLETED, ERROR]
+          example: "STARTED"
+        message:
+          type: string
+          description: Messaggio informativo
+          example: "Accommodation search started"
+
+    JobStatus:
+      type: object
+      required:
+        - job_id
+        - status
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: ID univoco del job di ricerca
+          example: "0b2a5c87-53c3-41f6-863f-76636fe5122b"
+        status:
+          type: string
+          description: Stato corrente del job
+          enum: [STARTED, RUNNING, COMPLETED, ERROR]
+          example: "COMPLETED"
+        result_path:
+          type: string
+          nullable: true
+          description: Percorso del file di risultato
+          example: "/data/output_data_0b2a5c87-53c3-41f6-863f-76636fe5122b.json"
+
+    Accommodation:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome dell'alloggio
+          example: "Hotel Palazzo Vecchio"
+        address:
+          type: string
+          description: Indirizzo dell'alloggio
+          example: "Via Cennini 4, 50123 Firenze"
+        description:
+          type: string
+          description: Descrizione dell'alloggio
+          example: "Un bell'hotel nel centro di Firenze a pochi passi dalla stazione e dai principali monumenti."
+        daily_prices:
+          type: number
+          format: float
+          description: Prezzo giornaliero
+          example: 180.0
+        rating:
+          type: number
+          format: float
+          description: Valutazione dell'alloggio
+          example: 8.5
+        free_cancellation:
+          type: boolean
+          description: Indica se è prevista la cancellazione gratuita
+          example: true
+        breakfast_included:
+          type: boolean
+          description: Indica se è inclusa la colazione
+          example: true
+        hid:
+          type: string
+          description: ID univoco dell'hotel
+          example: "12345678"
+        kind:
+          type: string
+          description: Tipologia di alloggio
+          example: "Hotel"
+        star_rating:
+          type: number
+          description: Classificazione a stelle
+          example: 3
+        latitude:
+          type: number
+          format: float
+          description: Latitudine
+          example: 43.77662
+        longitude:
+          type: number
+          format: float
+          description: Longitudine
+          example: 11.24895
+
+    Experience:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nome dell'esperienza
+          example: "Visita Galleria degli Uffizi"
+        description:
+          type: string
+          description: Descrizione dell'esperienza
+          example: "Una straordinaria collezione di capolavori artistici"
+        price:
+          type: number
+          description: Prezzo dell'esperienza
+          example: 65
+        duration:
+          type: string
+          description: Durata dell'esperienza
+          example: "2 ore"
+        rating:
+          type: number
+          format: float
+          description: Valutazione dell'esperienza
+          example: 4.5
+
+    SearchResult:
+      type: object
+      required:
+        - accomodation
+      properties:
+        accomodation:
+          $ref: '#/components/schemas/Accommodation'
+        esperienze:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experience'
+        status:
+          type: string
+          enum: [SUCCESS, ERROR]
+          example: "SUCCESS"
+
+    # Modelli per errori
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          type: string
+          description: Codice di errore
+          example: "INVALID_JSON_FORMAT"
+        detail:
+          type: string
+          description: Dettagli dell'errore
+          example: "Il formato JSON della richiesta non è valido"
+
+    ValidationErrorResponse:
+      type: object
+      required:
+        - code
+        - detail
+        - errors
+      properties:
+        code:
+          type: string
+          description: Codice di errore
+          example: "SCHEMA_VALIDATION_ERROR"
+        detail:
+          type: string
+          description: Dettaglio dell'errore
+          example: "I dati forniti non rispettano lo schema richiesto"
+        errors:
+          type: array
+          description: Lista dettagliata degli errori di validazione
+          items:
+            type: object
+            properties:
+              campo:
+                type: string
+                description: Campo che ha fallito la validazione
+                example: "luoghi_da_non_perdere.city"
+              tipo_errore:
+                type: string
+                description: Tipo di errore di validazione
+                example: "value_error.missing"
+              messaggio:
+                type: string
+                description: Messaggio descrittivo dell'errore
+                example: "Campo richiesto mancante"
