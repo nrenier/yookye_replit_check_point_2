@@ -25,7 +25,8 @@ export type FormValues = {
   email: string;
 };
 
-const API_URL = '/api'; // Your backend API base URL
+// Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
+const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST API URL from .env
 
 // Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
 const mapFormToSearchInput = (data: FormValues) => {
@@ -85,15 +86,45 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
     const searchData = mapFormToSearchInput(preferenceData);
     
-    // Utilizza l'endpoint /search come specificato nello Swagger
-    const response = await axios.post(`${API_URL}/search`, searchData);
+    console.log("Invio richiesta all'endpoint di ricerca:", `${API_URL}/search`);
+    console.log("Dati inviati:", searchData);
     
-    // Salva anche il record delle preferenze nel sistema
-    await axios.post(`${API_URL}/preferences`, preferenceData);
+    // Utilizza l'endpoint /search come specificato nello Swagger
+    const response = await axios.post(`${API_URL}/search`, searchData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    console.log("Risposta ricevuta dall'endpoint /search:", response.data);
+    
+    // Salva anche il record delle preferenze nel sistema locale
+    try {
+      await axios.post(`/api/preferences`, preferenceData);
+    } catch (prefError) {
+      console.warn("Errore nel salvataggio delle preferenze locali:", prefError);
+      // Continuiamo comunque perché l'operazione principale è la ricerca
+    }
     
     return response.data;
   } catch (error) {
     console.error('Error submitting preferences:', error);
+    
+    // Log dettagliato dell'errore per il debugging
+    if (axios.isAxiosError(error)) {
+      console.error('Dettagli errore:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL
+        }
+      });
+    }
+    
     throw error;
   }
 };
