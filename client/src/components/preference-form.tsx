@@ -132,24 +132,37 @@ export default function PreferenceForm() {
   const onSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
-      
-      // Chiamata all'API per inviare le preferenze
-      const result = await submitPreferences(data);
-      
-      toast({
-        title: "Preferenze inviate",
-        description: "Le tue preferenze sono state inviate con successo. Ti contatteremo presto!",
-      });
 
-      console.log("Risposta API:", result);
-      
-      // Reindirizza alla home dopo l'invio
-      setTimeout(() => navigate("/"), 2000);
+      // Chiamata all'API per inviare le preferenze e avviare la ricerca
+      const result = await submitPreferences(data);
+
+      // Verifica che sia stato restituito un job_id dalla richiesta di ricerca
+      if (result && result.job_id) {
+        toast({
+          title: "Ricerca avviata",
+          description: `La tua richiesta di ricerca è stata avviata con successo. ID: ${result.job_id}`,
+          variant: "default",
+        });
+
+        console.log("Risposta API search:", result);
+
+        // Reindirizza alla pagina dei risultati con l'ID della ricerca
+        setTimeout(() => navigate(`/results?job_id=${result.job_id}`), 2000);
+      } else {
+        toast({
+          title: "Preferenze inviate",
+          description: "Le tue preferenze sono state inviate con successo. Ti contatteremo presto!",
+          variant: "default",
+        });
+
+        // Reindirizza alla home dopo l'invio se non c'è un job_id
+        setTimeout(() => navigate("/"), 2000);
+      }
     } catch (error) {
-      console.error("Errore durante l'invio delle preferenze:", error);
+      console.error("Errore durante l'invio della richiesta di ricerca:", error);
       toast({
         title: "Errore",
-        description: "Si è verificato un errore durante l'invio delle preferenze. Riprova più tardi.",
+        description: "Si è verificato un errore durante l'invio della richiesta. Riprova più tardi.",
         variant: "destructive",
       });
     } finally {
@@ -962,6 +975,5 @@ export default function PreferenceForm() {
           </Button>
         </form>
       </Form>
-    </div>
-  );
+    </div>  );
 }
