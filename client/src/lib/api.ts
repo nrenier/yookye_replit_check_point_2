@@ -30,6 +30,8 @@ const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST 
 const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
 const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
 
+console.log("URL API utilizzato:", API_URL);
+
 // Token e timestamp di scadenza
 let accessToken: string | null = null;
 let tokenExpiryTime = 0;
@@ -43,8 +45,10 @@ const getAccessToken = async (): Promise<string> => {
 
   // Altrimenti richiediamo un nuovo token
   try {
-    console.log("Richiedo nuovo token di accesso");
-    const response = await axios.post(`${API_URL}/auth/token`, 
+    const tokenEndpoint = `${API_URL}/auth/token`;
+    console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
+    
+    const response = await axios.post(tokenEndpoint, 
       new URLSearchParams({
         username: API_USERNAME,
         password: API_PASSWORD
@@ -130,11 +134,12 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
     const searchData = mapFormToSearchInput(preferenceData);
     
-    console.log("Invio richiesta all'endpoint di ricerca:", `${API_URL}/search`);
+    const searchEndpoint = `${API_URL}/search`;
+    console.log("Invio richiesta all'endpoint di ricerca:", searchEndpoint);
     console.log("Dati inviati:", searchData);
     
     // Utilizza l'endpoint /search come specificato nello Swagger con il token di autenticazione
-    const response = await axios.post(`${API_URL}/search`, searchData, {
+    const response = await axios.post(searchEndpoint, searchData, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
