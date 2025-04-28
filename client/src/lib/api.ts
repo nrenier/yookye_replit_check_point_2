@@ -45,7 +45,7 @@ const getAccessToken = async (): Promise<string> => {
 
   // Altrimenti richiediamo un nuovo token
   try {
-    const tokenEndpoint = `${API_URL}/auth/token`;
+    const tokenEndpoint = `${API_URL}/api/auth/token`;
     console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
     
     const response = await axios.post(tokenEndpoint, 
@@ -134,7 +134,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
     const searchData = mapFormToSearchInput(preferenceData);
     
-    const searchEndpoint = `${API_URL}/search`;
+    const searchEndpoint = `${API_URL}/api/search`;
     console.log("Invio richiesta all'endpoint di ricerca:", searchEndpoint);
     console.log("Dati inviati:", searchData);
     

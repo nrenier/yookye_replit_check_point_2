@@ -28,4 +28,14 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://localhost:8993', // il tuo server API
+        changeOrigin: true,
+        secure: false,                   // <--- IMPORTANTE: ignora certificati invalidi
+        rewrite: (path) => path.replace(/^\/api/, ''), // rimuove il prefisso /api se necessario
+      },
+    },
+  },
 });
