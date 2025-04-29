@@ -319,11 +319,13 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       data: response.data,
     });
 
-    // La risposta dell'endpoint /api/search contiene un job_id (SearchResponse schema)
-    // Potrebbe essere necessario implementare la logica per il polling dello stato del job
-    // utilizzando gli endpoint /api/search/{job_id} e /api/search/{job_id}/result
-    // per ottenere il risultato finale, a seconda di come funziona l'API asincrona.
-    // Per ora, restituiamo semplicemente la risposta iniziale che contiene il job_id.
+    // Dopo aver ricevuto il job_id, reindirizza alla pagina dei risultati
+    // La pagina dei risultati si occuperà del polling
+    if (response.data && response.data.job_id) {
+      // Redirect a results?job_id={job_id}
+      window.location.href = `/results?job_id=${response.data.job_id}`;
+    }
+    
     return response.data;
   } catch (error) {
     console.error("Error submitting preferences:", error);

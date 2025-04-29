@@ -13,9 +13,28 @@ export default function ResultsPage() {
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("packages");
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<number | null>(null);
+  
+  // Estrai il job_id dalla query string, se presente
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const jobIdParam = params.get("job_id");
+    if (jobIdParam) {
+      setJobId(jobIdParam);
+    }
+  }, []);
 
-  const { data: recommendations, isLoading: packagesLoading, error: packagesError } = useQuery<TravelPackage[]>({
-    queryKey: ["/api/recommendations"],
+  const { data: recommendations, isLoading: packagesLoading, error: packagesError, refetch } = useQuery<any>({
+    queryKey: ["/api/recommendations", jobId],
+    queryFn: async () => {
+      const endpoint = jobId ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error("Errore durante il recupero dei dati");
+      }
+      return response.json();
+    },
   });
 
   const { data: cityPackages, isLoading: cityPackagesLoading, error: cityPackagesError } = useQuery<CityPackageData>({
@@ -182,6 +201,47 @@ export default function ResultsPage() {
   const isLoading = packagesLoading || cityPackagesLoading;
   const error = packagesError || cityPackagesError;
 
+  // Gestisci il polling per job non ancora completati
+  useEffect(() => {
+    // Se abbiamo una risposta con status diverso da SUCCESS, iniziamo il polling
+    if (recommendations && recommendations.status && recommendations.status !== "SUCCESS") {
+      // Se non abbiamo già iniziato il polling
+      if (!pollingInterval) {
+        console.log("Inizia il polling per il job", recommendations.job_id);
+        // Salva il job_id dalla risposta se disponibile
+        if (recommendations.job_id && !jobId) {
+          setJobId(recommendations.job_id);
+          // Aggiorna l'URL con il job_id
+          const params = new URLSearchParams(window.location.search);
+          params.set("job_id", recommendations.job_id);
+          window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+        }
+        
+        // Imposta un intervallo di polling di 5 secondi
+        const interval = window.setInterval(() => {
+          console.log("Esecuzione polling...");
+          refetch();
+        }, 5000);
+        
+        setPollingInterval(interval);
+      }
+    } else if (recommendations && (!recommendations.status || recommendations.status === "SUCCESS")) {
+      // Se il job è completato, ferma il polling
+      if (pollingInterval) {
+        console.log("Job completato, ferma il polling");
+        clearInterval(pollingInterval);
+        setPollingInterval(null);
+      }
+    }
+    
+    // Pulizia quando il componente si smonta
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [recommendations, jobId, pollingInterval, refetch]);
+
   useEffect(() => {
     if (error) {
       // If error is a 404 (no preferences found), redirect to preferences page
@@ -215,9 +275,16 @@ export default function ResultsPage() {
                 <div className="flex justify-center items-center py-20">
                   <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
                 </div>
-              ) : recommendations && recommendations.length > 0 ? (
+              ) : recommendations && recommendations.status && recommendations.status !== "SUCCESS" ? (
+                <div className="flex flex-col justify-center items-center py-20">
+                  <Loader2 className="h-12 w-12 animate-spin text-yookve-red mb-4" />
+                  <p className="text-lg font-medium">Elaborazione in corso...</p>
+                  <p className="text-gray-500 mt-2">Stiamo creando i tuoi pacchetti personalizzati</p>
+                  <p className="text-sm text-gray-400 mt-4">Job ID: {recommendations.job_id}</p>
+                </div>
+              ) : recommendations && recommendations.packages && recommendations.packages.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {recommendations.map((travelPackage) => (
+                  {recommendations.packages.map((travelPackage) => (
                     <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
                   ))}
                 </div>

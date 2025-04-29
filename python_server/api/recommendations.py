@@ -33,30 +33,58 @@ async def get_recommendations():
         # Usa la preferenza più recente
         latest_preference = preferences[-1]
 
-        # Ottieni raccomandazioni basate su questa preferenza
-        external_recommendations = get_recommendations_from_api(latest_preference)
-
-        # Trasforma le raccomandazioni nel formato corretto
-        recommended_packages = []
-        if external_recommendations and "packages" in external_recommendations:
-            for pkg in external_recommendations["packages"]:
-                recommended_packages.append({
-                    "id": pkg.get("id", ""),
-                    "title": pkg.get("title", ""),
-                    "description": pkg.get("description", ""),
-                    "destination": pkg.get("destination", ""),
-                    "imageUrl": pkg.get("imageUrl", ""),
-                    "price": pkg.get("price", 0),
-                    "rating": pkg.get("rating", ""),
-                    "durationDays": pkg.get("durationDays", 0) or (int(pkg.get("duration", "0").split()[0]) if pkg.get("duration") else 0),
-                    "durationNights": pkg.get("durationNights", 0) or (int(pkg.get("duration", "0").split()[0])-1 if pkg.get("duration") else 0),
-                    "isRecommended": True
+        # Ottieni raccomandazioni basate su questa preferenza  -  Modified to handle job_id and polling
+        job_id = request.args.get("job_id")
+        if job_id:
+            recommendations = get_recommendations_from_api(latest_preference, job_id=job_id) # Pass job_id if available
+            if recommendations and "status" in recommendations and recommendations["status"] != "SUCCESS":
+                return jsonify({
+                    "job_id": recommendations.get("job_id"),
+                    "status": recommendations.get("status"),
+                    "message": recommendations.get("message", "Elaborazione in corso"),
+                    "packages": []
                 })
+            elif recommendations and "packages" in recommendations:
+                recommended_packages = []
+                for pkg in recommendations["packages"]:
+                    recommended_packages.append({
+                        "id": pkg.get("id", ""),
+                        "title": pkg.get("title", ""),
+                        "description": pkg.get("description", ""),
+                        "destination": pkg.get("destination", ""),
+                        "imageUrl": pkg.get("imageUrl", ""),
+                        "price": pkg.get("price", 0),
+                        "rating": pkg.get("rating", ""),
+                        "durationDays": pkg.get("durationDays", 0) or (int(pkg.get("duration", "0").split()[0]) if pkg.get("duration") else 0),
+                        "durationNights": pkg.get("durationNights", 0) or (int(pkg.get("duration", "0").split()[0])-1 if pkg.get("duration") else 0),
+                        "isRecommended": True
+                    })
+                return jsonify(recommended_packages), 200
+            else:
+                return jsonify({"success": False, "message": "Formato dati non valido dal server esterno"}), 500
+        else:
+            external_recommendations = get_recommendations_from_api(latest_preference)
+            recommended_packages = []
+            if external_recommendations and "packages" in external_recommendations:
+                for pkg in external_recommendations["packages"]:
+                    recommended_packages.append({
+                        "id": pkg.get("id", ""),
+                        "title": pkg.get("title", ""),
+                        "description": pkg.get("description", ""),
+                        "destination": pkg.get("destination", ""),
+                        "imageUrl": pkg.get("imageUrl", ""),
+                        "price": pkg.get("price", 0),
+                        "rating": pkg.get("rating", ""),
+                        "durationDays": pkg.get("durationDays", 0) or (int(pkg.get("duration", "0").split()[0]) if pkg.get("duration") else 0),
+                        "durationNights": pkg.get("durationNights", 0) or (int(pkg.get("duration", "0").split()[0])-1 if pkg.get("duration") else 0),
+                        "isRecommended": True
+                    })
 
-        return jsonify(recommended_packages), 200
+            return jsonify(recommended_packages), 200
     except Exception as e:
         logger.error(f"Errore nel recuperare le raccomandazioni: {str(e)}")
         return jsonify({"success": False, "message": f"Errore: {str(e)}"}), 500
+
 import json
 from datetime import datetime
 
@@ -81,11 +109,11 @@ async def get_city_packages():
 
         # Ottieni raccomandazioni basate su questa preferenza
         external_recommendations = get_recommendations_from_api(latest_preference)
-        
+
         # Se abbiamo ricevuto dati formattati con accomodation e esperienze, restituiscili
         if external_recommendations and "accomodation" in external_recommendations and "esperienze" in external_recommendations:
             return jsonify(external_recommendations), 200
-            
+
         # Altrimenti, restituisci un errore
         return jsonify({"success": False, "message": "Formato dati non valido dal server esterno"}), 500
     except Exception as e:

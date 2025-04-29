@@ -123,7 +123,33 @@ class TravelApiClient:
             }
 
         try:
-            # Try to get the search result using the job ID
+            token = self._get_token()
+            
+            # Prima controlla lo stato del job usando l'endpoint /search/{job_id}
+            status_url = f"{self.base_url}/api/search/{self._last_search_id}"
+            status_response = requests.get(
+                status_url,
+                headers={
+                    "Authorization": f"Bearer {token}"
+                }
+            )
+            
+            status_response.raise_for_status()
+            job_status = status_response.json()
+            
+            print(f"Job status: {job_status}")
+            
+            # Se il job non è ancora completato, ritorna lo stato attuale
+            if job_status["status"] != "SUCCESS":
+                return {
+                    "success": False,
+                    "job_id": self._last_search_id,
+                    "status": job_status["status"],
+                    "message": "Elaborazione in corso, riprova più tardi",
+                    "packages": []
+                }
+            
+            # Il job è completo, possiamo recuperare il risultato
             result_url = f"{self.base_url}/api/search/{self._last_search_id}/result"
             response = requests.get(
                 result_url,
@@ -131,18 +157,17 @@ class TravelApiClient:
                     "Authorization": f"Bearer {token}"
                 }
             )
-
-            # If the job is still processing, we might get a 404 or other status code
-            if response.status_code == 404 or response.status_code == 202:
-                print(f"Job {self._last_search_id} is still processing. Status: {response.status_code}")
-                return {
-                    "success": True,
-                    "message": "Elaborazione in corso, riprova più tardi",
-                    "packages": []
-                }
-
+            
             response.raise_for_status()
-            return response.json()
+            result_data = response.json()
+            
+            return {
+                "success": True,
+                "job_id": self._last_search_id,
+                "status": "SUCCESS",
+                "data": result_data
+            }
+            
         except requests.exceptions.RequestException as e:
             print(f"Error getting recommendations from external API: {e}")
             if hasattr(e, 'response') and e.response is not None:
