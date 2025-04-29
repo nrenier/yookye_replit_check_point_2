@@ -135,19 +135,62 @@ const mapFormToSearchInput = (formData: FormValues) => {
 
     // Attiva le categorie selezionate
     formData.passioni?.forEach((interesse) => {
-      // Gestisci i casi speciali per i sottotipi
-      if (interesse === "musei" || interesse === "monumenti") {
-        interessi.storia_e_arte.musei_e_gallerie = interesse === "musei";
-        interessi.storia_e_arte.monumenti_e_architettura =
-          interesse === "monumenti";
-      } else if (interesse === "enogastronomia") {
-        interessi.food_wine.visite_alle_cantine = true;
-      } else if (interesse === "sport") {
-        interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
-      } else if (interesse === "cultura") {
-        interessi.vita_locale = true;
-      } else if (interesse === "benessere") {
-        interessi.salute_e_benessere = true;
+      // Mappa direttamente i valori alle chiavi corrispondenti
+      switch(interesse) {
+        // Storia e arte
+        case "archeologia":
+          interessi.storia_e_arte.siti_archeologici = true;
+          break;
+        case "musei":
+          interessi.storia_e_arte.musei_e_gallerie = true;
+          break;
+        case "architettura":
+          interessi.storia_e_arte.monumenti_e_architettura = true;
+          break;
+          
+        // Food & Wine
+        case "cantine":
+          interessi.food_wine.visite_alle_cantine = true;
+          break;
+        case "wine_country":
+          interessi.food_wine.soggiorni_nella_wine_country = true;
+          break;
+        case "corsi_cucina":
+          interessi.food_wine.corsi_di_cucina = true;
+          break;
+          
+        // Vacanze attive
+        case "trekking":
+          interessi.vacanze_attive.trekking_di_più_giorni = true;
+          break;
+        case "ebike":
+          interessi.vacanze_attive.tour_in_e_bike_di_più_giorni = true;
+          break;
+        case "bicicletta":
+          interessi.vacanze_attive.tour_in_bicicletta_di_più_giorni = true;
+          break;
+        case "sci":
+          interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
+          break;
+          
+        // Altre categorie
+        case "local_life":
+          interessi.vita_locale = true;
+          break;
+        case "benessere":
+          interessi.salute_e_benessere = true;
+          break;
+          
+        // Mappatura legacy per retrocompatibilità
+        case "enogastronomia":
+          interessi.food_wine.visite_alle_cantine = true;
+          break;
+        case "sport":
+          interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
+          break;
+        case "cultura":
+          interessi.vita_locale = true;
+          break;
       }
     });
 
