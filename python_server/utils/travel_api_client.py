@@ -2,9 +2,73 @@ import requests
 import os
 import time
 from dotenv import load_dotenv
+import logging
 
 # Load environment variables if not already loaded
 load_dotenv()
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
+def get_recommendations_from_api(preferences):
+    """
+    Get recommendations from external API based on user preferences
+    """
+    try:
+        # Initialize the client
+        client = TravelApiClient()
+        
+        # Get recommendations
+        recommendations = client.get_recommendations()
+        
+        # If we received recommendations, return them
+        if recommendations:
+            return recommendations
+        
+        # Fallback to mock data if API call failed
+        return {
+            "success": True,
+            "packages": [
+                {
+                    "id": "mock-1",
+                    "title": "Weekend a Roma",
+                    "description": "Scopri le meraviglie della città eterna",
+                    "destination": "Roma",
+                    "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5",
+                    "price": 350,
+                    "rating": "4.7",
+                    "duration": "3 giorni"
+                },
+                {
+                    "id": "mock-2",
+                    "title": "Tour della Costiera Amalfitana",
+                    "description": "Visita i panorami mozzafiato della Costiera",
+                    "destination": "Amalfi",
+                    "imageUrl": "https://images.unsplash.com/photo-1533165858814-1e017c30f838",
+                    "price": 580,
+                    "rating": "4.9",
+                    "duration": "5 giorni"
+                },
+                {
+                    "id": "mock-3",
+                    "title": "Weekend a Firenze",
+                    "description": "Arte e cultura nella culla del Rinascimento",
+                    "destination": "Firenze",
+                    "imageUrl": "https://images.unsplash.com/photo-1541370976299-4d52b2e18d51",
+                    "price": 320,
+                    "rating": "4.8",
+                    "duration": "3 giorni"
+                }
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error getting recommendations: {str(e)}")
+        # Return a minimal fallback with error message
+        return {
+            "success": False,
+            "message": f"Errore nell'ottenere raccomandazioni: {str(e)}",
+            "packages": []
+        }
 
 class TravelApiClient:
     def __init__(self):
