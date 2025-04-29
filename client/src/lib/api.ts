@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import type { z } from "zod"; // z is imported but not used in the provided snippet. Keeping it as is.
 import { format } from "date-fns";
@@ -105,6 +106,54 @@ const getAccessToken = async (): Promise<string> => {
       });
     }
     throw new Error("Impossibile ottenere il token di autenticazione");
+  }
+};
+
+// Funzione per controllare lo stato del job di ricerca
+export const checkJobStatus = async (jobId: string) => {
+  try {
+    // Ottieni un token valido
+    const token = await getAccessToken();
+    
+    const statusEndpoint = `${API_URL}/api/search/${jobId}`;
+    console.log("Verifico lo stato del job:", statusEndpoint);
+    
+    const response = await axios.get(statusEndpoint, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    console.log("Stato del job:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel controllo dello stato del job:", error);
+    throw error;
+  }
+};
+
+// Funzione per ottenere i risultati del job di ricerca
+export const getJobResults = async (jobId: string) => {
+  try {
+    // Ottieni un token valido
+    const token = await getAccessToken();
+    
+    const resultsEndpoint = `${API_URL}/api/search/${jobId}/result`;
+    console.log("Recupero i risultati del job:", resultsEndpoint);
+    
+    const response = await axios.get(resultsEndpoint, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    console.log("Risultati ricevuti:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel recupero dei risultati del job:", error);
+    throw error;
   }
 };
 
@@ -331,55 +380,6 @@ export const submitPreferences = async (preferenceData: FormValues) => {
         localStorage.setItem('yookve_user_email', preferenceData.email);
       }
       
-
-// Funzione per controllare lo stato del job di ricerca
-export const checkJobStatus = async (jobId: string) => {
-  try {
-    // Ottieni un token valido
-    const token = await getAccessToken();
-    
-    const statusEndpoint = `${API_URL}/api/search/${jobId}`;
-    console.log("Verifico lo stato del job:", statusEndpoint);
-    
-    const response = await axios.get(statusEndpoint, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    console.log("Stato del job:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Errore nel controllo dello stato del job:", error);
-    throw error;
-  }
-};
-
-// Funzione per ottenere i risultati del job di ricerca
-export const getJobResults = async (jobId: string) => {
-  try {
-    // Ottieni un token valido
-    const token = await getAccessToken();
-    
-    const resultsEndpoint = `${API_URL}/api/search/${jobId}/result`;
-    console.log("Recupero i risultati del job:", resultsEndpoint);
-    
-    const response = await axios.get(resultsEndpoint, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    console.log("Risultati ricevuti:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Errore nel recupero dei risultati del job:", error);
-    throw error;
-  }
-};
-
       // Redirect alla pagina dei risultati
       window.location.href = `/results?job_id=${jobId}`;
     }
