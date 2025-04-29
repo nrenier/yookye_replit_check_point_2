@@ -1,3 +1,4 @@
+
 from flask import Blueprint, request, jsonify, session
 from datetime import timedelta
 import uuid
@@ -56,14 +57,30 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 @auth_bp.route("/api/login", methods=["POST"])
-async def login():
+def login():
     """Effettua il login di un utente."""
     data = request.json
-
+    username = data.get("username")
+    password = data.get("password")
+    
+    if not username or not password:
+        return jsonify({"success": False, "message": "Username and password required"}), 400
+    
     # Verifica le credenziali
-    user = await user_repo.get_by_username(data.get("username"))
-    if not user or not verify_password(data.get("password"), user.password):
+    user = user_repo.get_by_username(username)
+    
+    # Se l'utente non esiste
+    if not user:
         return jsonify({"success": False, "message": "Invalid username or password"}), 401
+    
+    # Verifica la password
+    try:
+        if not verify_password(password, user.password):
+            return jsonify({"success": False, "message": "Invalid username or password"}), 401
+    except Exception as e:
+        # Log dell'errore per debug
+        print(f"Errore nella verifica della password: {str(e)}")
+        return jsonify({"success": False, "message": "Authentication error"}), 500
 
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)

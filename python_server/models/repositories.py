@@ -32,8 +32,11 @@ class BaseRepository(Generic[T, CreateT]):
             return obj.model_dump(exclude_none=True)
         return dict(obj)
     
-    async def get_by_id(self, id: str) -> Optional[T]:
+    def get_by_id(self, id: str) -> Optional[T]:
         """Ottiene un elemento per ID."""
+        if not id:
+            return None
+            
         try:
             response = self.client.get(index=self.index_name, id=id)
             if response["found"]:
@@ -41,7 +44,8 @@ class BaseRepository(Generic[T, CreateT]):
                 # Assicura che l'ID sia nel dato
                 data["id"] = response["_id"]
                 return self.model_cls(**data)
-        except Exception:
+        except Exception as e:
+            print(f"Error fetching by ID: {str(e)}")
             return None
         return None
     
@@ -136,8 +140,11 @@ class UserRepository(BaseRepository[User, UserCreate]):
     def __init__(self):
         super().__init__(User, INDEX_USERS)
     
-    async def get_by_username(self, username: str) -> Optional[UserInDB]:
+    def get_by_username(self, username: str) -> Optional[UserInDB]:
         """Ottiene un utente per username."""
+        if not username:
+            return None
+            
         query = {
             "query": {
                 "term": {
@@ -146,17 +153,20 @@ class UserRepository(BaseRepository[User, UserCreate]):
             }
         }
         
-        response = self.client.search(
-            index=self.index_name,
-            body=query
-        )
-        
-        hits = response["hits"]["hits"]
-        if hits:
-            data = hits[0]["_source"]
-            data["id"] = hits[0]["_id"]
-            return UserInDB(**data)
-        
+        try:
+            response = self.client.search(
+                index=self.index_name,
+                body=query
+            )
+            
+            hits = response["hits"]["hits"]
+            if hits:
+                data = hits[0]["_source"]
+                data["id"] = hits[0]["_id"]
+                return UserInDB(**data)
+        except Exception as e:
+            print(f"Error fetching user by username: {str(e)}")
+            
         return None
     
     async def get_by_email(self, email: str) -> Optional[UserInDB]:
@@ -185,7 +195,7 @@ class UserRepository(BaseRepository[User, UserCreate]):
         
         return None
     
-    async def create_user(self, user_create: UserCreate, hashed_password: str) -> User:
+    def create_user(self, user_create: UserCreate, hashed_password: str) -> User:
         """Crea un nuovo utente con password hashata."""
         user_dict = self._to_dict(user_create)
         user_dict["password"] = hashed_password
@@ -196,17 +206,21 @@ class UserRepository(BaseRepository[User, UserCreate]):
         
         id = user_dict.pop("id")  # Rimuovi l'ID dal dict
         
-        # Indice il documento
-        response = self.client.index(
-            index=self.index_name,
-            id=id,
-            body=user_dict,
-            refresh=True
-        )
-        
-        # Restituisci l'utente senza la password
-        created_user = await self.get_by_id(response["_id"])
-        return created_user
+        try:
+            # Indice il documento
+            response = self.client.index(
+                index=self.index_name,
+                id=id,
+                body=user_dict,
+                refresh=True
+            )
+            
+            # Restituisci l'utente senza la password
+            created_user = self.get_by_id(response["_id"])
+            return created_user
+        except Exception as e:
+            print(f"Error creating user: {str(e)}")
+            raise
 
 class PreferenceRepository(BaseRepository[Preference, PreferenceCreate]):
     """Repository per le preferenze."""
