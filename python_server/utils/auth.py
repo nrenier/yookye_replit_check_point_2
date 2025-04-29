@@ -1,5 +1,6 @@
 
 import os
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from jose import jwt
@@ -10,6 +11,10 @@ import binascii
 # Constants
 SECRET_KEY = os.getenv("SECRET_KEY", "yookve-travel-app-secret")
 ALGORITHM = "HS256"
+
+def generate_id():
+    """Genera un ID univoco."""
+    return str(uuid.uuid4())
 
 # Password context instance
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
