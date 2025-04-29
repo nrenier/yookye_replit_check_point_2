@@ -1,5 +1,12 @@
 
 import logging
+import sys
+import os
+
+# Aggiungi la directory principale al path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Ora importa i moduli
 from python_server.app import init_app
 from python_server.config.settings import PORT
 
