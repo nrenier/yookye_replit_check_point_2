@@ -26,9 +26,9 @@ export type FormValues = {
 };
 
 // Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
-const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST API URL from .env
-const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
-const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
+const API_URL = import.meta.env.VITE_TRAVEL_API_URL || 'https://localhost:8993'; // External REST API URL from .env
+const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME || 'virtual_expert';
+const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD || 'HJhx2QWCoU52~v<M9YJ]';
 
 console.log("Variabili ambiente API:", {
   url: API_URL,
