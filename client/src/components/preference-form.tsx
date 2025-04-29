@@ -306,7 +306,19 @@ export default function PreferenceForm() {
                       <Textarea
                         placeholder="Es. Roma, Costiera Amalfitana, Toscana..."
                         className="resize-none"
-                        {...field}
+                        onChange={(e) => {
+                          // Divide il testo in un array utilizzando la virgola come separatore
+                          // e rimuove gli spazi all'inizio e alla fine di ogni elemento
+                          const luoghi = e.target.value
+                            .split(',')
+                            .map(luogo => luogo.trim())
+                            .filter(luogo => luogo !== '');
+                          
+                          // Aggiorna il campo con l'array di luoghi
+                          field.onChange(luoghi);
+                        }}
+                        // Mostra i valori dell'array come stringa separata da virgole
+                        value={Array.isArray(field.value) ? field.value.join(', ') : ''}
                       />
                     </FormControl>
                     <FormMessage />
