@@ -1,0 +1,248 @@
+✅ JSON creato con successo:
+{
+    "accomodation": {
+        "Roma": [
+            {
+                "hid": 7478033,
+                "name": "Precise House Mantegna Roma",
+                "address": "A.Mantegna, 130, Roma",
+                "phone": "+39 06989521",
+                "kind": "Hotel",
+                "latitude": 41.853,
+                "longitude": 12.496451,
+                "star_rating": 4,
+                "email": "reservation.room@precisehotels.com",
+                "description": "«Precise House Mantegna Roma» Devi avere il massimo del comfort in vacanza! Scegli hotel a Roma. L’hotel si trova a 5 km dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Basilica San Paolo, Appian Way e Basilica of Saint Paul Outside the Walls. Puoi fare una sosta al bar. È l’ora di gustare un buon pasto! Fai una sosta al ristorante. Il bar degli Sorseggia un caffè al café e, chissà, forse sarà il più buono della città. La connessione Wi-Fi gratuita disponibile ti permetterà di essere sempre online. Viaggi in auto? Avrai a disposizione l’area parcheggio. Per i turisti che viaggiano in auto, è disponibile un’area parcheggio a pagamento. Nella struttura, è possibile organizzare riunioni d’affari, conferenze, assemblee, poiché sono disponibili un centro business e una struttura per gli eventi. Vuoi fare un’escursione? Chiedi consulenza al desk di assistenza agli ospiti di l’hotel. Per spostarti liberamente per la città, l’hotel ti offre il servizio di transfer. Accessibilità: è presente un ascensore. Gli ospiti troveranno inoltre a loro disposizione una lavanderia, un servizio di lavaggio a secco, il servizio di stiro e una cassaforte. Lo staff di l’hotel sarà lieto di parlare con te in inglese. In camera troverai una TV. La dotazione della camera dipende dalla categoria",
+                "id": "barcelo_aran_mantegna",
+                "daily_prices": 141.71,
+                "meal": "nomeal",
+                "room_name": "Camera doppia Superior (letto matrimoniale)"
+            },
+            {
+                "hid": 7476190,
+                "name": "BV Oly Hotel",
+                "address": "Via Santuario Regina degli Apostoli,36, Roma",
+                "phone": "393906594441",
+                "kind": "Hotel",
+                "latitude": 41.85173,
+                "longitude": 12.482609,
+                "star_rating": 4,
+                "email": "booking@bvolyhotel.com",
+                "description": "«BV Oly Hotel» Ottima scelta se vuoi rilassarti in hotel tanto quanto esplorare la città a piedi. Scegli hotel ra Roma. L’hotel si trova a 5 km dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Basilica San Paolo, Basilica of Saint Paul Outside the Walls e Colosseo. Passa la serata nell’atmosfera piacevole del bar. Puoi fare una pausa al ristorante. Il bar degli La connessione Wi-Fi gratuita disponibile ti permetterà di essere sempre online. Viaggi in auto? Avrai a disposizione l’area parcheggio gratuito. Inoltre, per gli ospiti degli all’hotel sono disponibili i seguenti servizi: un dottore. Gli amanti dello sport potranno usufruire di un centro fitness. Per chi deve partecipare a riunioni d’affari, è disponibile: un centro business. Accessibile agli ospiti con disabilità: l’ascensore li aiuta a raggiungere i piani più alti. Servizi aggiuntivi offerti da l’hotel ai propri ospiti: una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, giornali, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo, italiano e francese. Ecco cosa troverai in camera per rilassarti dopo una lunga giornata: una TV. La dotazione della camera dipende dalla categoria",
+                "id": "oly",
+                "daily_prices": 135.26,
+                "meal": "breakfast",
+                "room_name": "Camera doppia Classica (2 letti singoli)"
+            },
+            {
+                "hid": 7473093,
+                "name": "Antico Palazzo Rospigliosi",
+                "address": "Via Liberiana 22, Roma",
+                "phone": "+39 06 48930495",
+                "kind": "Hotel",
+                "latitude": 41.897423,
+                "longitude": 12.497811,
+                "star_rating": 4,
+                "email": "info@hotelrospigliosi.com",
+                "description": "«Antico Palazzo Rospigliosi» Ottima scelta se vuoi rilassarti in hotel tanto quanto esplorare la città a piedi. Scegli hotel a Roma. L’hotel si trova a pochi minuti di distanza dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Santa Maria Maggiore, Cavour e Capitoline Hill. Passa la serata nell’atmosfera piacevole del bar. È l’ora di gustare un buon pasto! Fai una sosta al ristorante. Il bar degli È disponibile il Wi-Fi gratuito. Chiedi maggiori informazioni al check-in. Per i turisti che viaggiano in auto, è disponibile un’area parcheggio. Servizi per la bellezza e il benessere disponibili: un dottore. La struttura offre i seguenti servizi di intrattenimento: una biblioteca. È possibile organizzare riunioni d’affari, conferenze, assemblee, poiché è disponibile una sala conferenze. Il desk di assistenza ai turisti di l’hotel ti aiuterà a prenotare un’escursione. Puoi portare il tuo animale con te in vacanza. Gli animali sono ammessi. Se per il tuo viaggio desideri una comodità ancora maggiore, puoi prenotare un transfer. Accessibilità: è presente un ascensore. Gli ospiti troveranno inoltre a loro disposizione una lavanderia, un servizio di lavaggio a secco, una cappella, check-in e check-out privati, il servizio di stiro, il servizio di noleggio auto, una cassaforte e un concierge. Lo staff di l’hotel parla inglese, spagnolo, italiano e francese. Ecco cosa troverai in camera per rilassarti dopo una lunga giornata: una TV e un mini-bar. La dotazione della camera dipende dalla categoria",
+                "id": "antico_palazzo_rospigliosi",
+                "daily_prices": 173.29,
+                "meal": "breakfast",
+                "room_name": "Internal doppia (letto matrimoniale) (il tipo di letto è soggetto a disponibilità)"
+            },
+            {
+                "hid": 7501292,
+                "name": "Hotel Caravel",
+                "address": "Via Cristoforo Colombo 124, Roma",
+                "phone": "39065180789",
+                "kind": "Hotel",
+                "latitude": 41.865234,
+                "longitude": 12.496233,
+                "star_rating": 4,
+                "email": "info@hotelcaravel.it",
+                "description": "La struttura a Ottima scelta se vuoi rilassarti in hotel tanto quanto esplorare la città a piedi. Scegli hotel \"Hotel Caravel\" si trova a Roma. Questo hotel a 3 km dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Appian Way, Porta San Sebastiano e Garbatella. Puoi fare una sosta al bar. È l’ora di gustare un buon pasto! Fai una sosta al ristorante. Il bar degli Vuoi essere sempre online? È disponibile il Wi-Fi. Inoltre, per gli ospiti degli all’hotel sono disponibili i seguenti servizi: un dottore. Gli ospiti che amano lo sport potranno approfittare di un centro fitness. Per le riunioni d’affari, è disponibile una sala conferenze e riunioni e attrezzature per le presentazioni. Lo staff di l’hotel ti aiuterà a prenotare il servizio di transfer. Accessibilità: è presente un ascensore. Gli ospiti troveranno inoltre a loro disposizione una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo e italiano. In camera troverai una sveglia, una doccia e una TV. La dotazione della camera dipende dalla categoria",
+                "id": "hotel_caravel_2",
+                "daily_prices": 164.0,
+                "meal": "nomeal",
+                "room_name": "Camera tripla"
+            }
+        ],
+        "Firenze": [
+            {
+                "hid": 7500769,
+                "name": "Hotel Alinari",
+                "address": "Largo Alinari 15, Firenze",
+                "phone": "39055284289",
+                "kind": "Hotel",
+                "latitude": 43.77629,
+                "longitude": 11.250681,
+                "star_rating": 3,
+                "email": "info@hotelalinari.com",
+                "description": "La struttura a Il luogo ideale per rilassarsi dopo una giornata piena di emozioni! Hotel \"Hotel Alinari\" si trova a Firenze. Questo hotel v nelle vicinanze dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel — Medici Chapels, Santa Maria Novella Basilica and Museum e Battistero di San Giovanni. Passa la serata nell’atmosfera piacevole del bar. Puoi fare una pausa al ristorante. Il bar degli Vuoi essere sempre online? È disponibile il Wi-Fi. Gli ospiti che amano lo sport potranno approfittare di una zona per il ping pong. Per prenotare un’escursione, chiedi consulenza al desk di assistenza ai turisti di l’hotel. Accessibile agli ospiti con disabilità: l’ascensore li aiuta a raggiungere i piani più alti. Gli ospiti troveranno inoltre a loro disposizione una lavanderia, un servizio di lavaggio a secco, il servizio di noleggio auto, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo e italiano. In camera troverai una sveglia, una doccia, una TV e un mini-bar. La dotazione della camera dipende dalla categoria",
+                "id": "hotel_alinari_2",
+                "daily_prices": 169.0,
+                "meal": "nomeal",
+                "room_name": "Camera doppia (2 letti singoli)"
+            },
+            {
+                "hid": 7473616,
+                "name": "Hotel Albani Firenze",
+                "address": "Via Fiume 12, Firenze",
+                "phone": "+3905526030",
+                "kind": "Hotel",
+                "latitude": 43.77708,
+                "longitude": 11.25009,
+                "star_rating": 4,
+                "email": "info.flo@albanihotels.com",
+                "description": "La struttura a Vuoi rilassarti ed esplorare la città? Scegli hotel \"Hotel Albani Firenze\" si trova a Firenze. Questo hotel t nelle vicinanze dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Santa Maria Novella Basilica and Museum, Medici Chapels e Battistero di San Giovanni. Puoi fare una sosta al bar. È l’ora di gustare un buon pasto! Fai una sosta al ristorante. Il bar degli È disponibile il Wi-Fi gratuito. Chiedi maggiori informazioni al check-in. Per te che viaggi in auto, è disponibile un’area parcheggio. Viaggi in auto? Avrai a disposizione l’area parcheggio a pagamento. Servizi per la bellezza e il benessere disponibili: un dottore. Agli sportivi farà piacere sapere di poter usufruire di un centro fitness. Per le riunioni d’affari, è disponibile una sala conferenze. Porta con te il tuo animale. Gli animali sono ammessi con un supplemento. Se per il tuo viaggio desideri una comodità ancora maggiore, puoi prenotare un transfer. Accessibilità: è presente un ascensore. Sono disponibili altri servizi per gli ospiti di l’hotel. Ad esempio, una lavanderia, il servizio di stiro e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo e italiano. La camera è finemente decorata e ha tutto il necessario per rilassarsi dopo una lunga giornata piena di attività. Troverai una TV e un accappatoio. Ti ricordiamo che i servizi e le dotazioni elencati potrebbero non essere disponibili per tutte le camere.",
+                "id": "hotel_albani_firenze",
+                "daily_prices": 144.02,
+                "meal": "breakfast",
+                "room_name": "Camera doppia Classica (letto matrimoniale)"
+            }
+        ]
+    },
+    "esperienze": {
+        "Roma": [
+            {
+                "url": [
+                    "https://yookye.com/it/proposte/degustazione-esclusiva-di-vini-tipici-italiani"
+                ],
+                "alias": [
+                    "Degustazione Esclusiva di Vini tipici Italiani"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Roma"
+                ],
+                "citta": [
+                    "Roma"
+                ],
+                "descrizione": "Vivi una degustazione esclusiva nel centro storico di Roma! Gusterai 6 tipologie di vini Italiani con assaggio di formaggi e olive. Durante queste due ore di degustazione, tratteremo le basi di come degustare il vino, come abbinarlo al cibo e come comprendere e riconoscere tutti i diversi stili di vino che vengono prodotti in ciascuna delle 20 diverse regioni del paese. Discuteremo anche cosa sia esattamente un vino naturale o a basso intervento e cosa lo distingue dalla maggior parte delle offerte convenzionali.",
+                "dettagli": {
+                    "dettagli_aggiuntivi": "durata_dell'esperienza: 2 ore",
+                    "tipo_attivita": "Cultura",
+                    "scenario": "Città",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Gruppo",
+                        "Individuale"
+                    ]
+                },
+                "tags": [
+                    "Coppia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Cultura",
+                    "Città",
+                    "Roma"
+                ],
+                "dati_extra": "mappa: Roma Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            }
+        ],
+        "Firenze": [
+            {
+                "url": [
+                    "https://yookye.com/it/proposte/tour-nel-chianti-vespa-con-pasto-km0-e-degustazioni"
+                ],
+                "alias": [
+                    "Tour nel Chianti in Vespa con Pasto Km0 e Degustazioni"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Firenze"
+                ],
+                "citta": [
+                    "Firenze"
+                ],
+                "descrizione": "In pochissimo tempo il nostro minibus vi porterà in un luogo meraviglioso, dove aria fresca, panorami mozzafiato, cibo delizioso e vino Chianti saranno i vostri compagni durante questa memorabile giornata. La prima parte dell'attività è dedicata ad una LEZIONE DI ORIENTAMENTO condotta da un tour leader esperto all'interno di un'area apposita in cui potrete testare le vostre Vespe e prenderci confidenza. A seguito di un vero e proprio test di guida il vostro accompagnatore giudicherà se tutti i membri del gruppo hanno la dimestichezza e la confidenza necessaria per guidare in autonomia e soprattutto in sicurezza per i soleggiati sentieri di campagna. Dopo tanta teoria è giunto il momento della pratica! Il giro in Vespa vi condurrà attraverso uno dei più bei paesaggi che il Chianti ha da offrire, DOLCI COLLINE, RIGOGLIOSI VIGNETI e oliveti che danno vita ad un vero e proprio paesaggio da cartolina. Durante il tragitto verranno fatte soste a più riprese per permettervi di scattare delle foto panoramiche. La prima fermata lungo il tragitto sarà presso una FAMOSA CANTINA, dove grazie ad un interessante tour guidato scoprirete tutti i segreti che si celano dietro alla produzione del vino Chianti.",
+                "tags": [
+                    "Azienda",
+                    "Coppia",
+                    "Famiglia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Accompagnatore",
+                    "Fotografia",
+                    "Noleggi",
+                    "Vespa",
+                    "Collina",
+                    "Firenze",
+                    "Chi siamo"
+                ],
+                "dati_extra": "servizisinclusi: {'siaconsiglia': 'di indossare scarpe comode.', 'nonsicuriguida': 'Nel caso in cui non vi sentiate sicuri nel guidare da soli potrete avere la possibilità di essere affiancati durante la passeggiata da uno dei nostri esperti accompagnatori.', 'patenteguida': 'Si richiede una patente di guida valida per partecipare al tour.', 'sicurezza': 'Se durante la lezione di preparazione riteniamo che per la vostra sicurezza non sia opportuno che guidiate da soli vi verrà suggerito di avvalervi durante la passeggiata della collaborazione di uno dei nostri accompagnatori oppure di continuare il tour sul minibus. In questi casi non sarà possibile ottenere un rimborso.', 'pioggia': \"Il tour parte anche in caso di pioggia. Faremo di tutto per garantire in ogni caso l'attività in Vespa, ma nel caso in cui le condizioni metereologiche non migliorino il giro in Vespa verrà ridotto drasticamente o annullato. In questo caso, il tour verrà condotto in sicurezza con il nostro minivan. In caso di pioggia non è previsto alcun rimborso, ma qualora rinunciaste a prendere parte al tour potrete spostarlo senza alcuna penale.\"} | mappa: Firenze Italia",
+                "dettagli": {
+                    "scenario": "Collina",
+                    "stagione": "Autunno Estate Inverno Primavera",
+                    "durata": "1 day",
+                    "difficolta": "Facile",
+                    "target": "Azienda Coppia Famiglia Gruppo Individuale",
+                    "dettagli_aggiuntivi": "tipodattività: Accompagnatore Fotografia Noleggi Vespa"
+                },
+                "tipologia": "visite_alle_cantine, vita_locale, soggiorni_nella_wine_country"
+            },
+            {
+                "url": [
+                    "https://yookye.com/it/proposte/visita-guidata-nella-storia-di-firenze-con-degustazione-di-olio"
+                ],
+                "alias": [
+                    "Visita Guidata nella storia di Firenze con Degustazione di Olio"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Firenze"
+                ],
+                "citta": [
+                    "Firenze"
+                ],
+                "descrizione": "Vi proponiamo una visita guidata privata alla scoperta della città, del suo carattere in tutte le proprie sfumature, compresa quella culinaria! Partirete dal cuore antico di Piazza della Repubblica, per poi proseguire verso Piazza San Giovanni, il primo quartiere mediceo, Piazza del Duomo. A questo punto ci sarà la sosta per una degustazione di olio extravergine di oliva da Alessi, negozio storico, per poi proseguire per Piazza della Signoria, attraversare il Ponte Vecchio.",
+                "dettagli": {
+                    "tipo_attivita": "Accompagnatore Guida",
+                    "scenario": "Cittu00e0",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Famiglia",
+                        "Gruppo"
+                    ],
+                    "esperienza_inclusa": "Guida esperta, Degustazione di Olio, Audioguide",
+                    "info_aggiuntive": "consigli: Indossare un abbigliamento e scarpe comode"
+                },
+                "tags": [
+                    "Coppia",
+                    "Famiglia",
+                    "Gruppo",
+                    "1 day",
+                    "Accompagnatore",
+                    "Guida",
+                    "Cittu00e0",
+                    "Firenze"
+                ],
+                "dati_extra": "mappa: Firenze, Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            }
+        ]
+    }
+}
