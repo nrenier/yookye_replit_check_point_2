@@ -131,7 +131,7 @@ def logout():
 @auth_bp.route("/user", methods=["GET"])
 @auth_bp.route("/api/user", methods=["GET"])
 @auth_bp.route("/api/me", methods=["GET"])
-async def get_current_user():
+def get_current_user():
     """Ottiene l'utente corrente."""
     # Verifica la sessione
     user_id = session.get("user_id")
@@ -139,7 +139,7 @@ async def get_current_user():
         return jsonify({"success": False, "message": "Not authenticated"}), 401
 
     # Ottieni l'utente
-    user = await user_repo.get_by_id(user_id)
+    user = user_repo.get_by_id(user_id)
     if not user:
         return jsonify({"success": False, "message": "User not found"}), 404
 
