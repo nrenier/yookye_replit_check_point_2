@@ -61,4 +61,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd client && npm install && npm run build && cd .. && pip install python-jose python-dotenv opensearch-py passlib bcrypt && python python_server/run.py"
+args = "cd client && npm install && npm run build && cd .. && pip install python-jose python-dotenv opensearch-py passlib bcrypt pyjwt && python python_server/run.py"

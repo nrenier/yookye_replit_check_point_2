@@ -146,9 +146,9 @@ def get_current_user():
     # Converti l'oggetto User in un dizionario per la serializzazione JSON
     user_dict = {
         "id": user.id,
-        "email": user.email,
-        "name": user.name,
-        "role": user.role,
+        "username": user.username if hasattr(user, 'username') else "",
+        "email": user.email if hasattr(user, 'email') else "",
+        "name": user.name if hasattr(user, 'name') else "",
         "created_at": user.created_at.isoformat() if hasattr(user, 'created_at') and user.created_at else None
     }
 

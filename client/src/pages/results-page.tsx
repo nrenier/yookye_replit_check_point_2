@@ -208,30 +208,53 @@ export default function ResultsPage() {
   // Effettua il polling se abbiamo un job_id
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout;
+    let failedAttempts = 0;
+    const MAX_FAILED_ATTEMPTS = 5;
 
     const pollJobStatus = async () => {
       if (!jobId) return;
 
       try {
+        // Verifica che l'utente sia ancora autenticato
+        if (!user) {
+          console.error("Utente non autenticato durante il polling");
+          setIsPolling(false);
+          return;
+        }
+
         const statusResponse = await checkJobStatus(jobId);
         console.log("Polling status:", statusResponse);
         setPollingStatus(statusResponse.status);
+        failedAttempts = 0; // Reset il contatore degli errori
 
         if (statusResponse.status === 'SUCCESS') {
           const results = await getJobResults(jobId);
           setPollingResults(results);
           setIsPolling(false);
-          localStorage.removeItem('yookve_job_id');
+          // Salva il risultato per poterlo recuperare anche dopo un refresh
+          // localStorage.setItem('yookve_search_results', JSON.stringify(results));
+          // Manteniamo il job_id per permettere di ritrovare i risultati
+          // localStorage.removeItem('yookve_job_id');
         }
       } catch (error) {
         console.error("Errore durante il polling:", error);
-        setIsPolling(false);
+        failedAttempts += 1;
+        
+        // Se ci sono troppi tentativi falliti consecutivi, interrompi il polling
+        if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+          console.error("Troppi tentativi falliti, interrompo il polling");
+          setIsPolling(false);
+        }
       }
     };
 
-    if (isPolling && jobId) {
+    if (isPolling && jobId && user) {
       pollJobStatus();
       pollingInterval = setInterval(pollJobStatus, 3000);
+    } else if (isPolling && !user) {
+      // Interrompe il polling se l'utente non è autenticato
+      console.log("Utente non autenticato, interrompo il polling");
+      setIsPolling(false);
     }
 
     return () => {
@@ -239,7 +262,7 @@ export default function ResultsPage() {
         clearInterval(pollingInterval);
       }
     };
-  }, [jobId, isPolling]);
+  }, [jobId, isPolling, user]);
 
 
   useEffect(() => {
