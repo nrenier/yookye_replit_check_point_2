@@ -1,0 +1,58 @@
+NFO:werkzeug:127.0.0.1 - - [29/Apr/2025 17:09:07] "GET /results?job_id=afe631ff-b0fd-4fe2-bc81-1fd692904f42 HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Apr/2025 17:09:07] "GET /assets/index-CEQXNjhj.js HTTP/1.1" 304 -
+INFO:werkzeug:127.0.0.1 - - [29/Apr/2025 17:09:07] "GET /assets/index-_JfL8ZCm.css HTTP/1.1" 304 -
+INFO:opensearch:GET http://localhost:9200/users/_doc/r8q18w03f9r [status:200 request:0.266s]
+INFO:werkzeug:127.0.0.1 - - [29/Apr/2025 17:09:07] "GET /api/user HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/api/auth.py", line 147, in get_current_user
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type User is not JSON serializable
