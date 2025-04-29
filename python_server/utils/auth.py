@@ -69,3 +69,29 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
     return encoded_jwt
+
+from functools import wraps
+from flask import session, jsonify, request
+import jwt
+from jwt import PyJWTError
+
+def login_required(f):
+    """Decoratore per proteggere le route che richiedono autenticazione."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        # Verifica se l'utente è in sessione
+        if not session.get("user_id"):
+            # Prova a verificare il token JWT nell'header Authorization
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1]
+                try:
+                    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                    session["user_id"] = payload.get("user_id")
+                except PyJWTError:
+                    return jsonify({"message": "Non autorizzato"}), 401
+            else:
+                return jsonify({"message": "Non autorizzato"}), 401
+                
+        return f(*args, **kwargs)
+    return decorated
