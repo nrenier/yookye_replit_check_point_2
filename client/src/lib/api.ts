@@ -322,8 +322,66 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // Dopo aver ricevuto il job_id, reindirizza alla pagina dei risultati
     // La pagina dei risultati si occuperà del polling
     if (response.data && response.data.job_id) {
-      // Redirect a results?job_id={job_id}
-      window.location.href = `/results?job_id=${response.data.job_id}`;
+      const jobId = response.data.job_id;
+      // Salva l'email dell'utente e il job_id nel localStorage per poter ripristinare la sessione
+      localStorage.setItem('yookve_job_id', jobId);
+      
+      // Se disponibile, salva l'email per poter identificare l'utente
+      if (preferenceData.email) {
+        localStorage.setItem('yookve_user_email', preferenceData.email);
+      }
+      
+
+// Funzione per controllare lo stato del job di ricerca
+export const checkJobStatus = async (jobId: string) => {
+  try {
+    // Ottieni un token valido
+    const token = await getAccessToken();
+    
+    const statusEndpoint = `${API_URL}/api/search/${jobId}`;
+    console.log("Verifico lo stato del job:", statusEndpoint);
+    
+    const response = await axios.get(statusEndpoint, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    console.log("Stato del job:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel controllo dello stato del job:", error);
+    throw error;
+  }
+};
+
+// Funzione per ottenere i risultati del job di ricerca
+export const getJobResults = async (jobId: string) => {
+  try {
+    // Ottieni un token valido
+    const token = await getAccessToken();
+    
+    const resultsEndpoint = `${API_URL}/api/search/${jobId}/result`;
+    console.log("Recupero i risultati del job:", resultsEndpoint);
+    
+    const response = await axios.get(resultsEndpoint, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    console.log("Risultati ricevuti:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel recupero dei risultati del job:", error);
+    throw error;
+  }
+};
+
+      // Redirect alla pagina dei risultati
+      window.location.href = `/results?job_id=${jobId}`;
     }
     
     return response.data;

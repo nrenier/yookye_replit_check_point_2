@@ -8,42 +8,46 @@ import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { checkJobStatus, getJobResults } from "@/lib/api"; // Added import
+
 
 export default function ResultsPage() {
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("packages");
   const [jobId, setJobId] = useState<string | null>(null);
-  const [pollingInterval, setPollingInterval] = useState<number | null>(null);
-  
-  // Estrai il job_id dalla query string, se presente
+  const [pollingStatus, setPollingStatus] = useState<string>('PENDING');
+  const [pollingResults, setPollingResults] = useState<any>(null);
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+
+
+  // Estrai il job_id dalla query string o dal localStorage, se presente
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const jobIdParam = params.get("job_id");
+    const jobIdParam = params.get("job_id") || localStorage.getItem('yookve_job_id');
     if (jobIdParam) {
       setJobId(jobIdParam);
+      setIsPolling(true); // Start polling if jobId is found
     }
   }, []);
 
   const { data: recommendations, isLoading: packagesLoading, error: packagesError, refetch } = useQuery<any>({
     queryKey: ["/api/recommendations", jobId],
     queryFn: async () => {
-      const endpoint = jobId ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
+      const endpoint = jobId && !isPolling ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
       const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error("Errore durante il recupero dei dati");
       }
       return response.json();
     },
+    enabled: !!jobId && !isPolling // Only fetch if jobId is available and polling is finished
   });
+
 
   const { data: cityPackages, isLoading: cityPackagesLoading, error: cityPackagesError } = useQuery<CityPackageData>({
     queryKey: ["/api/recommendations/city-packages"],
-    // If the API endpoint doesn't exist yet, we can use a mock implementation
-    // This will be replaced with the real API once it's implemented
     queryFn: async () => {
-      // Mocking the response for demonstration
-      // In a real implementation, this would be fetched from your API
       return {
         accomodation: {
           "Roma": [
@@ -201,50 +205,45 @@ export default function ResultsPage() {
   const isLoading = packagesLoading || cityPackagesLoading;
   const error = packagesError || cityPackagesError;
 
-  // Gestisci il polling per job non ancora completati
+  // Effettua il polling se abbiamo un job_id
   useEffect(() => {
-    // Se abbiamo una risposta con status diverso da SUCCESS, iniziamo il polling
-    if (recommendations && recommendations.status && recommendations.status !== "SUCCESS") {
-      // Se non abbiamo già iniziato il polling
-      if (!pollingInterval) {
-        console.log("Inizia il polling per il job", recommendations.job_id);
-        // Salva il job_id dalla risposta se disponibile
-        if (recommendations.job_id && !jobId) {
-          setJobId(recommendations.job_id);
-          // Aggiorna l'URL con il job_id
-          const params = new URLSearchParams(window.location.search);
-          params.set("job_id", recommendations.job_id);
-          window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
+    let pollingInterval: NodeJS.Timeout;
+
+    const pollJobStatus = async () => {
+      if (!jobId) return;
+
+      try {
+        const statusResponse = await checkJobStatus(jobId);
+        console.log("Polling status:", statusResponse);
+        setPollingStatus(statusResponse.status);
+
+        if (statusResponse.status === 'SUCCESS') {
+          const results = await getJobResults(jobId);
+          setPollingResults(results);
+          setIsPolling(false);
+          localStorage.removeItem('yookve_job_id');
         }
-        
-        // Imposta un intervallo di polling di 5 secondi
-        const interval = window.setInterval(() => {
-          console.log("Esecuzione polling...");
-          refetch();
-        }, 5000);
-        
-        setPollingInterval(interval);
+      } catch (error) {
+        console.error("Errore durante il polling:", error);
+        setIsPolling(false);
       }
-    } else if (recommendations && (!recommendations.status || recommendations.status === "SUCCESS")) {
-      // Se il job è completato, ferma il polling
-      if (pollingInterval) {
-        console.log("Job completato, ferma il polling");
-        clearInterval(pollingInterval);
-        setPollingInterval(null);
-      }
+    };
+
+    if (isPolling && jobId) {
+      pollJobStatus();
+      pollingInterval = setInterval(pollJobStatus, 3000);
     }
-    
-    // Pulizia quando il componente si smonta
+
     return () => {
       if (pollingInterval) {
         clearInterval(pollingInterval);
       }
     };
-  }, [recommendations, jobId, pollingInterval, refetch]);
+  }, [jobId, isPolling]);
+
 
   useEffect(() => {
     if (error) {
-      // If error is a 404 (no preferences found), redirect to preferences page
       if ((error as any).message?.includes("404")) {
         setLocation("/preferences");
       }
@@ -263,17 +262,29 @@ export default function ResultsPage() {
           <p className="text-center text-gray-600 mb-6">
             Ecco i tuoi pacchetti su misura in base alle tue preferenze
           </p>
-          
+
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
               <TabsTrigger value="packages">Pacchetti</TabsTrigger>
               <TabsTrigger value="itinerary">Itinerario Dettagliato</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="packages">
-              {isLoading ? (
+              {isLoading || isPolling ? ( // Added isPolling to loading condition
                 <div className="flex justify-center items-center py-20">
                   <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
+                  <p className="mt-4 text-lg text-gray-600">
+                    {pollingStatus === 'STARTED'
+                      ? "Stiamo cercando le migliori proposte per te..."
+                      : pollingStatus === 'PROCESSING'
+                        ? "Stiamo elaborando i risultati della ricerca..."
+                        : "Stiamo preparando le tue proposte di viaggio..."}
+                  </p>
+                  {pollingStatus && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Stato attuale: {pollingStatus}
+                    </p>
+                  )}
                 </div>
               ) : recommendations && recommendations.status && recommendations.status !== "SUCCESS" ? (
                 <div className="flex flex-col justify-center items-center py-20">
@@ -294,11 +305,23 @@ export default function ResultsPage() {
                 </div>
               )}
             </TabsContent>
-            
+
             <TabsContent value="itinerary">
-              {isLoading ? (
+              {isLoading || isPolling ? ( // Added isPolling to loading condition
                 <div className="flex justify-center items-center py-20">
                   <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
+                  <p className="mt-4 text-lg text-gray-600">
+                    {pollingStatus === 'STARTED'
+                      ? "Stiamo cercando le migliori proposte per te..."
+                      : pollingStatus === 'PROCESSING'
+                        ? "Stiamo elaborando i risultati della ricerca..."
+                        : "Stiamo preparando le tue proposte di viaggio..."}
+                  </p>
+                  {pollingStatus && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Stato attuale: {pollingStatus}
+                    </p>
+                  )}
                 </div>
               ) : cityPackages ? (
                 <CityExperiencePackage data={cityPackages} />
