@@ -1,4 +1,3 @@
-
 import time
 import json
 import logging
@@ -12,41 +11,34 @@ def log_request():
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # Registra il tempo di inizio
             start_time = time.time()
-            
-            # Memorizza il percorso della richiesta
-            request_path = request.path
-            
-            # Esegui la funzione di vista
+            logger.info(f"Richiesta a {request.path} con metodo {request.method}")
+
             response = f(*args, **kwargs)
-            
-            # Calcola la durata
-            duration = int((time.time() - start_time) * 1000)  # in millisecondi
-            
-            # Logga solo le richieste API
-            if request_path.startswith('/api'):
-                log_data = {
-                    "method": request.method,
-                    "path": request_path,
-                    "status": response.status_code,
-                    "duration": f"{duration}ms"
-                }
-                
-                # Se la risposta contiene dati JSON, aggiungiamo un estratto
-                if response.is_json and response.json:
-                    response_json = json.dumps(response.json)
-                    if len(response_json) > 80:
-                        response_json = response_json[:79] + "…"
-                    log_data["response"] = response_json
-                
-                # Crea la linea di log
-                log_line = f"{log_data['method']} {log_data['path']} {log_data['status']} in {log_data['duration']}"
-                if "response" in log_data:
-                    log_line += f" :: {log_data['response']}"
-                
-                logger.info(log_line)
-            
-            return response
+
+            # Verifica se la risposta è un coroutine (async)
+            if hasattr(response, '__await__'):
+                # Per funzioni asincrone, dobbiamo modificare l'implementazione
+                @wraps(f)
+                async def async_wrapper(*args, **kwargs):
+                    start_time = time.time()
+                    try:
+                        # Attendere il risultato del coroutine
+                        response = await f(*args, **kwargs)
+                        end_time = time.time()
+                        execution_time = end_time - start_time
+                        logger.info(f"Risposta asincrona da {request.path}: {getattr(response, 'status_code', 'N/A')}, tempo di esecuzione: {execution_time:.2f}s")
+                        return response
+                    except Exception as e:
+                        logger.error(f"Errore in richiesta asincrona a {request.path}: {str(e)}")
+                        raise
+                return async_wrapper(*args, **kwargs)
+            else:
+                # Per funzioni sincrone, usa l'implementazione originale
+                end_time = time.time()
+                execution_time = end_time - start_time
+                logger.info(f"Risposta da {request.path}: {getattr(response, 'status_code', 'N/A')}, tempo di esecuzione: {execution_time:.2f}s")
+                return response
+
         return decorated_function
     return decorator

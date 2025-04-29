@@ -24,28 +24,36 @@ else:
 @log_request()
 async def get_user_bookings():
     """Recupera tutte le prenotazioni dell'utente corrente."""
-    user_id = session.get("user_id")
-    booking_repo = BookingRepository()
-    bookings = await booking_repo.get_by_user_id(user_id)
-    return jsonify([booking.dict() for booking in bookings])
+    try:
+        user_id = session.get("user_id")
+        booking_repo = BookingRepository()
+        bookings = await booking_repo.get_by_user_id(user_id)
+        return jsonify([booking.dict() for booking in bookings])
+    except Exception as e:
+        logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
+        return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
 
 @booking_bp.route("/<booking_id>", methods=["GET"])
 @login_required
 @log_request()
 async def get_booking_by_id(booking_id):
     """Recupera una prenotazione specifica."""
-    user_id = session.get("user_id")
-    booking_repo = BookingRepository()
-    booking = await booking_repo.get_by_id(booking_id)
-    
-    if not booking:
-        return jsonify({"message": "Prenotazione non trovata"}), 404
-    
-    # Verifica che l'utente sia il proprietario della prenotazione
-    if booking.userId != user_id:
-        return jsonify({"message": "Non autorizzato"}), 403
-    
-    return jsonify(booking.dict())
+    try:
+        user_id = session.get("user_id")
+        booking_repo = BookingRepository()
+        booking = await booking_repo.get_by_id(booking_id)
+        
+        if not booking:
+            return jsonify({"message": "Prenotazione non trovata"}), 404
+        
+        # Verifica che l'utente sia il proprietario della prenotazione
+        if booking.userId != user_id:
+            return jsonify({"message": "Non autorizzato"}), 403
+        
+        return jsonify(booking.dict())
+    except Exception as e:
+        logger.error(f"Errore nel recupero della prenotazione {booking_id}: {str(e)}")
+        return jsonify({"message": f"Errore nel recupero della prenotazione: {str(e)}"}), 500
 
 @booking_bp.route("/", methods=["POST"])
 @login_required
