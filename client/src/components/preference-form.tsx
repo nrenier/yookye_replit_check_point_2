@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -41,7 +42,7 @@ const formSchema = z.object({
 
   // Luoghi da non perdere
   luoghiDaNonPerdere: z.string(),
-  luoghiSpecifici: z.string().optional(),
+  luoghiSpecifici: z.array(z.string()).optional(),
 
   // Tipo di destinazioni
   tipoDestinazioni: z.string(),
@@ -78,7 +79,7 @@ const formSchema = z.object({
   budget: z.string(),
 
   // Servizi speciali
-  serviziSpeciali: z.string().optional(),
+  noteAggiuntive: z.string().optional(),
 
   // Email di contatto
   email: z.string().email("Inserisci un indirizzo email valido"),
@@ -112,6 +113,7 @@ export default function PreferenceForm() {
       localitaArrivoPartenza: "non_so",
       budget: "mid_range",
       email: "",
+      noteAggiuntive: "",
     },
   });
 
@@ -851,90 +853,76 @@ export default function PreferenceForm() {
           <Separator />
 
           {/* Budget */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Hai in mente un budget specifico per questo viaggio?</h2>
-            <p className="text-sm text-gray-600 mb-4">I viaggi di Yookye comprendono soggiorno, esperienze e trasferimenti.</p>
-            <FormField
-              control={form.control}
-              name="budget"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="economy" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Budget, meno di € 150 a persona/giorno
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="mid_range" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Mid-range, tra € 150 - € 250 a persona/giorno
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="comfort" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Comfort, tra € 250 - € 400 a persona/giorno
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="lusso" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Lusso, &euro; 400 a persona/giorno
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="nessuno" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Non ho un budget specifico in mente
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="budget"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Budget per persona al giorno</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    className="flex flex-col space-y-1"
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="budget" />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">Economico (fino a €100)</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="mid_range" />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">Fascia media (€100-€200)</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="comfort" />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">Comfort (€200-€350)</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="luxury" />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">Lusso (€350+)</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="no_limit" />
+                      </FormControl>
+                      <FormLabel className="font-normal cursor-pointer">Nessun budget predefinito</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <Separator />
-
-          {/* Servizi speciali */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Servizi speciali / Esigenze particolari:</h2>
-            <FormField
-              control={form.control}
-              name="serviziSpeciali"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Indica eventuali servizi speciali o esigenze particolari (allergie, accessibilità, etc.)"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {/* Esigenze Particolari */}
+          <FormField
+            control={form.control}
+            name="noteAggiuntive"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Esigenze Particolari</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Indica eventuali esigenze particolari o richieste specifiche"
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Ad esempio: accesso disabili, vicinanza a specifiche attrazioni, ecc.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Separator />
 

@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 export type FormValues = {
   passioni: string[];
   luoghiDaNonPerdere: string; // Assuming this is the destination city name
-  luoghiSpecifici?: string; // Assuming a string describing specific places
+  luoghiSpecifici?: string[]; // Assuming a string describing specific places
   tipoDestinazioni: string; // This field doesn't seem directly mapped to the API schema
   ritmoViaggio: string;
   livelloSistemazione: string;
@@ -19,16 +19,16 @@ export type FormValues = {
   checkInDate: Date;
   checkOutDate: Date;
   localitaArrivoPartenza: string; // Assuming this is used for the city name and potentially indicates known arrival/departure
-  dettagliArrivoPartenza?: string; // Assuming details about arrival/departure points
+  descrizioneArrivoPartenza?: string; // Assuming details about arrival/departure points
   budget: string;
-  serviziSpeciali?: string;
+  noteAggiuntive?: string;
   email: string; // This field doesn't seem directly mapped to the API schema
 };
 
 // Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
-const API_URL = import.meta.env.VITE_TRAVEL_API_URL || 'https://localhost:8993'; // External REST API URL from .env
-const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME || 'virtual_expert';
-const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD || 'HJhx2QWCoU52~v<M9YJ]';
+const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST API URL from .env
+const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
+const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
 
 console.log("Variabili ambiente API:", {
   url: API_URL,
@@ -100,93 +100,111 @@ const getAccessToken = async (): Promise<string> => {
 };
 
 // Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
-const mapFormToSearchInput = (data: FormValues) => {
+const mapFormToSearchInput = (formData: FormValues) => {
+  // Mappa interessi in categorie e sottocategorie
+  const mapInterests = () => {
+    const interessi: any = {
+      storia_e_arte: {
+        siti_archeologici: false,
+        musei_e_gallerie: false,
+        monumenti_e_architettura: false
+      },
+      Food_&_wine: {
+        visite_alle_cantine: false,
+        soggiorni_nella_wine_country: false,
+        corsi_di_cucina: false
+      },
+      vacanze_attive: {
+        trekking_di_più_giorni: false,
+        tour_in_e_bike_di_più_giorni: false,
+        tour_in_bicicletta_di_più_giorni: false,
+        sci_snowboard_di_più_giorni: false
+      },
+      vita_locale: false,
+      salute_e_benessere: false
+    };
 
-   // Logica per TRASPORTI basata sull'errore API ricevuto:
-   // 'conosci_arrivo_e_partenza' deve essere True SOLO se 'description' è fornita.
-   // Quindi, 'conosci_arrivo_e_partenza' è vero SE E SOLO SE 'dettagliArrivoPartenza' ha un valore.
-   const conosciArrivoPartenza = !!data.dettagliArrivoPartenza;
+    // Attiva le categorie selezionate
+    formData.passioni.forEach(interesse => {
+      // Gestisci i casi speciali per i sottotipi
+      if (interesse === 'musei' || interesse === 'monumenti') {
+        interessi.storia_e_arte.musei_e_gallerie = interesse === 'musei';
+        interessi.storia_e_arte.monumenti_e_architettura = interesse === 'monumenti';
+      } else if (interesse === 'enogastronomia') {
+        interessi.Food_&_wine.visite_alle_cantine = true;
+      } else if (interesse === 'sport') {
+        interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
+      } else if (interesse === 'cultura') {
+        interessi.vita_locale = true;
+      } else if (interesse === 'benessere') {
+        interessi.salute_e_benessere = true;
+      }
+    });
 
-   // Logica per BUDGET: L'errore indica che almeno una fascia deve essere True.
-   // La mappatura attuale imposta una sola fascia a True basandosi su data.budget.
-   // Se data.budget non corrisponde a nessun valore previsto, tutte saranno False, causando l'errore.
-   // Assicurati che la validazione del form garantisca che data.budget sia sempre uno dei valori attesi.
-   const validBudgets = ['economico', 'medio', 'comfort', 'lusso', 'ultra_lusso'];
-   const isBudgetSelected = validBudgets.includes(data.budget);
-    if (!isBudgetSelected && data.budget) {
-        console.warn(`Avviso: Il valore budget '${data.budget}' non corrisponde a una fascia attesa. Questo potrebbe causare un errore API.`);
-    } else if (!isBudgetSelected && !data.budget) {
-         console.warn("Avviso: Nessuna fascia di budget selezionata nel form (campo vuoto). Questo causerà un errore API.");
-    }
-
+    return interessi;
+  };
 
   return {
-    // TRASPORTI (REQUIRED by API schema)
-    trasporti: {
-      conosci_arrivo_e_partenza: conosciArrivoPartenza, // True solo se dettagliArrivoPartenza è fornito
-      description: data.dettagliArrivoPartenza || null, // Mappa i dettagli, usa null se vuoto
-      // auto_propria e Unknown non sono presenti in FormValues e sono opzionali, quindi vengono omessi.
-    },
-    // LUOGHI DA NON PERDERE (REQUIRED by API schema)
+    interessi: mapInterests(),
     luoghi_da_non_perdere: {
-      city: data.localitaArrivoPartenza, // Utilizza localitaArrivoPartenza come nome della città di destinazione
-      luoghi_specifici: !!data.luoghiSpecifici // Mappa il campo opzionale 'luoghiSpecifici' a un booleano
+      luoghi_specifici: formData.luoghiDaNonPerdere === 'si',
+      city: formData.luoghiSpecifici ? formData.luoghiSpecifici[0] : ''
     },
-    // VIAGGIATORI (REQUIRED by API schema)
-    viaggiatori: {
-      adults_number: Number(data.numAdulti),
-      children_number: Number(data.numBambini || 0),
-      baby_number: Number(data.numNeonati || 0)
+    mete_clou: {
+      destinazioni_popolari: formData.tipoDestinazioni === 'popolari',
+      destinazioni_avventura: formData.tipoDestinazioni === 'avventura',
+      entrambe: formData.tipoDestinazioni === 'entrambi'
     },
-    // DATE (REQUIRED by API schema)
-    date: {
-      check_in_time: format(data.checkInDate, 'yyyy-MM-dd'),
-      check_out_time: format(data.checkOutDate, 'yyyy-MM-dd')
+    ritmo_ideale: {
+      veloce: formData.ritmoViaggio === 'veloce',
+      moderato: formData.ritmoViaggio === 'moderato',
+      rilassato: formData.ritmoViaggio === 'rilassato'
     },
-    // BUDGET PER PERSONA GIORNO (REQUIRED by API schema)
-    budget_per_persona_giorno: {
-      // Mappatura basata sul valore della stringa data.budget.
-      // Richiede che data.budget sia una delle stringhe valide ('economico', 'medio', etc.)
-      // e che almeno una sia vera per superare la validazione API.
-      economico: data.budget === 'economico',
-      fascia_media: data.budget === 'medio',
-      comfort: data.budget === 'comfort',
-      lusso: data.budget === 'lusso',
-      ultra_lusso: data.budget === 'ultra_lusso'
-    },
-    // SISTEMAZIONE (REQUIRED by API schema)
     sistemazione: {
-      livello: { // SISTEMAZIONE LIVELLO (REQUIRED by Sistemazione schema)
-        fascia_media: data.livelloSistemazione === 'media',
-        boutique: data.livelloSistemazione === 'boutique',
-        eleganti: data.livelloSistemazione === 'elegante'
+      livello: {
+        fascia_media: formData.livelloSistemazione === 'standard',
+        boutique: formData.livelloSistemazione === 'boutique',
+        eleganti: formData.livelloSistemazione === 'lusso'
       },
-      tipologia: { // SISTEMAZIONE TIPOLOGIA (REQUIRED by Sistemazione schema)
-        hotel: data.tipologiaSistemazione.includes('hotel'),
-        'b&b': data.tipologiaSistemazione.includes('bb'), // Usa la chiave esatta dello schema 'b&b'
-        agriturismo: data.tipologiaSistemazione.includes('agriturismo'),
-        villa: data.tipologiaSistemazione.includes('villa'),
-        appartamento: data.tipologiaSistemazione.includes('appartamento'),
-        glamping: data.tipologiaSistemazione.includes('glamping')
+      tipologia: {
+        hotel: formData.tipologiaSistemazione.includes('hotel'),
+        'b&b': formData.tipologiaSistemazione.includes('bb'),
+        agriturismo: formData.tipologiaSistemazione.includes('agriturismo'),
+        villa: formData.tipologiaSistemazione.includes('villa'),
+        appartamento: formData.tipologiaSistemazione.includes('appartamento'),
+        glamping: formData.tipologiaSistemazione.includes('glamping')
       }
     },
-    // ESIGENZE PARTICOLARI (Optional in API schema)
-    esigenze_particolari: data.serviziSpeciali || null, // Mappa il campo opzionale, usa null se vuoto
-    // INTERESSI (Optional in API schema - OMMESSO per discrepanza con FormValues.passioni)
-    // TIPOLOGIA VIAGGIATORE (Optional in API schema)
-    tipologia_viaggiatore: {
-      family: data.tipologiaViaggiatore === 'famiglia',
-      amici: data.tipologiaViaggiatore === 'amici',
-      coppia: data.tipologiaViaggiatore === 'coppia',
-      single: data.tipologiaViaggiatore === 'single'
+    viaggiatori: {
+      adults_number: parseInt(formData.numAdulti),
+      children_number: parseInt(formData.numBambini),
+      baby_number: parseInt(formData.numNeonati),
+      Room_number: parseInt(formData.numCamere)
     },
-    // RITMO IDEALE (Optional in API schema)
-    ritmo_ideale: {
-      veloce: data.ritmoViaggio === 'veloce',
-      moderato: data.ritmoViaggio === 'moderato',
-      rilassato: data.ritmoViaggio === 'rilassato'
-    }
-    // Nota: numCamere, tipoDestinazioni, passioni e email non sono presenti nello schema API AccommodationSearchInput e sono stati omessi.
+    tipologia_viaggiatore: {
+      famiglia: formData.tipologiaViaggiatore === 'famiglia',
+      coppia: formData.tipologiaViaggiatore === 'coppia',
+      gruppo_amici: formData.tipologiaViaggiatore === 'amici',
+      azienda: formData.tipologiaViaggiatore === 'business'
+    },
+    date: {
+      check_in_time: formData.checkInDate.toISOString().split('T')[0],
+      check_out_time: formData.checkOutDate.toISOString().split('T')[0]
+    },
+    trasporti: {
+      conosci_arrivo_e_partenza: formData.localitaArrivoPartenza === 'si',
+      description: formData.localitaArrivoPartenza === 'si' ? formData.descrizioneArrivoPartenza : '',
+      auto_propria: formData.localitaArrivoPartenza === 'auto',
+      Unknown: formData.localitaArrivoPartenza === 'non_so'
+    },
+    budget_per_persona_giorno: {
+      economico: formData.budget === 'economico',
+      fascia_media: formData.budget === 'medio',
+      comfort: formData.budget === 'comfort',
+      lusso: formData.budget === 'lusso',
+      nessun_budget: formData.budget === 'illimitato'
+    },
+    esigenze_particolari: formData.noteAggiuntive || ''
   };
 };
 
@@ -229,7 +247,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       statusText: response.statusText,
       data: response.data
     });
-    
+
     // La risposta dell'endpoint /api/search contiene un job_id (SearchResponse schema)
     // Potrebbe essere necessario implementare la logica per il polling dello stato del job
     // utilizzando gli endpoint /api/search/{job_id} e /api/search/{job_id}/result
