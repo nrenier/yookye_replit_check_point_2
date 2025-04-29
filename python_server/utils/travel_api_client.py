@@ -56,6 +56,7 @@ class TravelApiClient:
     def get_recommendations(self):
         token = self._get_token()
         if not token:
+            print("Failed to get authentication token for external API")
             return None
 
         headers = {
@@ -63,9 +64,17 @@ class TravelApiClient:
         }
         recommendations_url = f"{self.base_url}/recommendations"
         try:
-            response = requests.get(recommendations_url, headers=headers)
+            # Add timeout to avoid hanging requests
+            response = requests.get(recommendations_url, headers=headers, timeout=5)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"Error getting recommendations from external API: {e}")
+            # Log more details about the error
+            if hasattr(e, 'response') and e.response:
+                print(f"Response status code: {e.response.status_code}")
+                print(f"Response content: {e.response.text}")
+            return None
+        except Exception as e:
+            print(f"Unexpected error when getting recommendations: {str(e)}")
             return None
