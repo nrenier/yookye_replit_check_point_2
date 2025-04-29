@@ -47,3 +47,16 @@ def decode_token(token: str):
 def generate_id():
     """Genera un ID univoco."""
     return str(uuid.uuid4())
+
+def login_required(f):
+    """Decorator per proteggere le route che richiedono autenticazione."""
+    from functools import wraps
+    from flask import session, jsonify
+    
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Verifica se l'utente è autenticato controllando la sessione
+        if "user_id" not in session:
+            return jsonify({"success": False, "message": "Autenticazione richiesta"}), 401
+        return f(*args, **kwargs)
+    return decorated_function
