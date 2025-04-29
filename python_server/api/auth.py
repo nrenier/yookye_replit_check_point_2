@@ -11,6 +11,7 @@ auth_bp = Blueprint("auth", __name__)
 user_repo = UserRepository()
 
 @auth_bp.route("/register", methods=["POST"])
+@auth_bp.route("/api/register", methods=["POST"])
 async def register():
     """Registra un nuovo utente."""
     data = request.json
@@ -54,6 +55,7 @@ async def register():
     })
 
 @auth_bp.route("/login", methods=["POST"])
+@auth_bp.route("/api/login", methods=["POST"])
 async def login():
     """Effettua il login di un utente."""
     data = request.json
@@ -86,6 +88,7 @@ async def login():
     })
 
 @auth_bp.route("/logout", methods=["POST"])
+@auth_bp.route("/api/logout", methods=["POST"])
 async def logout():
     """Effettua il logout di un utente."""
     # Rimuovi la sessione
@@ -97,6 +100,8 @@ async def logout():
     })
 
 @auth_bp.route("/user", methods=["GET"])
+@auth_bp.route("/api/user", methods=["GET"])
+@auth_bp.route("/api/me", methods=["GET"])
 async def get_current_user():
     """Ottiene l'utente corrente."""
     # Verifica la sessione
