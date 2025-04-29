@@ -3,6 +3,7 @@ import logging
 from opensearchpy import OpenSearch
 import os
 from dotenv import load_dotenv
+import traceback
 
 from ..models.repositories import PreferenceRepository, TravelPackageRepository
 from ..utils.travel_api_client import TravelApiClient
@@ -37,6 +38,31 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize OpenSearch client: {str(e)}")
     opensearch_client = None
+
+@reco_bp.route("", methods=["GET"])
+async def get_recommendations():
+    """Ottieni raccomandazioni di viaggio per l'utente corrente."""
+    # Verifica la sessione
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "message": "Non autenticato"}), 401
+    
+    try:
+        # Ottieni le preferenze dell'utente
+        preferences = await pref_repo.get_by_user_id(user_id)
+        if not preferences:
+            return jsonify({"success": False, "message": "Nessuna preferenza trovata"}), 404
+        
+        # Ottieni le raccomandazioni dall'API esterna
+        recommendations = travel_api_client.get_recommendations()
+        if recommendations is None:
+            return jsonify({"success": False, "message": "Errore nell'ottenere raccomandazioni dall'API esterna"}), 500
+        
+        return jsonify(recommendations), 200
+    except Exception as e:
+        logger.error(f"Errore nel recupero delle raccomandazioni: {str(e)}")
+        logger.error(traceback.format_exc())
+        return jsonify({"success": False, "message": f"Errore nell'ottenere raccomandazioni: {str(e)}"}), 500
 
 def get_recommended_packages_from_opensearch():
     """Get recommended travel packages from OpenSearch."""

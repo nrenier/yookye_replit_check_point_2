@@ -104,34 +104,34 @@ const mapFormToSearchInput = (formData: FormValues) => {
   // Mappa interessi in categorie e sottocategorie
   const mapInterests = () => {
     const interessi: any = {
-      storia_e_arte: {
-        siti_archeologici: false,
-        musei_e_gallerie: false,
-        monumenti_e_architettura: false
+      "storia_e_arte": {
+        "siti_archeologici": false,
+        "musei_e_gallerie": false,
+        "monumenti_e_architettura": false
       },
-      Food_&_wine: {
-        visite_alle_cantine: false,
-        soggiorni_nella_wine_country: false,
-        corsi_di_cucina: false
+      "food_wine": {
+        "visite_alle_cantine": false,
+        "soggiorni_nella_wine_country": false,
+        "corsi_di_cucina": false
       },
-      vacanze_attive: {
-        trekking_di_più_giorni: false,
-        tour_in_e_bike_di_più_giorni: false,
-        tour_in_bicicletta_di_più_giorni: false,
-        sci_snowboard_di_più_giorni: false
+      "vacanze_attive": {
+        "trekking_di_più_giorni": false,
+        "tour_in_e_bike_di_più_giorni": false,
+        "tour_in_bicicletta_di_più_giorni": false,
+        "sci_snowboard_di_più_giorni": false
       },
-      vita_locale: false,
-      salute_e_benessere: false
+      "vita_locale": false,
+      "salute_e_benessere": false
     };
 
     // Attiva le categorie selezionate
-    formData.passioni.forEach(interesse => {
+    formData.passioni?.forEach(interesse => {
       // Gestisci i casi speciali per i sottotipi
       if (interesse === 'musei' || interesse === 'monumenti') {
         interessi.storia_e_arte.musei_e_gallerie = interesse === 'musei';
         interessi.storia_e_arte.monumenti_e_architettura = interesse === 'monumenti';
       } else if (interesse === 'enogastronomia') {
-        interessi.Food_&_wine.visite_alle_cantine = true;
+        interessi.food_wine.visite_alle_cantine = true;
       } else if (interesse === 'sport') {
         interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
       } else if (interesse === 'cultura') {
@@ -148,7 +148,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
     interessi: mapInterests(),
     luoghi_da_non_perdere: {
       luoghi_specifici: formData.luoghiDaNonPerdere === 'si',
-      city: formData.luoghiSpecifici ? formData.luoghiSpecifici[0] : ''
+      city: formData.luoghiSpecifici && formData.luoghiSpecifici.length > 0 ? formData.luoghiSpecifici[0] : ''
     },
     mete_clou: {
       destinazioni_popolari: formData.tipoDestinazioni === 'popolari',
@@ -167,44 +167,46 @@ const mapFormToSearchInput = (formData: FormValues) => {
         eleganti: formData.livelloSistemazione === 'lusso'
       },
       tipologia: {
-        hotel: formData.tipologiaSistemazione.includes('hotel'),
-        'b&b': formData.tipologiaSistemazione.includes('bb'),
-        agriturismo: formData.tipologiaSistemazione.includes('agriturismo'),
-        villa: formData.tipologiaSistemazione.includes('villa'),
-        appartamento: formData.tipologiaSistemazione.includes('appartamento'),
-        glamping: formData.tipologiaSistemazione.includes('glamping')
+        hotel: formData.tipologiaSistemazione?.includes('hotel') || false,
+        'b&b': formData.tipologiaSistemazione?.includes('bb') || false,
+        agriturismo: formData.tipologiaSistemazione?.includes('agriturismo') || false,
+        villa: formData.tipologiaSistemazione?.includes('villa') || false,
+        appartamento: formData.tipologiaSistemazione?.includes('appartamento') || false,
+        glamping: formData.tipologiaSistemazione?.includes('glamping') || false
       }
     },
     viaggiatori: {
-      adults_number: parseInt(formData.numAdulti),
-      children_number: parseInt(formData.numBambini),
-      baby_number: parseInt(formData.numNeonati),
-      Room_number: parseInt(formData.numCamere)
+      adults_number: Number(formData.numAdulti) || 2,
+      children_number: Number(formData.numBambini) || 0,
+      baby_number: Number(formData.numNeonati) || 0,
+      Room_number: Number(formData.numCamere) || 1
     },
     tipologia_viaggiatore: {
-      famiglia: formData.tipologiaViaggiatore === 'famiglia',
+      family: formData.tipologiaViaggiatore === 'famiglia',
       coppia: formData.tipologiaViaggiatore === 'coppia',
-      gruppo_amici: formData.tipologiaViaggiatore === 'amici',
+      amici: formData.tipologiaViaggiatore === 'amici',
+      single: false,
       azienda: formData.tipologiaViaggiatore === 'business'
     },
     date: {
-      check_in_time: formData.checkInDate.toISOString().split('T')[0],
-      check_out_time: formData.checkOutDate.toISOString().split('T')[0]
+      check_in_time: formData.checkInDate instanceof Date ? formData.checkInDate.toISOString().split('T')[0] : '',
+      check_out_time: formData.checkOutDate instanceof Date ? formData.checkOutDate.toISOString().split('T')[0] : ''
     },
     trasporti: {
       conosci_arrivo_e_partenza: formData.localitaArrivoPartenza === 'si',
       description: formData.localitaArrivoPartenza === 'si' ? formData.descrizioneArrivoPartenza : '',
-      auto_propria: formData.localitaArrivoPartenza === 'auto',
-      Unknown: formData.localitaArrivoPartenza === 'non_so'
+      auto_propria: formData.localitaArrivoPartenza === 'auto' || false,
+      Unknown: formData.localitaArrivoPartenza === 'non_so' || false
     },
     budget_per_persona_giorno: {
       economico: formData.budget === 'economico',
       fascia_media: formData.budget === 'medio',
       comfort: formData.budget === 'comfort',
       lusso: formData.budget === 'lusso',
+      ultra_lusso: false,
       nessun_budget: formData.budget === 'illimitato'
     },
-    esigenze_particolari: formData.noteAggiuntive || ''
+    esigenze_particolari: formData.noteAggiuntive || null
   };
 };
 
