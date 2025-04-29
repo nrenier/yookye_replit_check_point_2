@@ -105,7 +105,8 @@ const mapFormToSearchInput = (data: FormValues) => {
    // La mappatura attuale imposta una sola fascia a True basandosi su data.budget.
    // Se data.budget non corrisponde a nessun valore previsto, tutte saranno False, causando l'errore.
    // Assicurati che la validazione del form garantisca che data.budget sia sempre uno dei valori attesi.
-   const isBudgetSelected = ['economico', 'medio', 'comfort', 'lusso', 'ultra_lusso'].includes(data.budget);
+   const validBudgets = ['economico', 'medio', 'comfort', 'lusso', 'ultra_lusso'];
+   const isBudgetSelected = validBudgets.includes(data.budget);
     if (!isBudgetSelected && data.budget) {
         console.warn(`Avviso: Il valore budget '${data.budget}' non corrisponde a una fascia attesa. Questo potrebbe causare un errore API.`);
     } else if (!isBudgetSelected && !data.budget) {
@@ -141,8 +142,8 @@ const mapFormToSearchInput = (data: FormValues) => {
       // Mappatura basata sul valore della stringa data.budget.
       // Richiede che data.budget sia una delle stringhe valide ('economico', 'medio', etc.)
       // e che almeno una sia vera per superare la validazione API.
-      economico: data.budget === 'economy',
-      fascia_media: data.budget === 'mid_range',
+      economico: data.budget === 'economico',
+      fascia_media: data.budget === 'medio',
       comfort: data.budget === 'comfort',
       lusso: data.budget === 'lusso',
       ultra_lusso: data.budget === 'ultra_lusso'
@@ -216,6 +217,13 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       // Continuiamo comunque perché l'operazione principale è la ricerca
     }
 
+    // Log di debug per monitorare la risposta dell'API
+    console.log(`Risposta ricevuta dall'API (${API_URL}): `, {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data
+    });
+    
     // La risposta dell'endpoint /api/search contiene un job_id (SearchResponse schema)
     // Potrebbe essere necessario implementare la logica per il polling dello stato del job
     // utilizzando gli endpoint /api/search/{job_id} e /api/search/{job_id}/result
