@@ -24,7 +24,7 @@ def init_app():
     CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS}})
 
     # Registra i blueprint
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(travel_package_bp, url_prefix='/api/travel-packages')
     app.register_blueprint(preference_bp, url_prefix='/api/preferences')
     app.register_blueprint(recommendation_bp, url_prefix='/api/recommendations')
