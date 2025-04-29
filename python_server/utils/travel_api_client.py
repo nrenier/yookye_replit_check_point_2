@@ -161,8 +161,12 @@ def get_recommendations_from_api(preferences):
         # Get recommendations
         recommendations = client.get_recommendations()
 
-        # If we received recommendations, return them
-        if recommendations:
+        # Check if we have city-based data
+        if recommendations and isinstance(recommendations, dict) and ("accomodation" in recommendations or "esperienze" in recommendations):
+            return recommendations
+
+        # If we received traditional recommendations, return them
+        if recommendations and "packages" in recommendations:
             return recommendations
 
         # Fallback to mock data if API call failed

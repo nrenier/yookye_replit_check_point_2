@@ -57,3 +57,37 @@ async def get_recommendations():
     except Exception as e:
         logger.error(f"Errore nel recuperare le raccomandazioni: {str(e)}")
         return jsonify({"success": False, "message": f"Errore: {str(e)}"}), 500
+import json
+from datetime import datetime
+
+@reco_bp.route('/city-packages', methods=['GET'])
+async def get_city_packages():
+    """
+    Get city-based travel recommendations with accommodations and experiences
+    """
+    logger.info("Ricevuta richiesta per pacchetti per città e esperienze")
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"success": False, "message": "Non autenticato"}), 401
+
+    try:
+        # Ottieni le preferenze dell'utente
+        preferences = await pref_repo.get_by_user_id(user_id)
+        if not preferences or len(preferences) == 0:
+            return jsonify({"success": False, "message": "Nessuna preferenza trovata"}), 404
+
+        # Usa la preferenza più recente
+        latest_preference = preferences[-1]
+
+        # Ottieni raccomandazioni basate su questa preferenza
+        external_recommendations = get_recommendations_from_api(latest_preference)
+        
+        # Se abbiamo ricevuto dati formattati con accomodation e esperienze, restituiscili
+        if external_recommendations and "accomodation" in external_recommendations and "esperienze" in external_recommendations:
+            return jsonify(external_recommendations), 200
+            
+        # Altrimenti, restituisci un errore
+        return jsonify({"success": False, "message": "Formato dati non valido dal server esterno"}), 500
+    except Exception as e:
+        logger.error(f"Errore nel recuperare i pacchetti per città: {str(e)}")
+        return jsonify({"success": False, "message": f"Errore: {str(e)}"}), 500
