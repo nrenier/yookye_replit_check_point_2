@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "chiave_segreta_di_default")
 # Configurazioni OpenSearch
 OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "localhost")
 OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9200))
-OPENSEARCH_USER = os.getenv("OPENSEARCH_USERNAME", "admin") #Using original variable name for consistency.
+OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin") #Using original variable name for consistency.
 OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "admin")
 OPENSEARCH_USE_SSL = os.getenv("OPENSEARCH_USE_SSL", "false").lower() == "true"
 OPENSEARCH_VERIFY_CERTS = os.getenv("OPENSEARCH_VERIFY_CERTS", "false").lower() == "true"

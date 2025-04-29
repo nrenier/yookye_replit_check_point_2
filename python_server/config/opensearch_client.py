@@ -2,7 +2,7 @@ from opensearchpy import OpenSearch
 from .settings import (
     OPENSEARCH_HOST, 
     OPENSEARCH_PORT, 
-    OPENSEARCH_USERNAME, 
+    OPENSEARCH_USER, 
     OPENSEARCH_PASSWORD,
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 def get_opensearch_client():
     """Crea e restituisce un client OpenSearch."""
     auth = None
-    if OPENSEARCH_USERNAME and OPENSEARCH_PASSWORD:
-        auth = (OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD)
+    if OPENSEARCH_USER and OPENSEARCH_PASSWORD:
+        auth = (OPENSEARCH_USER, OPENSEARCH_PASSWORD)
         
     client = OpenSearch(
         hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
