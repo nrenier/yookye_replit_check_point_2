@@ -10,6 +10,7 @@ DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
 
 # Configurazioni di sicurezza
 SECRET_KEY = os.getenv("SECRET_KEY", "chiave_segreta_di_default")
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 
 # Configurazioni OpenSearch
 OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "localhost")
