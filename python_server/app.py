@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import logging
 import os
@@ -10,6 +11,7 @@ from .api.travel_packages import travel_bp
 from .api.preferences import pref_bp
 from .api.bookings import booking_bp
 from .api.recommendations import reco_bp
+from .middleware import log_request
 
 # Configura il logging
 logging.basicConfig(level=logging.INFO)
@@ -17,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def create_app():
     """Crea e configura l'applicazione Flask."""
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="../client/dist", static_url_path="/")
     
     # Configurazione dell'app
     app.config["SECRET_KEY"] = SECRET_KEY
@@ -35,13 +37,36 @@ def create_app():
     
     # Rotta di test
     @app.route("/api/ping", methods=["GET"])
+    @log_request()
     def ping():
         return jsonify({"message": "pong"})
+    
+    # Rotta per le richieste Stripe
+    @app.route("/api/create-payment-intent", methods=["POST"])
+    @log_request()
+    def create_payment_intent():
+        from .api.bookings import create_payment_intent_handler
+        return create_payment_intent_handler()
+    
+    @app.route("/api/webhook", methods=["POST"])
+    def stripe_webhook():
+        from .api.bookings import webhook_handler
+        return webhook_handler()
+    
+    # Serve l'applicazione client (React)
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        if path != "" and os.path.exists(app.static_folder + '/' + path):
+            return app.send_static_file(path)
+        return app.send_static_file('index.html')
     
     # Gestore degli errori
     @app.errorhandler(404)
     def not_found(error):
-        return jsonify({"success": False, "message": "Non trovato"}), 404
+        if request.path.startswith('/api'):
+            return jsonify({"success": False, "message": "Non trovato"}), 404
+        return app.send_static_file('index.html')
     
     @app.errorhandler(500)
     def server_error(error):

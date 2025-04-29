@@ -1,29 +1,32 @@
 import os
 from dotenv import load_dotenv
 
-# Carica le variabili d'ambiente
+# Carica variabili d'ambiente dal file .env
 load_dotenv()
 
-# Configurazione OpenSearch
+# Configurazioni del server
+PORT = int(os.getenv("PORT", 5000))
+DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
+
+# Configurazioni di sicurezza
+SECRET_KEY = os.getenv("SECRET_KEY", "chiave_segreta_di_default")
+
+# Configurazioni OpenSearch
 OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "localhost")
-OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", "9200"))
-OPENSEARCH_USERNAME = os.getenv("OPENSEARCH_USERNAME", "")
-OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "")
+OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9200))
+OPENSEARCH_USER = os.getenv("OPENSEARCH_USERNAME", "admin") #Using original variable name for consistency.
+OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "admin")
 OPENSEARCH_USE_SSL = os.getenv("OPENSEARCH_USE_SSL", "false").lower() == "true"
 OPENSEARCH_VERIFY_CERTS = os.getenv("OPENSEARCH_VERIFY_CERTS", "false").lower() == "true"
+
 
 # Configurazione JWT
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "yookve_development_secret_key")
 JWT_ACCESS_TOKEN_EXPIRES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "60"))  # minuti
 
 # Configurazione Stripe
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
-
-# Configurazione server
-PORT = int(os.getenv("PORT", "5000"))
-DEBUG = os.getenv("DEBUG", "false").lower() == "true"
-SECRET_KEY = os.getenv("SECRET_KEY", "yookve_flask_secret_key")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 
 # Configurazione External Travel API
 TRAVEL_API_URL = os.getenv("TRAVEL_API_URL")
