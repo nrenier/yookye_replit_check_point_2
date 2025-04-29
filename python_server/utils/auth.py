@@ -1,42 +1,58 @@
+
+import os
 from datetime import datetime, timedelta
-from typing import Optional
-import uuid
-from jose import JWTError, jwt
+from typing import Optional, Dict, Any
+from jose import jwt
 from passlib.context import CryptContext
-from fastapi import HTTPException, status, Depends, Request
-from fastapi.security import OAuth2PasswordBearer
+import hashlib
+import binascii
 
-from ..models.models import TokenData, User, UserInDB
-from ..config.settings import JWT_SECRET_KEY, JWT_ACCESS_TOKEN_EXPIRES
+# Constants
+SECRET_KEY = os.getenv("SECRET_KEY", "yookve-travel-app-secret")
+ALGORITHM = "HS256"
 
-# Password hashing
+# Password context instance
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-def verify_password(plain_password, hashed_password):
-    """Verifica la password."""
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verifica la password. Supporta sia il formato bcrypt che il formato personalizzato JavaScript."""
     if not plain_password or not hashed_password:
         return False
         
     try:
-        # First try with bcrypt
-        return pwd_context.verify(plain_password, hashed_password)
+        # Prova prima con bcrypt attraverso passlib
+        if pwd_context.identify(hashed_password):
+            return pwd_context.verify(plain_password, hashed_password)
+        
+        # Se non è un formato bcrypt, prova con il formato JavaScript (hex.salt)
+        if "." in hashed_password:
+            hashed, salt = hashed_password.split(".")
+            # Emula scrypt di Node.js
+            supplied_hash = hashlib.scrypt(
+                plain_password.encode(), 
+                salt=salt.encode(), 
+                n=16384, 
+                r=8, 
+                p=1, 
+                dklen=64
+            )
+            # Converti in hex per confronto
+            supplied_hex = binascii.hexlify(supplied_hash).decode()
+            return supplied_hex == hashed
+        
+        # Fallback: confronto diretto (solo per testing)
+        print("WARNING: Using direct password comparison. Update hash format.")
+        return plain_password == hashed_password
     except Exception as e:
         print(f"Password verification error: {str(e)}")
-        # If there's an error, try a simple string comparison as fallback (for testing only)
-        # In production, you should always use proper hashing
-        if plain_password == hashed_password:
-            print("Warning: Using direct password comparison. Update hash format.")
-            return True
         return False
 
-def get_password_hash(password):
-    """Ottiene l'hash della password."""
+def get_password_hash(password: str) -> str:
+    """Genera un hash per la password utilizzando bcrypt."""
     return pwd_context.hash(password)
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Crea un token di accesso JWT."""
+def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    """Crea un token JWT di accesso."""
     to_encode = data.copy()
     
     if expires_delta:
@@ -45,31 +61,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, algorithm="HS256")
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     
     return encoded_jwt
-
-def decode_token(token: str):
-    """Decodifica un token JWT."""
-    try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=["HS256"])
-        return payload
-    except JWTError:
-        return None
-
-def generate_id():
-    """Genera un ID univoco."""
-    return str(uuid.uuid4())
-
-def login_required(f):
-    """Decorator per proteggere le route che richiedono autenticazione."""
-    from functools import wraps
-    from flask import session, jsonify
-    
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Verifica se l'utente è autenticato controllando la sessione
-        if "user_id" not in session:
-            return jsonify({"success": False, "message": "Autenticazione richiesta"}), 401
-        return f(*args, **kwargs)
-    return decorated_function
