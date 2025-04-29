@@ -15,12 +15,12 @@ user_repo = UserRepository()
 def register():
     """Registra un nuovo utente."""
     data = request.json
-    
+
     # Verifica se l'utente esiste già
     existing_user = user_repo.get_by_username(data.get("username"))
     if existing_user:
         return jsonify({"success": False, "message": "Username already exists"}), 400
-    
+
     # Crea un nuovo utente
     user_create = UserCreate(
         username=data.get("username"),
@@ -28,23 +28,23 @@ def register():
         email=data.get("email"),
         password=data.get("password")
     )
-    
+
     # Hash della password
     hashed_password = get_password_hash(user_create.password)
-    
+
     # Salva l'utente
     user = user_repo.create_user(user_create, hashed_password)
-    
+
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)
     access_token = create_access_token(
         data={"sub": user.username, "user_id": user.id},
         expires_delta=access_token_expires
     )
-    
+
     # Imposta la sessione
     session["user_id"] = user.id
-    
+
     return jsonify({
         "success": True,
         "data": {
@@ -56,28 +56,28 @@ def register():
 
 @auth_bp.route("/login", methods=["POST"])
 @auth_bp.route("/api/login", methods=["POST"])
-def login():
+async def login():
     """Effettua il login di un utente."""
     data = request.json
-    
+
     # Verifica le credenziali
-    user = user_repo.get_by_username(data.get("username"))
+    user = await user_repo.get_by_username(data.get("username"))
     if not user or not verify_password(data.get("password"), user.password):
         return jsonify({"success": False, "message": "Invalid username or password"}), 401
-    
+
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)
     access_token = create_access_token(
         data={"sub": user.username, "user_id": user.id},
         expires_delta=access_token_expires
     )
-    
+
     # Imposta la sessione
     session["user_id"] = user.id
-    
+
     # Rimuovi la password dal risultato
     user_data = user.dict(exclude={"password"})
-    
+
     return jsonify({
         "success": True,
         "data": {
@@ -93,7 +93,7 @@ def logout():
     """Effettua il logout di un utente."""
     # Rimuovi la sessione
     session.clear()
-    
+
     return jsonify({
         "success": True,
         "message": "Logout successful"
@@ -108,12 +108,12 @@ def get_current_user():
     user_id = session.get("user_id")
     if not user_id:
         return jsonify({"success": False, "message": "Not authenticated"}), 401
-    
+
     # Ottieni l'utente
     user = user_repo.get_by_id(user_id)
     if not user:
         return jsonify({"success": False, "message": "User not found"}), 404
-    
+
     return jsonify({
         "success": True,
         "data": user
