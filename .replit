@@ -10,12 +10,16 @@ packages = ["cargo", "libiconv", "libxcrypt", "rustc"]
 deploymentTarget = "autoscale"
 run = ["sh", "-c", "npm run dev"]
 
+[[deployment.rewrites]]
+from = "/*"
+to = "/index.html"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "Start Python Server"
+runButton = "Build & Start App"
 
 [[workflows.workflow]]
 name = "Project"
@@ -49,3 +53,12 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python python_server/run.py"
+
+[[workflows.workflow]]
+name = "Build & Start App"
+author = 42069639
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd client && npm run build && cd .. && python python_server/run.py"

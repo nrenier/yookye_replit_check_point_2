@@ -1,47 +1,65 @@
-from flask import Flask, jsonify, request, send_from_directory
-from flask_cors import CORS
-import logging
 import os
-
-from .config.settings import PORT, DEBUG, SECRET_KEY
-from .config.opensearch_client import init_indices, seed_travel_packages
+import logging
+from flask import Flask, jsonify, request, render_template, send_from_directory
+from flask_cors import CORS
+from .config.settings import SECRET_KEY, CORS_ORIGINS, PORT, DEBUG #Added PORT and DEBUG from original file
 from .api.auth import auth_bp
-from .api.travel_packages import travel_bp
-from .api.preferences import pref_bp
+from .api.travel_packages import travel_package_bp
+from .api.preferences import preference_bp
+from .api.recommendations import recommendation_bp
 from .api.bookings import booking_bp
-from .api.recommendations import reco_bp
-from .middleware import log_request
+from .middleware import log_request #Kept from original file
 
-# Configura il logging
+
+# Configurazione del logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def create_app():
-    """Crea e configura l'applicazione Flask."""
-    app = Flask(__name__)
-
-    # Configurazione dell'app
-    app.config["SECRET_KEY"] = SECRET_KEY
-    app.config["SESSION_TYPE"] = "filesystem"
-    app.static_folder = '../client/dist'  # La posizione dove vengono generati i file di build dal frontend
+def init_app():
+    """Inizializza l'applicazione Flask."""
+    app = Flask(__name__, static_folder=None)
+    app.config['SECRET_KEY'] = SECRET_KEY
 
     # Configura CORS
-    CORS(app, supports_credentials=True)
+    CORS(app, resources={r"/api/*": {"origins": CORS_ORIGINS}})
 
-    # Registra le blueprint
-    app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(travel_bp, url_prefix="/api/travel-packages")
-    app.register_blueprint(pref_bp, url_prefix="/api/preferences")
-    app.register_blueprint(booking_bp, url_prefix="/api/bookings")
-    app.register_blueprint(reco_bp, url_prefix="/api/recommendations")
+    # Registra i blueprint
+    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(travel_package_bp, url_prefix='/api/travel-packages')
+    app.register_blueprint(preference_bp, url_prefix='/api/preferences')
+    app.register_blueprint(recommendation_bp, url_prefix='/api/recommendations')
+    app.register_blueprint(booking_bp, url_prefix='/api/bookings')
 
-    # Rotta di test
+    # Versione della API
+    @app.route('/api/version')
+    def version():
+        return jsonify({"version": "1.0.0"})
+
+    # Percorso della cartella dist, una directory sopra la directory python_server
+    dist_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dist', 'public')
+
+    # Servi i file statici dalla cartella dist/public
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        try:
+            if path and os.path.exists(os.path.join(dist_dir, path)):
+                return send_from_directory(dist_dir, path)
+            else:
+                # Se il file non esiste o è richiesta la root, servi index.html
+                logger.info(f"Serving index.html for path: {path}")
+                return send_from_directory(dist_dir, 'index.html')
+        except Exception as e:
+            logger.error(f"Errore nel servire i file statici: {str(e)}")
+            return str(e), 404
+
+    # Rotta di test (Kept from original)
     @app.route("/api/ping", methods=["GET"])
     @log_request()
     def ping():
         return jsonify({"message": "pong"})
 
-    # Rotta per le richieste Stripe
+    # Rotta per le richieste Stripe (Kept from original)
     @app.route("/api/create-payment-intent", methods=["POST"])
     @log_request()
     def create_payment_intent():
@@ -53,28 +71,13 @@ def create_app():
         from .api.bookings import webhook_handler
         return webhook_handler()
 
-    # Serve l'applicazione client (React)
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve(path):
-        """Serve SPA"""
-        try:
-            # Prima prova a servire un file statico specifico se esiste
-            if path and os.path.exists(os.path.join(app.static_folder, path)):
-                return send_from_directory(app.static_folder, path)
-            # Altrimenti servi index.html
-            return send_from_directory(app.static_folder, 'index.html')
-        except Exception as e:
-            app.logger.error(f"Errore nel servire i file statici: {str(e)}")
-            return jsonify({"error": "File non trovato"}), 404
-
-    # Gestore degli errori
+    # Gestore degli errori (Kept from original)
     @app.errorhandler(404)
     def not_found(e):
         try:
-            return send_from_directory(app.static_folder, 'index.html')
+            return send_from_directory(dist_dir, 'index.html') #Using dist_dir here as well
         except Exception as err:
-            app.logger.error(f"Errore nel servire index.html: {str(err)}")
+            logger.error(f"Errore nel servire index.html: {str(err)}")
             return jsonify({"error": "Risorsa non trovata"}), 404
 
     @app.errorhandler(500)
@@ -83,16 +86,6 @@ def create_app():
 
     return app
 
-def init_app():
-    """Inizializza l'applicazione e il database."""
-    # Inizializza gli indici OpenSearch
-    init_indices()
-
-    # Seed dei dati di esempio
-    seed_travel_packages()
-
-    return create_app()
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = init_app()
-    app.run(host="0.0.0.0", port=PORT, debug=DEBUG)
+    app.run(debug=DEBUG, host='0.0.0.0', port=PORT) #Using PORT and DEBUG from original file
