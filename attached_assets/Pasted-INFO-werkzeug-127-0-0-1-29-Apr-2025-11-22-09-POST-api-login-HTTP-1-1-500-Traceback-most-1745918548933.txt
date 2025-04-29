@@ -1,0 +1,46 @@
+INFO:werkzeug:127.0.0.1 - - [29/Apr/2025 11:22:09] "POST /api/login HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/api/auth.py", line 65, in login
+    if not user or not verify_password(data.get("password"), user.password):
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/utils/auth.py", line 19, in verify_password
+    return pwd_context.verify(plain_password, hashed_password)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/passlib/context.py", line 2343, in verify
+    record = self._get_or_identify_record(hash, scheme, category)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/passlib/context.py", line 2031, in _get_or_identify_record
+    return self._identify_record(hash, category)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/passlib/context.py", line 1132, in identify_record
+    raise exc.UnknownHashError("hash could not be identified")
+passlib.exc.UnknownHashError: hash could not be identified
