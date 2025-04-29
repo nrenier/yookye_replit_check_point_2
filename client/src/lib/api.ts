@@ -118,7 +118,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
         musei_e_gallerie: false,
         monumenti_e_architettura: false,
       },
-      food_wine: {
+      "Food_&_wine": {
         visite_alle_cantine: false,
         soggiorni_nella_wine_country: false,
         corsi_di_cucina: false,
@@ -150,13 +150,13 @@ const mapFormToSearchInput = (formData: FormValues) => {
           
         // Food & Wine
         case "cantine":
-          interessi.food_wine.visite_alle_cantine = true;
+          interessi["Food_&_wine"].visite_alle_cantine = true;
           break;
         case "wine_country":
-          interessi.food_wine.soggiorni_nella_wine_country = true;
+          interessi["Food_&_wine"].soggiorni_nella_wine_country = true;
           break;
         case "corsi_cucina":
-          interessi.food_wine.corsi_di_cucina = true;
+          interessi["Food_&_wine"].corsi_di_cucina = true;
           break;
           
         // Vacanze attive
@@ -183,7 +183,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
           
         // Mappatura legacy per retrocompatibilità
         case "enogastronomia":
-          interessi.food_wine.visite_alle_cantine = true;
+          interessi["Food_&_wine"].visite_alle_cantine = true;
           break;
         case "sport":
           interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;

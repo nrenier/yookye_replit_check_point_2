@@ -52,7 +52,7 @@ class TravelApiClient:
                     "musei_e_gallerie": False,
                     "monumenti_e_architettura": False
                 },
-                "food_wine": {
+                "Food_&_wine": {
                     "visite_alle_cantine": False,
                     "soggiorni_nella_wine_country": False,
                     "corsi_di_cucina": False
@@ -99,6 +99,16 @@ class TravelApiClient:
             if hasattr(e, 'response') and e.response is not None:
                 print(f"Response status: {e.response.status_code}")
                 print(f"Response body: {e.response.text}")
+                
+                # Try to parse and print more detailed error information
+                try:
+                    error_data = e.response.json()
+                    print(f"Detailed API error: {json.dumps(error_data, indent=2)}")
+                    
+                    # Print the actual request payload for debugging
+                    print(f"Request payload sent: {json.dumps(preference_data, indent=2)}")
+                except:
+                    print("Could not parse error response as JSON")
             return None
 
     def get_recommendations(self):
