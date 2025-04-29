@@ -60,8 +60,13 @@ def register():
 def login():
     """Effettua il login di un utente."""
     data = request.json
+    if not data:
+        return jsonify({"success": False, "message": "No data provided"}), 400
+    
     username = data.get("username")
     password = data.get("password")
+    
+    print(f"Login attempt for user: {username}")
     
     if not username or not password:
         return jsonify({"success": False, "message": "Username and password required"}), 400
@@ -71,17 +76,24 @@ def login():
     
     # Se l'utente non esiste
     if not user:
+        print(f"User not found: {username}")
         return jsonify({"success": False, "message": "Invalid username or password"}), 401
     
+    print(f"User found: {user.username}, checking password")
+    
     # Verifica la password
+    password_valid = False
     try:
-        if not verify_password(password, user.password):
+        password_valid = verify_password(password, user.password)
+        if not password_valid:
+            print(f"Password mismatch for user: {username}")
             return jsonify({"success": False, "message": "Invalid username or password"}), 401
     except Exception as e:
-        # Log dell'errore per debug
         print(f"Errore nella verifica della password: {str(e)}")
         return jsonify({"success": False, "message": "Authentication error"}), 500
 
+    print(f"Password valid for user: {username}, generating token")
+    
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)
     access_token = create_access_token(
@@ -91,6 +103,7 @@ def login():
 
     # Imposta la sessione
     session["user_id"] = user.id
+    print(f"Session set for user_id: {user.id}")
 
     # Rimuovi la password dal risultato
     user_data = user.dict(exclude={"password"})
