@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request, jsonify, session
 from datetime import timedelta
 import uuid
@@ -62,25 +61,25 @@ def login():
     data = request.json
     if not data:
         return jsonify({"success": False, "message": "No data provided"}), 400
-    
+
     username = data.get("username")
     password = data.get("password")
-    
+
     print(f"Login attempt for user: {username}")
-    
+
     if not username or not password:
         return jsonify({"success": False, "message": "Username and password required"}), 400
-    
+
     # Verifica le credenziali
     user = user_repo.get_by_username(username)
-    
+
     # Se l'utente non esiste
     if not user:
         print(f"User not found: {username}")
         return jsonify({"success": False, "message": "Invalid username or password"}), 401
-    
+
     print(f"User found: {user.username}, checking password")
-    
+
     # Verifica la password
     password_valid = False
     try:
@@ -93,7 +92,7 @@ def login():
         return jsonify({"success": False, "message": "Authentication error"}), 500
 
     print(f"Password valid for user: {username}, generating token")
-    
+
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)
     access_token = create_access_token(
@@ -132,7 +131,7 @@ def logout():
 @auth_bp.route("/user", methods=["GET"])
 @auth_bp.route("/api/user", methods=["GET"])
 @auth_bp.route("/api/me", methods=["GET"])
-def get_current_user():
+async def get_current_user():
     """Ottiene l'utente corrente."""
     # Verifica la sessione
     user_id = session.get("user_id")
@@ -140,11 +139,20 @@ def get_current_user():
         return jsonify({"success": False, "message": "Not authenticated"}), 401
 
     # Ottieni l'utente
-    user = user_repo.get_by_id(user_id)
+    user = await user_repo.get_by_id(user_id)
     if not user:
         return jsonify({"success": False, "message": "User not found"}), 404
 
+    # Converti l'oggetto User in un dizionario per la serializzazione JSON
+    user_dict = {
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+        "created_at": user.created_at.isoformat() if hasattr(user, 'created_at') and user.created_at else None
+    }
+
     return jsonify({
         "success": True,
-        "data": user
+        "user": user_dict
     })
