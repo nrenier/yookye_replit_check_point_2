@@ -5,8 +5,8 @@ from flask_cors import CORS
 from .config.settings import SECRET_KEY, CORS_ORIGINS, PORT, DEBUG #Added PORT and DEBUG from original file
 from .api.auth import auth_bp
 from .api.travel_packages import travel_bp as travel_package_bp
-from .api.preferences import preference_bp
-from .api.recommendations import recommendation_bp
+from .api.preferences import pref_bp
+from .api.recommendations import reco_bp
 from .api.bookings import booking_bp
 from .middleware import log_request #Kept from original file
 
@@ -26,8 +26,8 @@ def init_app():
     # Registra i blueprint
     app.register_blueprint(auth_bp, url_prefix='/api')
     app.register_blueprint(travel_package_bp, url_prefix='/api/travel-packages')
-    app.register_blueprint(preference_bp, url_prefix='/api/preferences')
-    app.register_blueprint(recommendation_bp, url_prefix='/api/recommendations')
+    app.register_blueprint(pref_bp, url_prefix='/api/preferences')
+    app.register_blueprint(reco_bp, url_prefix='/api/recommendations')
     app.register_blueprint(booking_bp, url_prefix='/api/bookings')
 
     # Versione della API
