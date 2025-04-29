@@ -61,4 +61,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd client && npm run build && cd .. && python python_server/run.py"
+args = "cd client && npm install && npm run build && cd .. && python python_server/run.py"

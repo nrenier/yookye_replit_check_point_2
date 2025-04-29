@@ -30,6 +30,12 @@ const API_URL = import.meta.env.VITE_TRAVEL_API_URL || '/api'; // External REST 
 const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
 const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
 
+console.log("Variabili ambiente API:", {
+  url: API_URL,
+  username: API_USERNAME ? "definito" : "non definito",
+  password: API_PASSWORD ? "definito" : "non definito"
+});
+
 console.log("URL API utilizzato:", API_URL);
 
 // Token e timestamp di scadenza
