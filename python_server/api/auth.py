@@ -12,12 +12,12 @@ user_repo = UserRepository()
 
 @auth_bp.route("/register", methods=["POST"])
 @auth_bp.route("/api/register", methods=["POST"])
-async def register():
+def register():
     """Registra un nuovo utente."""
     data = request.json
     
     # Verifica se l'utente esiste già
-    existing_user = await user_repo.get_by_username(data.get("username"))
+    existing_user = user_repo.get_by_username(data.get("username"))
     if existing_user:
         return jsonify({"success": False, "message": "Username already exists"}), 400
     
@@ -33,7 +33,7 @@ async def register():
     hashed_password = get_password_hash(user_create.password)
     
     # Salva l'utente
-    user = await user_repo.create_user(user_create, hashed_password)
+    user = user_repo.create_user(user_create, hashed_password)
     
     # Crea un token di accesso
     access_token_expires = timedelta(minutes=JWT_ACCESS_TOKEN_EXPIRES)
@@ -56,12 +56,12 @@ async def register():
 
 @auth_bp.route("/login", methods=["POST"])
 @auth_bp.route("/api/login", methods=["POST"])
-async def login():
+def login():
     """Effettua il login di un utente."""
     data = request.json
     
     # Verifica le credenziali
-    user = await user_repo.get_by_username(data.get("username"))
+    user = user_repo.get_by_username(data.get("username"))
     if not user or not verify_password(data.get("password"), user.password):
         return jsonify({"success": False, "message": "Invalid username or password"}), 401
     
@@ -89,7 +89,7 @@ async def login():
 
 @auth_bp.route("/logout", methods=["POST"])
 @auth_bp.route("/api/logout", methods=["POST"])
-async def logout():
+def logout():
     """Effettua il logout di un utente."""
     # Rimuovi la sessione
     session.clear()
@@ -102,7 +102,7 @@ async def logout():
 @auth_bp.route("/user", methods=["GET"])
 @auth_bp.route("/api/user", methods=["GET"])
 @auth_bp.route("/api/me", methods=["GET"])
-async def get_current_user():
+def get_current_user():
     """Ottiene l'utente corrente."""
     # Verifica la sessione
     user_id = session.get("user_id")
@@ -110,7 +110,7 @@ async def get_current_user():
         return jsonify({"success": False, "message": "Not authenticated"}), 401
     
     # Ottieni l'utente
-    user = await user_repo.get_by_id(user_id)
+    user = user_repo.get_by_id(user_id)
     if not user:
         return jsonify({"success": False, "message": "User not found"}), 404
     
