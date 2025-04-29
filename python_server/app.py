@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_cors import CORS
 from .config.settings import SECRET_KEY, CORS_ORIGINS, PORT, DEBUG #Added PORT and DEBUG from original file
 from .api.auth import auth_bp
-from .api.travel_packages import travel_package_bp
+from .api.travel_packages import travel_bp as travel_package_bp
 from .api.preferences import preference_bp
 from .api.recommendations import recommendation_bp
 from .api.bookings import booking_bp
