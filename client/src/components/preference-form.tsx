@@ -867,7 +867,7 @@ export default function PreferenceForm() {
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value="budget" />
+                        <RadioGroupItem value="economy" />
                       </FormControl>
                       <FormLabel className="font-normal cursor-pointer">Economico (fino a €100)</FormLabel>
                     </FormItem>
