@@ -25,6 +25,7 @@ def init_app():
 
     # Registra i blueprint
     app.register_blueprint(auth_bp, url_prefix='/api')
+
     app.register_blueprint(travel_package_bp,
                            url_prefix='/api/travel-packages')
     app.register_blueprint(pref_bp, url_prefix='/api/preferences')
