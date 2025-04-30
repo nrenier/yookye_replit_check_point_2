@@ -1,33 +1,33 @@
 
 import axios from "axios";
-import type { z } from "zod"; // z is imported but not used in the provided snippet. Keeping it as is.
+import type { z } from "zod";
 import { format } from "date-fns";
 
 // Definizione del tipo FormValues
 export type FormValues = {
   passioni: string[];
-  luoghiDaNonPerdere: string; // Assuming this is the destination city name
-  luoghiSpecifici?: string[]; // Assuming a string describing specific places
-  tipoDestinazioni: string; // This field doesn't seem directly mapped to the API schema
+  luoghiDaNonPerdere: string;
+  luoghiSpecifici?: string[];
+  tipoDestinazioni: string;
   ritmoViaggio: string;
   livelloSistemazione: string;
   tipologiaSistemazione: string[];
   numAdulti: string | number;
   numBambini: string | number;
   numNeonati: string | number;
-  numCamere: string | number; // This field doesn't seem directly mapped to the API schema
+  numCamere: string | number;
   tipologiaViaggiatore: string;
   checkInDate: Date;
   checkOutDate: Date;
-  localitaArrivoPartenza: string; // Assuming this is used for the city name and potentially indicates known arrival/departure
-  descrizioneArrivoPartenza?: string; // Assuming details about arrival/departure points
+  localitaArrivoPartenza: string;
+  descrizioneArrivoPartenza?: string;
   budget: string;
   noteAggiuntive?: string;
-  email: string; // This field doesn't seem directly mapped to the API schema
+  email: string;
 };
 
 // Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
-const API_URL = import.meta.env.VITE_TRAVEL_API_URL || "/api"; // External REST API URL from .env
+const API_URL = import.meta.env.VITE_TRAVEL_API_URL || "/api";
 const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
 const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
 
@@ -109,52 +109,64 @@ const getAccessToken = async (): Promise<string> => {
   }
 };
 
+// NUOVA funzione per effettuare richieste API autenticate
+export const apiRequest = async (method: string, url: string, data?: any) => {
+  try {
+    const token = await getAccessToken();
+    const headers: any = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    const config = {
+      method: method.toLowerCase(),
+      url: `${API_URL}${url}`, // Use API_URL as base
+      headers,
+      data: data ? data : undefined, // Include data for POST/PUT/PATCH
+    };
+
+    console.log("Effettuo richiesta API:", config);
+
+    const response = await axios(config);
+
+    console.log("Risposta API ricevuta:", response);
+    return response;
+
+  } catch (error) {
+    console.error(`Errore durante la richiesta API ${method.toUpperCase()} ${url}:`, error);
+     if (axios.isAxiosError(error)) {
+      console.error("Dettagli errore Axios:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+          data: error.config?.data, // Log request body if available
+        },
+      });
+    }
+    throw error; // Re-throw the error to be handled by the caller (e.g., react-query mutation/query)
+  }
+};
+
+
 // Funzione per controllare lo stato del job di ricerca
 export const checkJobStatus = async (jobId: string) => {
-  try {
-    // Ottieni un token valido
-    const token = await getAccessToken();
-    
-    const statusEndpoint = `${API_URL}/api/search/${jobId}`;
-    console.log("Verifico lo stato del job:", statusEndpoint);
-    
-    const response = await axios.get(statusEndpoint, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    console.log("Stato del job:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Errore nel controllo dello stato del job:", error);
-    throw error;
-  }
+  // Use apiRequest for authenticated call
+  const response = await apiRequest("GET", `/api/search/${jobId}`);
+  console.log("Stato del job:", response.data);
+  return response.data;
 };
 
 // Funzione per ottenere i risultati del job di ricerca
 export const getJobResults = async (jobId: string) => {
-  try {
-    // Ottieni un token valido
-    const token = await getAccessToken();
-    
-    const resultsEndpoint = `${API_URL}/api/search/${jobId}/result`;
-    console.log("Recupero i risultati del job:", resultsEndpoint);
-    
-    const response = await axios.get(resultsEndpoint, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    console.log("Risultati ricevuti:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Errore nel recupero dei risultati del job:", error);
-    throw error;
-  }
+  // Use apiRequest for authenticated call
+  const response = await apiRequest("GET", `/api/search/${jobId}/result`);
+  console.log("Risultati ricevuti:", response.data);
+  return response.data;
 };
 
 // Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
@@ -330,7 +342,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // Ottieni un token valido prima della richiesta
     const token = await getAccessToken();
 
-    // Trasforma i dati nel formato richiesto dall'API secondo lo swagger
+    // Trasforma i dati nel formato richiesto dall'API di ricerca (come definito nello Swagger)
     const searchData = mapFormToSearchInput(preferenceData);
 
     const searchEndpoint = `${API_URL}/api/search`;
@@ -351,7 +363,8 @@ export const submitPreferences = async (preferenceData: FormValues) => {
 
     // Salva anche il record delle preferenze nel sistema locale (opzionale e separato dalla chiamata API esterna)
     try {
-      await axios.post(`/api/preferences`, preferenceData);
+      // Use apiRequest for this authenticated call as well
+      await apiRequest("POST", "/api/preferences", preferenceData);
       console.log("Preferenze salvate localmente con successo.");
     } catch (prefError) {
       console.warn(
