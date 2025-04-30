@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import MainLayout from "@/components/layouts/main-layout";
 import TravelCard from "@/components/travel-card";
-import CityExperiencePackage, { CityPackageData } from "@/components/city-experience-package";
+import CityExperiencePackage, { CityPackageData, Selections, Accommodation, Experience } from "@/components/city-experience-package"; // Import Selections, Accommodation, Experience types
 import { TravelPackage } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { checkJobStatus, getJobResults } from "@/lib/api"; // Added import
+import { checkJobStatus, getJobResults } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button"; // Import Button
 
 
 export default function ResultsPage() {
@@ -17,9 +19,12 @@ export default function ResultsPage() {
   const [activeTab, setActiveTab] = useState("packages");
   const [jobId, setJobId] = useState<string | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string>('PENDING');
-  const [pollingResults, setPollingResults] = useState<any>(null);
+  const [pollingResults, setPollingResults] = useState<CityPackageData | null>(null);
   const [isPolling, setIsPolling] = useState<boolean>(false);
+  const [userSelections, setUserSelections] = useState<Selections>({});
+  const [composedPackages, setComposedPackages] = useState<TravelPackage[]>([]); // State for composed packages
 
+  const { toast } = useToast();
 
   // Estrai il job_id dalla query string o dal localStorage, se presente
   useEffect(() => {
@@ -31,179 +36,35 @@ export default function ResultsPage() {
     }
   }, []);
 
+  // This useQuery was likely intended for pre-generated packages or was part of the old flow.
+  // With the new polling mechanism, we rely on pollingResults.
+  // Keeping it for now if it serves another purpose, but removing cityPackages logic.
   const { data: recommendations, isLoading: packagesLoading, error: packagesError, refetch } = useQuery<any>({
     queryKey: ["/api/recommendations", jobId],
     queryFn: async () => {
-      const endpoint = jobId && !isPolling ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
+      // This endpoint might need adjustment depending on how the backend handles package listing now.
+      const endpoint = jobId ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
       const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error("Errore durante il recupero dei dati");
       }
       return response.json();
     },
-    enabled: !!jobId && !isPolling // Only fetch if jobId is available and polling is finished
+     // Disable this query if polling is active and pollingResults are not yet set
+    enabled: !!jobId && !isPolling && !pollingResults // Modified enabled condition
   });
 
+  // Removed the useQuery for cityPackages mock data
 
-  const { data: cityPackages, isLoading: cityPackagesLoading, error: cityPackagesError } = useQuery<CityPackageData>({
-    queryKey: ["/api/recommendations/city-packages"],
-    queryFn: async () => {
-      return {
-        accomodation: {
-          "Roma": [
-            {
-              "hid": 7478033,
-              "name": "Precise House Mantegna Roma",
-              "address": "A.Mantegna, 130, Roma",
-              "phone": "+39 06989521",
-              "kind": "Hotel",
-              "latitude": 41.853,
-              "longitude": 12.496451,
-              "star_rating": 4,
-              "email": "reservation.room@precisehotels.com",
-              "description": "«Precise House Mantegna Roma» Devi avere il massimo del comfort in vacanza! Scegli hotel a Roma. L'hotel si trova a 5 km dal centro città...",
-              "id": "barcelo_aran_mantegna",
-              "daily_prices": 141.71,
-              "meal": "nomeal",
-              "room_name": "Camera doppia Superior (letto matrimoniale)"
-            },
-            {
-              "hid": 7476190,
-              "name": "BV Oly Hotel",
-              "address": "Via Santuario Regina degli Apostoli,36, Roma",
-              "phone": "393906594441",
-              "kind": "Hotel",
-              "latitude": 41.85173,
-              "longitude": 12.482609,
-              "star_rating": 4,
-              "email": "booking@bvolyhotel.com",
-              "description": "«BV Oly Hotel» Ottima scelta se vuoi rilassarti in hotel tanto quanto esplorare la città a piedi. Scegli hotel ra Roma...",
-              "id": "oly",
-              "daily_prices": 135.26,
-              "meal": "breakfast",
-              "room_name": "Camera doppia Classica (2 letti singoli)"
-            }
-          ],
-          "Firenze": [
-            {
-              "hid": 7500769,
-              "name": "Hotel Alinari",
-              "address": "Largo Alinari 15, Firenze",
-              "phone": "39055284289",
-              "kind": "Hotel",
-              "latitude": 43.77629,
-              "longitude": 11.250681,
-              "star_rating": 3,
-              "email": "info@hotelalinari.com",
-              "description": "La struttura a Il luogo ideale per rilassarsi dopo una giornata piena di emozioni! Hotel \"Hotel Alinari\" si trova a Firenze...",
-              "id": "hotel_alinari_2",
-              "daily_prices": 169.0,
-              "meal": "nomeal",
-              "room_name": "Camera doppia (2 letti singoli)"
-            }
-          ]
-        },
-        esperienze: {
-          "Roma": [
-            {
-              "url": [
-                "https://yookye.com/it/proposte/degustazione-esclusiva-di-vini-tipici-italiani"
-              ],
-              "alias": [
-                "Degustazione Esclusiva di Vini tipici Italiani"
-              ],
-              "stato": [
-                "Attiva"
-              ],
-              "provincia": [
-                "Roma"
-              ],
-              "citta": [
-                "Roma"
-              ],
-              "descrizione": "Vivi una degustazione esclusiva nel centro storico di Roma! Gusterai 6 tipologie di vini Italiani con assaggio di formaggi e olive...",
-              "dettagli": {
-                "dettagli_aggiuntivi": "durata_dell'esperienza: 2 ore",
-                "tipo_attivita": "Cultura",
-                "scenario": "Città",
-                "stagione": [
-                  "Autunno",
-                  "Estate",
-                  "Inverno",
-                  "Primavera"
-                ],
-                "durata": "1 day",
-                "target": [
-                  "Coppia",
-                  "Gruppo",
-                  "Individuale"
-                ]
-              },
-              "tags": [
-                "Coppia",
-                "Gruppo",
-                "Individuale",
-                "1 day",
-                "Cultura",
-                "Città",
-                "Roma"
-              ],
-              "dati_extra": "mappa: Roma Italia",
-              "tipologia": "visite_alle_cantine, corsi_di_cucina"
-            }
-          ],
-          "Firenze": [
-            {
-              "url": [
-                "https://yookye.com/it/proposte/tour-nel-chianti-vespa-con-pasto-km0-e-degustazioni"
-              ],
-              "alias": [
-                "Tour nel Chianti in Vespa con Pasto Km0 e Degustazioni"
-              ],
-              "stato": [
-                "Attiva"
-              ],
-              "provincia": [
-                "Firenze"
-              ],
-              "citta": [
-                "Firenze"
-              ],
-              "descrizione": "In pochissimo tempo il nostro minibus vi porterà in un luogo meraviglioso, dove aria fresca, panorami mozzafiato...",
-              "tags": [
-                "Azienda",
-                "Coppia",
-                "Famiglia",
-                "Gruppo",
-                "Individuale",
-                "1 day",
-                "Accompagnatore",
-                "Fotografia",
-                "Noleggi",
-                "Vespa",
-                "Collina",
-                "Firenze",
-                "Chi siamo"
-              ],
-              "dati_extra": "servizisinclusi: {'siaconsiglia': 'di indossare scarpe comode.', 'nonsicuriguida': 'Nel caso in cui non vi sentiate sicuri nel guidare da soli potrete avere la possibilità di essere affiancati durante la passeggiata da uno dei nostri esperti accompagnatori.'} | mappa: Firenze Italia",
-              "dettagli": {
-                "scenario": "Collina",
-                "stagione": "Autunno Estate Inverno Primavera",
-                "durata": "1 day",
-                "difficolta": "Facile",
-                "target": "Azienda Coppia Famiglia Gruppo Individuale",
-                "dettagli_aggiuntivi": "tipodattività: Accompagnatore Fotografia Noleggi Vespa"
-              },
-              "tipologia": "visite_alle_cantine, vita_locale, soggiorni_nella_wine_country"
-            }
-          ]
-        }
-      };
-    }
-  });
+  const isLoading = packagesLoading || isPolling; // Updated loading condition
+  const error = packagesError; // Updated error condition
 
-  const isLoading = packagesLoading || cityPackagesLoading;
-  const error = packagesError || cityPackagesError;
+  // Function to handle selections change from CityExperiencePackage
+  const handleSelectionsChange = useCallback((selections: Selections) => {
+    console.log("Selections changed:", selections);
+    setUserSelections(selections);
+  }, []); // useCallback to prevent unnecessary re-creations
+
 
   // Effettua il polling se abbiamo un job_id
   useEffect(() => {
@@ -219,6 +80,8 @@ export default function ResultsPage() {
         if (!user) {
           console.error("Utente non autenticato durante il polling");
           setIsPolling(false);
+          // Optionally redirect to auth page if user is not authenticated
+          // setLocation("/auth");
           return;
         }
 
@@ -227,15 +90,31 @@ export default function ResultsPage() {
         setPollingStatus(statusResponse.status);
         failedAttempts = 0; // Reset il contatore degli errori
 
-        if (statusResponse.status === 'SUCCESS') {
+        if (statusResponse.status === 'COMPLETED') {
+          console.log("Recupero i risultati del job:", `/api/search/${jobId}/result`);
           const results = await getJobResults(jobId);
+          console.log("Risultati ricevuti:", results);
           setPollingResults(results);
           setIsPolling(false);
-          // Salva il risultato per poterlo recuperare anche dopo un refresh
-          // localStorage.setItem('yookve_search_results', JSON.stringify(results));
-          // Manteniamo il job_id per permettere di ritrovare i risultati
+          // Optional: remove job_id from localStorage after successful completion
           // localStorage.removeItem('yookve_job_id');
-        }
+
+        } else if (statusResponse.status === 'FAILED') {
+             console.error("Job di ricerca fallito.", statusResponse);
+             setIsPolling(false);
+             // Handle failure, e.g., show an error message and maybe redirect
+             toast({
+                title: "Ricerca fallita",
+                description: "Si è verificato un errore durante la ricerca. Riprova.",
+                variant: "destructive",
+             });
+             // Optionally clear job_id from localStorage on failure
+             // localStorage.removeItem('yookve_job_id');
+             // Optionally redirect user after failure
+             // setTimeout(() => setLocation("/preferences"), 3000);
+
+        } // Add other relevant statuses like 'PENDING', 'PROCESSING' if needed for UI updates
+
       } catch (error) {
         console.error("Errore durante il polling:", error);
         failedAttempts += 1;
@@ -244,12 +123,23 @@ export default function ResultsPage() {
         if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
           console.error("Troppi tentativi falliti, interrompo il polling");
           setIsPolling(false);
+           toast({
+              title: "Errore di comunicazione",
+              description: "Impossibile verificare lo stato della ricerca. Riprova più tardi.",
+              variant: "destructive",
+           });
+            // Optionally clear job_id from localStorage on repeated errors
+            // localStorage.removeItem('yookve_job_id');
+            // Optionally redirect user after repeated errors
+            // setTimeout(() => setLocation("/preferences"), 3000);
         }
       }
     };
 
-    if (isPolling && jobId && user) {
-      pollJobStatus();
+    // Start polling if isPolling is true and jobId and user are available
+    // Stop polling if pollingResults are received or polling failed
+    if (isPolling && jobId && user && !pollingResults && pollingStatus !== 'FAILED') {
+      pollJobStatus(); // Initial poll
       pollingInterval = setInterval(pollJobStatus, 3000);
     } else if (isPolling && !user) {
       // Interrompe il polling se l'utente non è autenticato
@@ -257,25 +147,132 @@ export default function ResultsPage() {
       setIsPolling(false);
     }
 
+    // Clear interval on component unmount or when polling stops
     return () => {
       if (pollingInterval) {
         clearInterval(pollingInterval);
       }
     };
-  }, [jobId, isPolling, user]);
+  }, [jobId, isPolling, user, pollingResults, pollingStatus, toast, setLocation]); // Added dependencies
+
+  // Use another useEffect to trigger refetching recommendations once polling results are available
+  useEffect(() => {
+    if (pollingResults && jobId && !isPolling) {
+        // Optionally refetch the 'packages' data if needed, or rely solely on pollingResults
+        // refetch(); // Uncomment if you still need to fetch packages via the recommendations endpoint
+        console.log("Polling complete, results available.");
+        // You might want to process pollingResults here or directly in the render logic
+    }
+  }, [pollingResults, jobId, isPolling, refetch]); // Added dependencies: refetch
 
 
   useEffect(() => {
     if (error) {
+      // Assuming a 404 on recommendations endpoint might mean no packages found for the job_id
+      // or the job_id is invalid after polling fails/completes without packages.
+      // Re-evaluate this redirect logic based on how your backend signals no packages.
       if ((error as any).message?.includes("404")) {
-        setLocation("/preferences");
+        console.warn("Recommendations not found, redirecting to preferences.", error);
+        // setLocation("/preferences"); // Consider if you always want to redirect on 404
       }
+       // Add handling for other potential errors from the recommendations query
     }
   }, [error, setLocation]);
+
+  // Function to compose packages based on user selections
+  const handleComposePackage = () => {
+      if (!pollingResults || Object.keys(userSelections).length === 0) {
+          toast({
+              title: "Nessuna selezione",
+              description: "Seleziona almeno una sistemazione e una o più esperienze per comporre un pacchetto.",
+              variant: "warning",
+          });
+          return;
+      }
+
+      const composed: TravelPackage[] = [];
+
+      // Iterate through each city in userSelections
+      Object.keys(userSelections).forEach(city => {
+          const citySelections = userSelections[city];
+          const selectedAccommodationId = citySelections.selectedAccommodationId;
+          const selectedExperienceIds = citySelections.selectedExperienceIds;
+
+          // Only compose a package for this city if an accommodation is selected
+          if (selectedAccommodationId) {
+              // Find the full accommodation details from pollingResults
+              const selectedAccommodation = pollingResults.accomodation[city]?.find(
+                  acc => acc.id === selectedAccommodationId
+              );
+
+              // Find the full experience details from pollingResults
+              // Note: We used a temporary ID format 'exp-${city}-${index}' in CityExperiencePackage.
+              // We need to find the original experience object based on this temporary ID or index.
+              // A more robust solution would use a unique ID from the backend.
+              const selectedExperiences = selectedExperienceIds.map(expId => {
+                  // Extract the original index from the temporary ID
+                  const parts = expId.split('-');
+                  const originalIndex = parseInt(parts[2], 10);
+                   // Find the experience by its original index in the polling results for this city
+                  return pollingResults.esperienze[city]?.[originalIndex];
+              }).filter(exp => exp !== undefined); // Filter out any undefined experiences
+
+              // Basic composition logic: create a package for each city with a selected accommodation
+              // and all selected experiences for that city.
+              // You might need more sophisticated logic here depending on how you want to combine things.
+              if (selectedAccommodation) {
+                   // Construct a basic TravelPackage object
+                   // You'll need to map the selected data to the TravelPackage schema.
+                   const newPackage: TravelPackage = {
+                       id: `composed-${city}-${Date.now()}`, // Generate a unique ID for the composed package
+                       title: `Viaggio Personalizzato a ${city}`, // Example title
+                       description: `Pacchetto composto con ${selectedAccommodation.name} e ${selectedExperiences.length} esperienze.`, // Example description
+                       destination: city,
+                       imageUrl: selectedAccommodation.imageUrl || '', // Use accommodation image or a default
+                       rating: selectedAccommodation.star_rating ? String(selectedAccommodation.star_rating) : '', // Map star rating
+                       reviewCount: selectedAccommodation.reviewCount || 0, // Add review count if available
+                       accommodationName: selectedAccommodation.name,
+                       accommodationType: selectedAccommodation.kind,
+                       transportType: '', // Add transport type if available
+                       durationDays: 0, // Calculate duration based on selected dates if available
+                       durationNights: 0, // Calculate duration based on selected dates if available
+                       experiences: selectedExperiences.map(exp => exp.alias[0]).join(', '), // Join experience aliases
+                       price: selectedAccommodation.daily_prices || 0, // Start with accommodation price, add experience costs if applicable
+                       isRecommended: false, // User composed, not a backend recommendation
+                       categories: [], // Add relevant categories based on selections
+                       // Add any other necessary fields from the TravelPackage schema
+                   };
+                   composed.push(newPackage);
+              }
+          }
+      });
+
+      console.log("Composed Packages:", composed);
+      setComposedPackages(composed); // Store the composed packages
+      setActiveTab("packages"); // Switch to the packages tab to show the result
+  };
+
 
   if (!user) {
     return <Redirect to="/auth" />;
   }
+
+  // Determine what to display while loading/polling or if there are results/errors
+  // Also consider the case where polling finishes but there are no results
+  const displayLoading = isLoading || (isPolling && !pollingResults && pollingStatus !== 'FAILED');
+  const displayError = error && !displayLoading; // Display query error if present and not in loading state
+  // Also consider displaying an error if polling failed after multiple attempts
+  const displayPollingError = pollingStatus === 'FAILED' && !pollingResults;
+
+  // Display packages if they exist and we are not loading or in a polling error state
+  // Now also include user-composed packages if available
+  const displayPackages = (recommendations && recommendations.packages && recommendations.packages.length > 0) || composedPackages.length > 0 && !displayLoading && !displayError && !displayPollingError;
+  // Display itinerary if pollingResults exist and we are not loading or in an error state
+  const displayItinerary = pollingResults && !displayLoading && !displayError && !displayPollingError;
+
+  // Check if there are no packages AND no itinerary results after loading/polling is done
+  const displayNoResults = !displayLoading && !displayError && !displayPollingError && !displayPackages && !displayItinerary;
+
 
   return (
     <MainLayout>
@@ -293,66 +290,101 @@ export default function ResultsPage() {
             </TabsList>
 
             <TabsContent value="packages">
-              {isLoading || isPolling ? ( // Added isPolling to loading condition
-                <div className="flex justify-center items-center py-20">
+              {displayLoading ? (
+                 <div className="flex flex-col justify-center items-center py-20">
                   <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
                   <p className="mt-4 text-lg text-gray-600">
-                    {pollingStatus === 'STARTED'
-                      ? "Stiamo cercando le migliori proposte per te..."
-                      : pollingStatus === 'PROCESSING'
-                        ? "Stiamo elaborando i risultati della ricerca..."
-                        : "Stiamo preparando le tue proposte di viaggio..."}
+                    {pollingStatus === 'PENDING'
+                      ? "Stiamo avviando la ricerca dei pacchetti..."
+                      : pollingStatus === 'STARTED'
+                        ? "Stiamo cercando i pacchetti migliori per te..."
+                        : pollingStatus === 'PROCESSING'
+                          ? "Stiamo finalizzando le tue proposte di pacchetti..."
+                          : "Caricamento pacchetti..."}
                   </p>
-                  {pollingStatus && (
-                    <p className="mt-2 text-sm text-gray-500">
-                      Stato attuale: {pollingStatus}
-                    </p>
-                  )}
+                   {isPolling && pollingStatus && pollingStatus !== 'COMPLETED' && (
+                     <p className="mt-2 text-sm text-gray-500">
+                       Stato attuale ricerca: {pollingStatus}
+                     </p>
+                   )}
                 </div>
-              ) : recommendations && recommendations.status && recommendations.status !== "SUCCESS" ? (
-                <div className="flex flex-col justify-center items-center py-20">
-                  <Loader2 className="h-12 w-12 animate-spin text-yookve-red mb-4" />
-                  <p className="text-lg font-medium">Elaborazione in corso...</p>
-                  <p className="text-gray-500 mt-2">Stiamo creando i tuoi pacchetti personalizzati</p>
-                  <p className="text-sm text-gray-400 mt-4">Job ID: {recommendations.job_id}</p>
-                </div>
-              ) : recommendations && recommendations.packages && recommendations.packages.length > 0 ? (
+              ) : (displayPackages || composedPackages.length > 0) ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {recommendations.packages.map((travelPackage) => (
+                  {/* Display recommendations if they exist */}
+                  {recommendations && recommendations.packages && recommendations.packages.map((travelPackage) => (
+                    <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
+                  ))}
+                   {/* Display composed packages */}
+                  {composedPackages.map((travelPackage) => (
                     <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
                   ))}
                 </div>
-              ) : (
+              ) : displayError || displayPollingError ? (
+                   <div className="text-center py-10 text-red-600">
+                       <p>Errore durante il caricamento dei pacchetti.</p>
+                        {displayPollingError && (<p>La ricerca non è riuscita a completarsi.</p>)}
+                   </div>
+              ) : displayNoResults ? (
                 <div className="text-center py-10">
-                  <p className="text-gray-500">Nessuna proposta trovata. Prova a modificare le tue preferenze.</p>
+                  <p className="text-gray-500">Nessun pacchetto trovato. Prova a modificare le tue preferenze.</p>
                 </div>
-              )}
+              ) : null /* Render nothing if none of the above conditions are met */}
+
+               {/* Add area to display composed package based on userSelections here later */}
+                {/* Example: Display userSelections for debugging */}
+                {/*
+                {userSelections && Object.keys(userSelections).length > 0 && (
+                     <div className="mt-10">
+                        <h3 className="font-semibold mb-4">Pacchetto Personalizzato (Selezione):</h3>
+                         <pre className="bg-gray-100 p-4 rounded-md text-left">
+                             {JSON.stringify(userSelections, null, 2)}
+                         </pre>
+                     </div>
+                )}
+                */}
             </TabsContent>
 
             <TabsContent value="itinerary">
-              {isLoading || isPolling ? ( // Added isPolling to loading condition
-                <div className="flex justify-center items-center py-20">
+              {displayLoading ? (
+                <div className="flex flex-col justify-center items-center py-20">
                   <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
-                  <p className="mt-4 text-lg text-gray-600">
-                    {pollingStatus === 'STARTED'
-                      ? "Stiamo cercando le migliori proposte per te..."
-                      : pollingStatus === 'PROCESSING'
-                        ? "Stiamo elaborando i risultati della ricerca..."
-                        : "Stiamo preparando le tue proposte di viaggio..."}
-                  </p>
-                  {pollingStatus && (
-                    <p className="mt-2 text-sm text-gray-500">
-                      Stato attuale: {pollingStatus}
-                    </p>
-                  )}
+                   <p className="mt-4 text-lg text-gray-600">
+                     {pollingStatus === 'PENDING'
+                       ? "Stiamo avviando la creazione dell'itinerario..."
+                       : pollingStatus === 'STARTED'
+                         ? "Stiamo definendo i dettagli del tuo itinerario..."
+                         : pollingStatus === 'PROCESSING'
+                           ? "Stiamo generando l'itinerario dettagliato..."
+                           : "Caricamento itinerario..."}
+                   </p>
+                  {isPolling && pollingStatus && pollingStatus !== 'COMPLETED' && (
+                     <p className="mt-2 text-sm text-gray-500">
+                       Stato attuale ricerca: {pollingStatus}
+                     </p>
+                   )}
                 </div>
-              ) : cityPackages ? (
-                <CityExperiencePackage data={cityPackages} />
-              ) : (
+              ) : displayItinerary ? (
+                // Render CityExperiencePackage and pass the selections and the handler
+                <>
+                   <CityExperiencePackage data={pollingResults} onSelectionsChange={handleSelectionsChange} />
+                   {/* Add the Compose Package button below CityExperiencePackage */} 
+                   <div className="mt-8 text-center">
+                      <Button onClick={handleComposePackage} disabled={Object.keys(userSelections).length === 0 || Object.values(userSelections).every(citySel => !citySel.selectedAccommodationId)}> {/* Disable if no selections */} 
+                         Componi Pacchetto Personalizzato
+                      </Button>
+                   </div>
+                </>
+
+              ) : displayError || displayPollingError ? (
+                  <div className="text-center py-10 text-red-600">
+                      <p>Errore durante il caricamento dell'itinerario dettagliato.</p>
+                       {displayPollingError && (<p>La ricerca non è riuscita a completarsi.</p>)}
+                  </div>
+              ) : displayNoResults ? (
                 <div className="text-center py-10">
                   <p className="text-gray-500">Nessun itinerario dettagliato disponibile. Prova a modificare le tue preferenze.</p>
                 </div>
-              )}
+              ) : null /* Render nothing if none of the above conditions are met */}
             </TabsContent>
           </Tabs>
         </div>
