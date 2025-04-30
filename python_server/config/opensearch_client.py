@@ -10,7 +10,8 @@ from .settings import (
     INDEX_USERS,
     INDEX_PREFERENCES,
     INDEX_TRAVEL_PACKAGES,
-    INDEX_BOOKINGS
+    INDEX_BOOKINGS,
+    INDEX_SAVED_PACKAGES # Import the new index name
 )
 import logging
 
@@ -35,7 +36,7 @@ def init_indices():
     """Inizializza gli indici di OpenSearch se non esistono già."""
     client = get_opensearch_client()
     
-    # Crea indici con mappings se non esistono
+    # Now includes INDEX_SAVED_PACKAGES from MAPPINGS
     for index_name, mapping in MAPPINGS.items():
         try:
             # Verifica se l'indice esiste
@@ -199,9 +200,13 @@ def seed_travel_packages():
     # Bulk insert
     bulk_data = []
     for package in packages:
-        # Manipolazione delle esperienze per convertirle in stringa (se necessario)
+         # Ensure 'experiences' is an array of strings as expected by the mapping
         if 'experiences' in package and isinstance(package['experiences'], list):
-            package['experiences'] = '\n'.join(package['experiences'])
+            package['experiences'] = [str(exp) for exp in package['experiences']]
+        elif 'experiences' in package: # Handle if it's a single string already
+             package['experiences'] = [str(package['experiences'])]
+        else:
+             package['experiences'] = [] # Ensure it's an empty list if missing
             
         # Aggiungi l'operazione di indicizzazione
         bulk_data.append({"index": {"_index": INDEX_TRAVEL_PACKAGES, "_id": package['id']}})

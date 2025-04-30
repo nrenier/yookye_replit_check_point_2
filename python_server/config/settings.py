@@ -15,7 +15,7 @@ CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 # Configurazioni OpenSearch
 OPENSEARCH_HOST = os.getenv("OPENSEARCH_HOST", "localhost")
 OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9200))
-OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin") #Using original variable name for consistency.
+OPENSEARCH_USER = os.getenv("OPENSEARCH_USER", "admin")
 OPENSEARCH_PASSWORD = os.getenv("OPENSEARCH_PASSWORD", "admin")
 OPENSEARCH_USE_SSL = os.getenv("OPENSEARCH_USE_SSL", "false").lower() == "true"
 OPENSEARCH_VERIFY_CERTS = os.getenv("OPENSEARCH_VERIFY_CERTS", "false").lower() == "true"
@@ -39,6 +39,7 @@ INDEX_USERS = "users"
 INDEX_PREFERENCES = "preferences"
 INDEX_TRAVEL_PACKAGES = "travel_packages"
 INDEX_BOOKINGS = "bookings"
+INDEX_SAVED_PACKAGES = "saved_packages" # New index name
 
 # Mapping per gli indici
 MAPPINGS = {
@@ -84,7 +85,8 @@ MAPPINGS = {
                 "transportType": {"type": "keyword"},
                 "durationDays": {"type": "integer"},
                 "durationNights": {"type": "integer"},
-                "experiences": {"type": "text"},
+                # Assuming experiences is array of strings in the frontend TravelPackage
+                "experiences": {"type": "keyword"}, 
                 "price": {"type": "integer"},
                 "isRecommended": {"type": "boolean"},
                 "categories": {"type": "keyword"}
@@ -108,6 +110,32 @@ MAPPINGS = {
                 "bookingDate": {"type": "date", "format": "strict_date_optional_time||epoch_millis"},
                 "status": {"type": "keyword"},
                 "paymentStatus": {"type": "keyword"}
+            }
+        }
+    },
+     INDEX_SAVED_PACKAGES: { # Add mapping for the new index
+        "mappings": {
+            "properties": {
+                "userId": {"type": "keyword"}, # To associate with user
+                "savedAt": {"type": "date", "format": "strict_date_optional_time||epoch_millis"}, # Timestamp
+                # Copy relevant fields from INDEX_TRAVEL_PACKAGES mapping here
+                "title": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "description": {"type": "text"},
+                "destination": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "imageUrl": {"type": "keyword"},
+                "rating": {"type": "keyword"},
+                "reviewCount": {"type": "integer"},
+                "accommodationName": {"type": "text"},
+                "accommodationType": {"type": "keyword"},
+                "transportType": {"type": "keyword"},
+                "durationDays": {"type": "integer"},
+                "durationNights": {"type": "integer"},
+                 # Assuming experiences is an array of strings in the frontend TravelPackage
+                "experiences": {"type": "keyword"}, 
+                "price": {"type": "integer"},
+                "isRecommended": {"type": "boolean"},
+                "categories": {"type": "keyword"}
+                # Add any other fields from the TravelPackage interface (like 'id' if needed)
             }
         }
     }

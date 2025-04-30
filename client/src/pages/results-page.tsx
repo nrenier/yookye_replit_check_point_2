@@ -1,16 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query"; // Import useMutation
 import MainLayout from "@/components/layouts/main-layout";
 import TravelCard from "@/components/travel-card";
 import CityExperiencePackage, { CityPackageData, Selections, Accommodation, Experience } from "@/components/city-experience-package"; // Import Selections, Accommodation, Experience types
 import { TravelPackage } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save } from "lucide-react"; // Import Save icon
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { checkJobStatus, getJobResults } from "@/lib/api";
+import { checkJobStatus, getJobResults, apiRequest } from "@/lib/api"; // Import apiRequest
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button"; // Import Button
+import { Button } from "@/components/ui/button";
 
 
 export default function ResultsPage() {
@@ -25,6 +25,34 @@ export default function ResultsPage() {
   const [composedPackages, setComposedPackages] = useState<TravelPackage[]>([]); // State for composed packages
 
   const { toast } = useToast();
+
+  // Mutation to save a composed package (NEW)
+  const savePackageMutation = useMutation({
+    mutationFn: async (packageData: TravelPackage) => {
+        // Call the new backend endpoint to save the package
+        const res = await apiRequest("POST", "/api/saved-packages", packageData);
+        if (!res.ok) {
+            const errorBody = await res.json();
+            throw new Error(errorBody.message || "Errore nel salvataggio del pacchetto");
+        }
+        return await res.json();
+    },
+    onSuccess: () => {
+        toast({
+            title: "Pacchetto salvato",
+            description: "Il pacchetto è stato salvato con successo! Lo trovi in 'I miei pacchetti'.",
+            variant: "default",
+        });
+        // Optionally clear selections or update UI after saving
+    },
+    onError: (error: Error) => {
+        toast({
+            title: "Errore di salvataggio",
+            description: `Non è stato possibile salvare il pacchetto: ${error.message}`,
+            variant: "destructive",
+        });
+    },
+  });
 
   // Estrai il job_id dalla query string o dal localStorage, se presente
   useEffect(() => {
@@ -254,8 +282,25 @@ export default function ResultsPage() {
       });
 
       console.log("Composed Packages:", composed);
-      setComposedPackages(composed);
-      setActiveTab("packages");
+      setComposedPackages(composed); // Store the composed packages
+      // setActiveTab("packages"); // Switch to the packages tab to show the result - maybe better to do this manually
+  };
+
+  // Function to handle saving a composed package (NEW)
+  const handleSavePackage = async (packageToSave: TravelPackage) => {
+      if (!user) {
+          toast({
+              title: "Accesso negato",
+              description: "Devi essere autenticato per salvare un pacchetto.",
+              variant: "destructive",
+          });
+          // Optionally redirect to login page
+          // setLocation("/auth");
+          return;
+      }
+
+      // Call the mutation to save the package
+      savePackageMutation.mutate(packageToSave);
   };
 
 
@@ -323,9 +368,21 @@ export default function ResultsPage() {
                   {validRecommendations && recommendations.packages.map((travelPackage) => (
                     <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
                   ))}
-                   {/* Display composed packages */}
+                   {/* Display composed packages with Save button */}
                   {composedPackages.map((travelPackage) => (
-                    <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
+                    <Card key={travelPackage.id} className="overflow-hidden flex flex-col">
+                        <TravelCard travelPackage={travelPackage} />
+                        <CardFooter className="mt-auto pt-4 flex justify-end">
+                             <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSavePackage(travelPackage)}
+                                disabled={savePackageMutation.isPending}
+                              >
+                                <Save className="w-4 h-4 mr-1" /> Salva Pacchetto
+                             </Button>
+                        </CardFooter>
+                    </Card>
                   ))}
                 </div>
               ) : displayError || displayPollingError ? (

@@ -2,13 +2,14 @@ import os
 import logging
 from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_cors import CORS
-from .config.settings import SECRET_KEY, CORS_ORIGINS, PORT, DEBUG  #Added PORT and DEBUG from original file
+from .config.settings import SECRET_KEY, CORS_ORIGINS, PORT, DEBUG
 from .api.auth import auth_bp
 from .api.travel_packages import travel_bp as travel_package_bp
 from .api.preferences import pref_bp
 from .api.recommendations import reco_bp
 from .api.bookings import booking_bp
-from .middleware import log_request  #Kept from original file
+from .api.saved_packages import saved_packages_bp # Import the new blueprint
+from .middleware import log_request
 
 # Configurazione del logger
 logging.basicConfig(level=logging.INFO)
@@ -31,6 +32,7 @@ def init_app():
     app.register_blueprint(pref_bp, url_prefix='/api/preferences')
     app.register_blueprint(reco_bp, url_prefix='/api/recommendations')
     app.register_blueprint(booking_bp, url_prefix='/api/bookings')
+    app.register_blueprint(saved_packages_bp, url_prefix='/api/saved-packages') # Register the new blueprint
 
     # Versione della API
     @app.route('/api/version')
@@ -57,13 +59,13 @@ def init_app():
             logger.error(f"Errore nel servire i file statici: {str(e)}")
             return str(e), 404
 
-    # Rotta di test (Kept from original)
+    # Rotta di test
     @app.route("/api/ping", methods=["GET"])
     @log_request()
     def ping():
         return jsonify({"message": "pong"})
 
-    # Rotta per le richieste Stripe (Kept from original)
+    # Rotta per le richieste Stripe
     @app.route("/api/create-payment-intent", methods=["POST"])
     @log_request()
     def create_payment_intent():
@@ -75,12 +77,12 @@ def init_app():
         from .api.bookings import webhook_handler
         return webhook_handler()
 
-    # Gestore degli errori (Kept from original)
+    # Gestore degli errori
     @app.errorhandler(404)
     def not_found(e):
         try:
             return send_from_directory(
-                dist_dir, 'index.html')  #Using dist_dir here as well
+                dist_dir, 'index.html')
         except Exception as err:
             logger.error(f"Errore nel servire index.html: {str(err)}")
             return jsonify({"error": "Risorsa non trovata"}), 404
@@ -95,4 +97,4 @@ def init_app():
 if __name__ == '__main__':
     app = init_app()
     app.run(debug=DEBUG, host='0.0.0.0',
-            port=PORT)  #Using PORT and DEBUG from original file
+            port=PORT)

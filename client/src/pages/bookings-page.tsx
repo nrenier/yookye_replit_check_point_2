@@ -14,14 +14,17 @@ import {
   PaymentElement,
   useStripe,
   useElements
-} from "@stripe/react-stripe-js";
+} from "@/components/ui/stripe"; // Corrected import path if using custom wrapper
 import { 
   Calendar, 
   CreditCard, 
   Loader2, 
   CheckCircle, 
   XCircle, 
-  Clock 
+  Clock, 
+  Heart, 
+  ShoppingCart, 
+  Trash2 
 } from "lucide-react";
 
 // Inizializza Stripe
@@ -57,6 +60,7 @@ import {
 import {
   Badge
 } from "@/components/ui/badge";
+import TravelCard from "@/components/travel-card"; // Import TravelCard to display saved packages
 
 // Componente per il modulo di pagamento
 function CheckoutForm({ clientSecret, onSuccess, onError }) {
@@ -120,6 +124,12 @@ function CheckoutForm({ clientSecret, onSuccess, onError }) {
   );
 }
 
+// Interface for Saved Packages (assuming similar structure to TravelPackage)
+// You might need to adjust this based on what your backend returns for saved packages
+interface SavedPackage extends TravelPackage {
+  savedAt?: string; // Example: add save date if available
+}
+
 export default function BookingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -129,15 +139,38 @@ export default function BookingsPage() {
   const [isStripeReady, setIsStripeReady] = useState(false);
 
   // Recupera le prenotazioni dell'utente
-  const { data: bookings, isLoading } = useQuery<Booking[]>({
+  const { data: bookings, isLoading: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ["/api/bookings"],
     enabled: !!user,
+    queryFn: async () => {
+        const res = await apiRequest("GET", "/api/bookings");
+        return await res.json();
+    }
   });
 
-  // Recupera i dettagli dei pacchetti di viaggio
-  const { data: travelPackages } = useQuery<TravelPackage[]>({
-    queryKey: ["/api/travel-packages"],
+  // Recupera i pacchetti salvati dall'utente (NEW)
+  const { data: savedPackages, isLoading: savedPackagesLoading, refetch: refetchSavedPackages } = useQuery<SavedPackage[]>({
+    queryKey: ["/api/saved-packages"], // Hypothetical endpoint
     enabled: !!user,
+    queryFn: async () => {
+        // Assume backend endpoint returns an array of saved packages
+        const res = await apiRequest("GET", "/api/saved-packages");
+        if (!res.ok) {
+           if (res.status === 404) return []; // Return empty array if no saved packages found
+           throw new Error("Errore nel recupero dei pacchetti salvati");
+        }
+        return await res.json();
+    }
+  });
+
+  // Recupera i dettagli dei pacchetti di viaggio (used for finding details for booked packages)
+  const { data: travelPackages, isLoading: travelPackagesLoading } = useQuery<TravelPackage[]>({
+    queryKey: ["/api/travel-packages"],
+    enabled: !!user, // Only fetch if there are bookings to look up?
+    queryFn: async () => {
+        const res = await apiRequest("GET", "/api/travel-packages");
+        return await res.json();
+    }
   });
 
   // Mutation per aggiornare lo stato di una prenotazione
@@ -161,6 +194,29 @@ export default function BookingsPage() {
       });
     },
   });
+
+  // Mutation per eliminare un pacchetto salvato (NEW)
+  const deleteSavedPackageMutation = useMutation({
+    mutationFn: async (packageId: string) => {
+        await apiRequest("DELETE", `/api/saved-packages/${packageId}`);
+        return packageId;
+    },
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["/api/saved-packages"] });
+        toast({
+            title: "Pacchetto rimosso",
+            description: "Il pacchetto salvato è stato rimosso con successo.",
+        });
+    },
+    onError: (error: Error) => {
+        toast({
+            title: "Errore",
+            description: `Non è stato possibile rimuovere il pacchetto: ${error.message}`,
+            variant: "destructive",
+        });
+    },
+  });
+
 
   // Crea un intento di pagamento reale con Stripe
   const createPaymentIntentMutation = useMutation({
@@ -221,6 +277,11 @@ export default function BookingsPage() {
     });
   };
 
+  // Gestisci l'eliminazione di un pacchetto salvato (NEW)
+  const handleDeleteSavedPackage = (packageId: string) => {
+    deleteSavedPackageMutation.mutate(packageId);
+  };
+
   // Helper per le badge di stato
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -242,6 +303,8 @@ export default function BookingsPage() {
     }
   };
 
+  const isLoading = bookingsLoading || savedPackagesLoading || travelPackagesLoading;
+
   if (!user) {
     return <Redirect to="/auth" />;
   }
@@ -249,121 +312,162 @@ export default function BookingsPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-16">
-        <h1 className="font-montserrat font-bold text-3xl mb-6">Le tue prenotazioni</h1>
+        <h1 className="font-montserrat font-bold text-3xl mb-6">I miei pacchetti e prenotazioni</h1>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="h-12 w-12 animate-spin text-yookve-red" />
           </div>
-        ) : bookings && bookings.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {bookings.map((booking) => {
-              const travelPackage = findTravelPackage(booking.packageId);
-              return (
-                <Card key={booking.id} className="overflow-hidden">
-                  {travelPackage && (
-                    <div className="relative h-48">
-                      <img 
-                        src={travelPackage.imageUrl} 
-                        alt={travelPackage.title} 
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-4 right-4 flex flex-col gap-2">
-                        {getStatusBadge(booking.status)}
-                        {getPaymentStatusBadge(booking.paymentStatus)}
-                      </div>
-                    </div>
-                  )}
-
-                  <CardHeader>
-                    <CardTitle>{travelPackage?.title || "Pacchetto viaggio"}</CardTitle>
-                    <CardDescription>
-                      {travelPackage?.destination} - Prenotato il {booking.bookingDate 
-                        ? format(new Date(booking.bookingDate), "d MMMM yyyy", { locale: it })
-                        : "Data non disponibile"}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>
-                          Dal {format(new Date(booking.travelDate), "d MMMM yyyy", { locale: it })} 
-                          al {format(new Date(booking.returnDate), "d MMMM yyyy", { locale: it })}
-                        </span>
-                      </div>
-
-                      <div>
-                        <p>
-                          {booking.numAdults} {booking.numAdults === 1 ? "adulto" : "adulti"}
-                          {booking.numChildren > 0 && `, ${booking.numChildren} ${booking.numChildren === 1 ? "bambino" : "bambini"}`}
-                          {booking.numInfants > 0 && `, ${booking.numInfants} ${booking.numInfants === 1 ? "neonato" : "neonati"}`}
-                        </p>
-                        <p className="font-bold mt-2">
-                          Totale: €{booking.totalPrice}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="flex justify-between">
-                    {booking.status === "pending" && (
-                      <>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="outline">Annulla</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Sei sicuro di voler annullare?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Questa azione non può essere annullata. La prenotazione verrà cancellata.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>No, mantieni</AlertDialogCancel>
-                              <AlertDialogAction 
-                                className="bg-red-500 hover:bg-red-600"
-                                onClick={() => handleCancelBooking(booking)}
+        ) : (bookings && bookings.length > 0) || (savedPackages && savedPackages.length > 0) ? (
+          <div className="space-y-10">
+             {/* Sezione Pacchetti Salvati */} 
+            {savedPackages && savedPackages.length > 0 && (
+              <div>
+                <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Salvati</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                   {savedPackages.map((pkg) => (
+                     // Reuse TravelCard or create a specific SavedPackageCard
+                      <Card key={pkg.id} className="overflow-hidden flex flex-col">
+                         <TravelCard travelPackage={pkg} />
+                         <CardFooter className="mt-auto pt-4 flex justify-between">
+                             <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteSavedPackage(pkg.id)}
+                                disabled={deleteSavedPackageMutation.isPending}
                               >
-                                Sì, annulla
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                <Trash2 className="w-4 h-4 mr-1" /> Rimuovi
+                             </Button>
+                              <Button 
+                                className="bg-yookve-red hover:bg-red-700"
+                                size="sm"
+                                // Add onClick handler for booking this saved package
+                                // onClick={() => handleBookSavedPackage(pkg)}
+                              >
+                                <ShoppingCart className="w-4 h-4 mr-1" /> Prenota ora
+                             </Button>
+                         </CardFooter>
+                     </Card>
+                   ))}
+                </div>
+              </div>
+            )}
 
-                        {booking.paymentStatus === "unpaid" && (
-                          <Button 
-                            className="bg-yookve-red hover:bg-red-700"
-                            onClick={() => handlePayment(booking)}
-                          >
-                            Paga ora
-                          </Button>
+             {/* Sezione Prenotazioni */} 
+            {bookings && bookings.length > 0 && (
+              <div>
+                 <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Prenotazioni Confermate</h2>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {bookings.map((booking) => {
+                    const travelPackage = findTravelPackage(booking.packageId);
+                    return (
+                      <Card key={booking.id} className="overflow-hidden flex flex-col">
+                        {travelPackage && (
+                          <div className="relative h-48">
+                            <img 
+                              src={travelPackage.imageUrl} 
+                              alt={travelPackage.title} 
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute top-4 right-4 flex flex-col gap-2">
+                              {getStatusBadge(booking.status)}
+                              {getPaymentStatusBadge(booking.paymentStatus)}
+                            </div>
+                          </div>
                         )}
-                      </>
-                    )}
 
-                    {booking.status === "confirmed" && (
-                      <Button className="bg-green-600 hover:bg-green-700 ml-auto">
-                        Dettagli viaggio
-                      </Button>
-                    )}
+                        <CardHeader>
+                          <CardTitle>{travelPackage?.title || "Pacchetto viaggio"}</CardTitle>
+                          <CardDescription>
+                            {travelPackage?.destination} - Prenotato il {booking.bookingDate 
+                              ? format(new Date(booking.bookingDate), "d MMMM yyyy", { locale: it })
+                              : "Data non disponibile"}
+                          </CardDescription>
+                        </CardHeader>
 
-                    {booking.status === "cancelled" && (
-                      <p className="text-gray-500 italic">
-                        Questa prenotazione è stata cancellata
-                      </p>
-                    )}
-                  </CardFooter>
-                </Card>
-              );
-            })}
+                        <CardContent className="flex-grow">
+                          <div className="space-y-4">
+                            <div className="flex items-center">
+                              <Calendar className="mr-2 h-4 w-4" />
+                              <span>
+                                Dal {format(new Date(booking.travelDate), "d MMMM yyyy", { locale: it })} 
+                                al {format(new Date(booking.returnDate), "d MMMM yyyy", { locale: it })}
+                              </span>
+                            </div>
+
+                            <div>
+                              <p>
+                                {booking.numAdults} {booking.numAdults === 1 ? "adulto" : "adulti"}
+                                {booking.numChildren > 0 && `, ${booking.numChildren} ${booking.numChildren === 1 ? "bambino" : "bambini"}`}
+                                {booking.numInfants > 0 && `, ${booking.numInfants} ${booking.numInfants === 1 ? "neonato" : "neonati"}`}
+                              </p>
+                              <p className="font-bold mt-2">
+                                Totale: €{booking.totalPrice}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+
+                        <CardFooter className="mt-auto pt-4 flex justify-between">
+                          {booking.status === "pending" && (
+                            <>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="outline">Annulla</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Sei sicuro di voler annullare?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Questa azione non può essere annullata. La prenotazione verrà cancellata.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>No, mantieni</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      className="bg-red-500 hover:bg-red-600"
+                                      onClick={() => handleCancelBooking(booking)}
+                                    >
+                                      Sì, annulla
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+
+                              {booking.paymentStatus === "unpaid" && (
+                                <Button 
+                                  className="bg-yookve-red hover:bg-red-700"
+                                  onClick={() => handlePayment(booking)}
+                                >
+                                  Paga ora
+                                </Button>
+                              )}
+                            </>
+                          )}
+
+                          {booking.status === "confirmed" && (
+                            <Button className="bg-green-600 hover:bg-green-700 ml-auto">
+                              Dettagli viaggio
+                            </Button>
+                          )}
+
+                          {booking.status === "cancelled" && (
+                            <p className="text-gray-500 italic">
+                              Questa prenotazione è stata cancellata
+                            </p>
+                          )}
+                        </CardFooter>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-50 rounded-lg">
             <h3 className="font-montserrat font-semibold text-xl mb-2">
-              Non hai ancora nessuna prenotazione
+              Non hai ancora pacchetti salvati o prenotazioni
             </h3>
             <p className="text-gray-600 mb-6">
               Esplora le nostre offerte personalizzate e prenota il tuo prossimo viaggio
