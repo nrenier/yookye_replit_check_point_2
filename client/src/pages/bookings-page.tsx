@@ -14,7 +14,7 @@ import {
   PaymentElement,
   useStripe,
   useElements
-} from "@/components/ui/stripe"; // Corrected import path if using custom wrapper
+} from "@stripe/react-stripe-js"; // Corrected import path
 import { 
   Calendar, 
   CreditCard, 
