@@ -46,9 +46,21 @@ export default function ResultsPage() {
       const endpoint = jobId ? `/api/recommendations?job_id=${jobId}` : "/api/recommendations";
       const response = await fetch(endpoint);
       if (!response.ok) {
-        throw new Error("Errore durante il recupero dei dati");
+        // Handle non-JSON responses like 404 more gracefully
+        if (response.status === 404) {
+          return { packages: [] }; // Return empty array if not found
+        } 
+        throw new Error(`Errore durante il recupero dei dati: ${response.statusText}`);
       }
-      return response.json();
+       // Check if response is valid JSON before parsing
+       const contentType = response.headers.get("content-type");
+       if (contentType && contentType.indexOf("application/json") !== -1) {
+           return response.json();
+       } else {
+           // Handle cases where backend might return non-JSON on success (less likely)
+           console.warn("Received non-JSON response from recommendations endpoint");
+           return { packages: [] }; // Return empty structure
+       }
     },
      // Disable this query if polling is active and pollingResults are not yet set
     enabled: !!jobId && !isPolling && !pollingResults // Modified enabled condition
@@ -172,10 +184,11 @@ export default function ResultsPage() {
       // or the job_id is invalid after polling fails/completes without packages.
       // Re-evaluate this redirect logic based on how your backend signals no packages.
       if ((error as any).message?.includes("404")) {
-        console.warn("Recommendations not found, redirecting to preferences.", error);
+        console.warn("Recommendations query returned 404.", error);
         // setLocation("/preferences"); // Consider if you always want to redirect on 404
       }
        // Add handling for other potential errors from the recommendations query
+       console.error("Error fetching recommendations:", error);
     }
   }, [error, setLocation]);
 
@@ -206,41 +219,34 @@ export default function ResultsPage() {
               );
 
               // Find the full experience details from pollingResults
-              // Note: We used a temporary ID format 'exp-${city}-${index}' in CityExperiencePackage.
-              // We need to find the original experience object based on this temporary ID or index.
-              // A more robust solution would use a unique ID from the backend.
               const selectedExperiences = selectedExperienceIds.map(expId => {
-                  // Extract the original index from the temporary ID
                   const parts = expId.split('-');
                   const originalIndex = parseInt(parts[2], 10);
-                   // Find the experience by its original index in the polling results for this city
                   return pollingResults.esperienze[city]?.[originalIndex];
-              }).filter(exp => exp !== undefined); // Filter out any undefined experiences
+              }).filter(exp => exp !== undefined) as Experience[]; // Add type assertion
 
-              // Basic composition logic: create a package for each city with a selected accommodation
-              // and all selected experiences for that city.
-              // You might need more sophisticated logic here depending on how you want to combine things.
               if (selectedAccommodation) {
                    // Construct a basic TravelPackage object
-                   // You'll need to map the selected data to the TravelPackage schema.
                    const newPackage: TravelPackage = {
-                       id: `composed-${city}-${Date.now()}`, // Generate a unique ID for the composed package
-                       title: `Viaggio Personalizzato a ${city}`, // Example title
-                       description: `Pacchetto composto con ${selectedAccommodation.name} e ${selectedExperiences.length} esperienze.`, // Example description
+                       id: `composed-${city}-${Date.now()}`,
+                       title: `Viaggio Personalizzato a ${city}`,
+                       description: `Pacchetto composto con ${selectedAccommodation.name} e ${selectedExperiences.length} esperienze.`,
                        destination: city,
-                       imageUrl: selectedAccommodation.imageUrl || '', // Use accommodation image or a default
-                       rating: selectedAccommodation.star_rating ? String(selectedAccommodation.star_rating) : '', // Map star rating
-                       reviewCount: selectedAccommodation.reviewCount || 0, // Add review count if available
+                       imageUrl: selectedAccommodation.imageUrl || '', 
+                       rating: selectedAccommodation.star_rating ? String(selectedAccommodation.star_rating) : '', 
+                       reviewCount: selectedAccommodation.reviewCount || 0, 
                        accommodationName: selectedAccommodation.name,
                        accommodationType: selectedAccommodation.kind,
-                       transportType: '', // Add transport type if available
-                       durationDays: 0, // Calculate duration based on selected dates if available
-                       durationNights: 0, // Calculate duration based on selected dates if available
-                       experiences: selectedExperiences.map(exp => exp.alias[0]).join(', '), // Join experience aliases
-                       price: selectedAccommodation.daily_prices || 0, // Start with accommodation price, add experience costs if applicable
-                       isRecommended: false, // User composed, not a backend recommendation
+                       transportType: '', 
+                       durationDays: 0, 
+                       durationNights: 0, 
+                       // Make sure experiences is an array of strings if TravelPackage schema expects that
+                       // Or adjust TravelPackage schema if it should hold Experience objects
+                       experiences: selectedExperiences.map(exp => exp.alias[0]), // Assuming TravelPackage wants string[]
+                       price: selectedAccommodation.daily_prices || 0, 
+                       isRecommended: false, 
                        categories: [], // Add relevant categories based on selections
-                       // Add any other necessary fields from the TravelPackage schema
+                       // Add any other required fields with default/mapped values
                    };
                    composed.push(newPackage);
               }
@@ -248,8 +254,8 @@ export default function ResultsPage() {
       });
 
       console.log("Composed Packages:", composed);
-      setComposedPackages(composed); // Store the composed packages
-      setActiveTab("packages"); // Switch to the packages tab to show the result
+      setComposedPackages(composed);
+      setActiveTab("packages");
   };
 
 
@@ -258,20 +264,23 @@ export default function ResultsPage() {
   }
 
   // Determine what to display while loading/polling or if there are results/errors
-  // Also consider the case where polling finishes but there are no results
   const displayLoading = isLoading || (isPolling && !pollingResults && pollingStatus !== 'FAILED');
   const displayError = error && !displayLoading; // Display query error if present and not in loading state
-  // Also consider displaying an error if polling failed after multiple attempts
   const displayPollingError = pollingStatus === 'FAILED' && !pollingResults;
 
-  // Display packages if they exist and we are not loading or in a polling error state
-  // Now also include user-composed packages if available
-  const displayPackages = (recommendations && recommendations.packages && recommendations.packages.length > 0) || composedPackages.length > 0 && !displayLoading && !displayError && !displayPollingError;
+  // Check if recommendations are loaded and are an array
+  const validRecommendations = recommendations && recommendations.packages && Array.isArray(recommendations.packages);
+
+  // Display packages if valid recommendations exist OR composed packages exist
+  const displayAnyPackages = (validRecommendations && recommendations.packages.length > 0) || composedPackages.length > 0;
+  // Display conditions for the packages tab content
+  const showPackagesContent = displayAnyPackages && !displayLoading && !displayError && !displayPollingError;
+
   // Display itinerary if pollingResults exist and we are not loading or in an error state
   const displayItinerary = pollingResults && !displayLoading && !displayError && !displayPollingError;
 
   // Check if there are no packages AND no itinerary results after loading/polling is done
-  const displayNoResults = !displayLoading && !displayError && !displayPollingError && !displayPackages && !displayItinerary;
+  const displayNoResults = !displayLoading && !displayError && !displayPollingError && !showPackagesContent && !displayItinerary;
 
 
   return (
@@ -308,10 +317,10 @@ export default function ResultsPage() {
                      </p>
                    )}
                 </div>
-              ) : (displayPackages || composedPackages.length > 0) ? (
+              ) : showPackagesContent ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {/* Display recommendations if they exist */}
-                  {recommendations && recommendations.packages && recommendations.packages.map((travelPackage) => (
+                  {/* Display recommendations only if they are a valid array */} 
+                  {validRecommendations && recommendations.packages.map((travelPackage) => (
                     <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
                   ))}
                    {/* Display composed packages */}
@@ -323,6 +332,7 @@ export default function ResultsPage() {
                    <div className="text-center py-10 text-red-600">
                        <p>Errore durante il caricamento dei pacchetti.</p>
                         {displayPollingError && (<p>La ricerca non è riuscita a completarsi.</p>)}
+                        {error && (<p>Dettagli: {(error as Error).message}</p>)} 
                    </div>
               ) : displayNoResults ? (
                 <div className="text-center py-10">
@@ -379,6 +389,7 @@ export default function ResultsPage() {
                   <div className="text-center py-10 text-red-600">
                       <p>Errore durante il caricamento dell'itinerario dettagliato.</p>
                        {displayPollingError && (<p>La ricerca non è riuscita a completarsi.</p>)}
+                       {error && (<p>Dettagli: {(error as Error).message}</p>)} 
                   </div>
               ) : displayNoResults ? (
                 <div className="text-center py-10">
