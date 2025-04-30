@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { checkJobStatus, getJobResults, apiRequest } from "@/lib/api"; // Import apiRequest
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Card, CardFooter } from "@/components/ui/card"; // Import Card and CardFooter
 
 
 export default function ResultsPage() {
