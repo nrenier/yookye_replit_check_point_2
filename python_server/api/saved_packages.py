@@ -116,7 +116,7 @@ def get_saved_packages(current_user):
         return jsonify(mock_packages), 200 # Return the fetched list
         # ---------------------------------------------------------------------
 
-    except Exception as e):
+    except Exception as e:
         logger.error(f"Error fetching saved packages for user {user_id}: {e}", exc_info=True)
         return jsonify({'message': 'Error fetching saved packages', 'error': str(e)}), 500
 
@@ -149,6 +149,6 @@ def delete_saved_package(current_user, package_id):
             # If package not found for this user or deletion failed for another reason
             logger.warning(f"Failed to delete package {package_id} for user {user_id}: Package not found or not authorized. (Mock)")
             return jsonify({'message': 'Package not found or not authorized'}), 404
-    except Exception as e):
+    except Exception as e:
         logger.error(f"Error deleting saved package {package_id} for user {user_id}: {e}", exc_info=True)
         return jsonify({'message': 'Error deleting saved package', 'error': str(e)}), 500
