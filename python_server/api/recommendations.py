@@ -37,7 +37,7 @@ async def get_recommendations():
         job_id = request.args.get("job_id")
         if job_id:
             recommendations = get_recommendations_from_api(latest_preference, job_id=job_id) # Pass job_id if available
-            if recommendations and "status" in recommendations and recommendations["status"] != "SUCCESS":
+            if recommendations and "status" in recommendations and recommendations["status"] != "COMPLETED":
                 return jsonify({
                     "job_id": recommendations.get("job_id"),
                     "status": recommendations.get("status"),

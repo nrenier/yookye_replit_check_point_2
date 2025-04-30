@@ -140,7 +140,7 @@ class TravelApiClient:
             print(f"Job status: {job_status}")
             
             # Se il job non è ancora completato, ritorna lo stato attuale
-            if job_status["status"] != "SUCCESS":
+            if job_status["status"] != "COMPLETED":
                 return {
                     "success": False,
                     "job_id": self._last_search_id,
@@ -164,7 +164,7 @@ class TravelApiClient:
             return {
                 "success": True,
                 "job_id": self._last_search_id,
-                "status": "SUCCESS",
+                "status": "COMPLETED",
                 "data": result_data
             }
             
