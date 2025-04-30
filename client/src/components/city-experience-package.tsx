@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils"; // Assuming cn is needed for styling
+import { cn } from "@/lib/utils";
 
 export interface Accommodation {
   hid: number;
@@ -36,8 +36,6 @@ export interface Experience {
   tags: string[];
   dati_extra: string;
   tipologia: string;
-  // Add a unique ID for experiences if not already present and needed for selection
-  // For now, using index might work if experiences within a city are stable, but a stable ID is better.
 }
 
 export interface CityPackageData {
@@ -47,11 +45,10 @@ export interface CityPackageData {
 
 interface CityExperiencePackageProps {
   data: CityPackageData | null;
-  // Add a prop to pass selected data back up if needed for package composition in parent
   onSelectionsChange?: (selections: Selections) => void;
 }
 
-interface Selections {
+export interface Selections {
   [city: string]: {
     selectedAccommodationId: string | null;
     selectedExperienceIds: string[];
@@ -63,23 +60,39 @@ export default function CityExperiencePackage({ data, onSelectionsChange }: City
   const [selectedCity, setSelectedCity] = useState(cities[0] || "");
   const [selections, setSelections] = useState<Selections>({});
 
-  // Initialize selections state when data prop changes
+  // Initialize selections state when data prop changes, only if not already initialized for these cities
   useEffect(() => {
-    if (data) {
-      const initialSelections: Selections = {};
-      cities.forEach(city => {
-        initialSelections[city] = {
-          selectedAccommodationId: null,
-          selectedExperienceIds: []
-        };
+    if (data && cities.length > 0) {
+      setSelections(prevSelections => {
+        // Check if selections are already initialized for all current cities
+        const allCitiesInitialized = cities.every(city => prevSelections.hasOwnProperty(city));
+
+        if (!allCitiesInitialized) {
+          const initialSelections: Selections = {};
+           cities.forEach(city => {
+             initialSelections[city] = {
+               selectedAccommodationId: prevSelections[city]?.selectedAccommodationId || null, // Preserve existing selections if any
+               selectedExperienceIds: prevSelections[city]?.selectedExperienceIds || [] // Preserve existing selections if any
+             };
+           });
+          return initialSelections;
+        }
+
+        return prevSelections; // Otherwise, return current state to avoid unnecessary updates
       });
-      setSelections(initialSelections);
+      // Set the initial selected city after data is loaded and selections potentially initialized
+      if (cities.length > 0 && !selectedCity) {
+         setSelectedCity(cities[0]);
+      }
+
     }
-  }, [data, cities]); // Depend on data and cities
+  }, [data, cities, selectedCity]); // Depend on data and cities. Added selectedCity to handle initial tab set.
+
 
   // Call parent callback when selections change
   useEffect(() => {
-    if (onSelectionsChange) {
+    // Only call if onSelectionsChange exists and selections object is not empty
+    if (onSelectionsChange && Object.keys(selections).length > 0) {
       onSelectionsChange(selections);
     }
   }, [selections, onSelectionsChange]);
@@ -118,7 +131,8 @@ export default function CityExperiencePackage({ data, onSelectionsChange }: City
     <div className="container mx-auto px-4 py-8">
       <h2 className="font-montserrat font-bold text-3xl mb-6 text-center">Il tuo itinerario personalizzato</h2>
 
-      <Tabs defaultValue={cities[0]} onValueChange={setSelectedCity}>
+      {/* Use selectedCity for the controlled Tabs component */}
+      <Tabs value={selectedCity} onValueChange={setSelectedCity}>
         <TabsList className="grid grid-cols-2 w-full max-w-lg mx-auto mb-8">
           {cities.map(city => (
             <TabsTrigger key={city} value={city}>{city}</TabsTrigger>
