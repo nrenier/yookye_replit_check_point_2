@@ -4,7 +4,7 @@ import uuid
 
 from ..models.repositories import UserRepository
 from ..models.models import UserCreate, User, UserLogin, Token
-from ..utils.auth import get_password_hash, verify_password, create_access_token
+from ..utils.auth import get_password_hash, verify_password, create_access_token, login_required
 from ..config.settings import JWT_ACCESS_TOKEN_EXPIRES, SECRET_KEY #Import SECRET_KEY
 
 auth_bp = Blueprint("auth", __name__)
