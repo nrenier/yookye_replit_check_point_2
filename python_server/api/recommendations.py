@@ -2,7 +2,7 @@ import logging
 import os
 import json
 from flask import Blueprint, jsonify, request, g, session
-from ..utils.travel_api_client import get_recommendations_from_api
+from ..utils.travel_api_client import TravelApiClient
 from ..models.repositories import TravelPackageRepository, PreferenceRepository
 
 # Configure logger
@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 reco_bp = Blueprint('recommendations', __name__)
 package_repo = TravelPackageRepository()
 pref_repo = PreferenceRepository()
+
+travel_api_client = TravelApiClient()
 
 @reco_bp.route('/', methods=['GET']) # Changed to GET
 async def get_recommendations():
@@ -36,7 +38,7 @@ async def get_recommendations():
         # Ottieni raccomandazioni basate su questa preferenza  -  Modified to handle job_id and polling
         job_id = request.args.get("job_id")
         if job_id:
-            recommendations = get_recommendations_from_api(latest_preference, job_id=job_id) # Pass job_id if available
+            recommendations = travel_api_client.get_recommendations_from_api(latest_preference, job_id=job_id) # Pass job_id if available
             if recommendations and "status" in recommendations and recommendations["status"] != "COMPLETED":
                 return jsonify({
                     "job_id": recommendations.get("job_id"),
@@ -63,7 +65,7 @@ async def get_recommendations():
             else:
                 return jsonify({"success": False, "message": "Formato dati non valido dal server esterno"}), 500
         else:
-            external_recommendations = get_recommendations_from_api(latest_preference)
+            external_recommendations = travel_api_client.get_recommendations_from_api(latest_preference)
             recommended_packages = []
             if external_recommendations and "packages" in external_recommendations:
                 for pkg in external_recommendations["packages"]:
@@ -108,7 +110,7 @@ async def get_city_packages():
         latest_preference = preferences[-1]
 
         # Ottieni raccomandazioni basate su questa preferenza
-        external_recommendations = get_recommendations_from_api(latest_preference)
+        external_recommendations = travel_api_client.get_recommendations_from_api(latest_preference)
 
         # Se abbiamo ricevuto dati formattati con accomodation e esperienze, restituiscili
         if external_recommendations and "accomodation" in external_recommendations and "esperienze" in external_recommendations:
