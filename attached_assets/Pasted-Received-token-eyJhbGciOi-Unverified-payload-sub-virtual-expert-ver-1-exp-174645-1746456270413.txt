@@ -1,0 +1,45 @@
+Received token: eyJhbGciOi...
+Unverified payload: {'sub': 'virtual_expert', 'ver': 1, 'exp': 1746458022}
+Token header: {'alg': 'HS256', 'typ': 'JWT'}
+Attempting to decode token with SECRET_KEY: yoo...
+PyJWT decode failed: Signature verification failed, trying with jose.jwt
+Jose.jwt decode failed: Signature verification failed.
+Both JWT libraries failed. Using unverified payload for debugging purposes ONLY.
+Token processed, user_id: virtual_expert, payload keys: ['sub', 'ver', 'exp']
+Saving package for user virtual_expert: {'id': 'composed-Palermo-1746456243928', 'title': 'Viaggio Personalizzato a Palermo', 'description': 'Pacchetto composto con San Paolo Palace Hotel e 0 esperienze.', 'destination': 'Palermo', 'imageUrl': '', 'rating': '4', 'reviewCount': 0, 'accommodationName': 'San Paolo Palace Hotel', 'accommodationType': 'Hotel', 'transportType': '', 'durationDays': 0, 'durationNights': 0, 'experiences': [], 'price': 152.33, 'isRecommended': False, 'categories': [], 'user_id': 'virtual_expert'}
+INFO:opensearch:PUT http://localhost:9200/saved_packages/_doc/composed-Palermo-1746456243928?refresh=wait_for [status:201 request:0.847s]
+INFO:python_server.models.repositories:Document created/updated with ID 'composed-Palermo-1746456243928' in index 'saved_packages'. Result: created
+INFO:opensearch:GET http://localhost:9200/saved_packages/_doc/composed-Palermo-1746456243928 [status:200 request:0.001s]
+ERROR:python_server.models.repositories:Failed to retrieve document immediately after creation/update. ID: composed-Palermo-1746456243928, Index: saved_packages
+ERROR:python_server.models.repositories:python_server.models.models.SavedPackage() argument after ** must be a mapping, not SavedPackage
+Error saving package: Object of type SavedPackage is not JSON serializable
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/api/saved_packages.py", line 27, in save_package
+    return jsonify({
+           ^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 202, in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 432, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 406, in _iterencode_dict
+    yield from chunks
+  File "/home/hb/.pyenv/versions/3.11.11/lib/python3.11/json/encoder.py", line 439, in _iterencode
+    o = _default(o)
+        ^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type SavedPackage is not JSON serializable
+
