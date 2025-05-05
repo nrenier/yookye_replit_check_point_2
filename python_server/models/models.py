@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, EmailStr
 class YookveBaseModel(BaseModel):
     """Classe base per tutti i modelli dell'app."""
     id: Optional[str] = None
-    
+
     class Config:
         populate_by_name = True
         # Allow extra fields for flexibility when creating models from dicts
@@ -92,7 +92,12 @@ class SavedPackage(TravelPackageBase):
     """Modello per un pacchetto salvato dall'utente."""
     userId: str = Field(...) # ID dell'utente che ha salvato il pacchetto, required
     savedAt: str = Field(default_factory=lambda: datetime.utcnow().isoformat()) # Timestamp di salvataggio UTC
-    # Inherits all fields from TravelPackageBase (id, title, description, etc.)
+    user_id: Optional[str] = None # Added to handle the user_id case
+
+    def model_post_init(self, __context):
+        # Se user_id è presente ma userId no, usare user_id per userId
+        if not self.userId and self.user_id:
+            self.userId = self.user_id
 
 
 # Modelli per le prenotazioni

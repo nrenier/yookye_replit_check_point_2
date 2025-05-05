@@ -441,5 +441,44 @@ class SavedPackageRepository(BaseRepository[SavedPackage, SavedPackage]): # Use 
             logger.error(f"Error deleting saved package {package_id} for user {user_id}: {e}", exc_info=True)
             return False
 
-    # The create method from BaseRepository should work, but ensure it handles SavedPackage model
-    # It will automatically add 'id' and 'savedAt' based on the model definition
+    def create(self, data: Dict) -> Any:
+        """Crea un nuovo documento."""
+        try:
+            # Genera un ID se non è presente
+            if "id" not in data:
+                data["id"] = generate_id()
+
+            doc_id = data["id"]
+
+            # Gestisci campi user_id e userId
+            if "user_id" in data and "userId" not in data:
+                data["userId"] = data["user_id"]
+
+            # Invia documento a OpenSearch
+            result = self.client.index(
+                index=self.index_name,
+                id=doc_id,
+                body=data,
+                refresh="wait_for"  # Aspetta che il documento sia indicizzato
+            )
+
+            logger.info(f"Document created/updated with ID '{doc_id}' in index '{self.index_name}'. Result: {result['result']}")
+
+            # Rileggi il documento per verifica
+            try:
+                obj_dict = self.get_by_id(doc_id)
+                if obj_dict:
+                    return self.model_cls(**obj_dict)
+                else:
+                    logger.error(f"Failed to retrieve document immediately after creation/update. ID: {doc_id}, Index: {self.index_name}")
+                    return self.model_cls(**data)
+
+            except Exception as e:
+                logger.error(f"Failed to retrieve document immediately after creation/update. ID: {doc_id}, Index: {self.index_name}")
+                logger.error(str(e))
+                # Continuiamo comunque, forse è solo un problema di timing con l'indicizzazione
+                return self.model_cls(**data)
+
+        except Exception as e:
+            logger.error(f"Error creating document in index '{self.index_name}': {str(e)}. Data: {data}")
+            raise
