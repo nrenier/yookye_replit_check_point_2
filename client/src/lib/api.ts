@@ -26,7 +26,7 @@ export type FormValues = {
   email: string;
 };
 
-// Usa l\'URL del server REST esterno se disponibile, altrimenti fallback su /api
+// Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
 const API_URL = import.meta.env.VITE_TRAVEL_API_URL || "/api";
 const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
 const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
@@ -59,12 +59,12 @@ const getAccessToken = async (): Promise<string> => {
     // Authentication endpoint should also ideally be relative to the local backend,
     // but keeping it using API_URL for now based on existing code structure.
     const tokenEndpoint = `${API_URL}/api/auth/token`;
-    console.log("Richiedo nuovo token di accesso all\'endpoint:", tokenEndpoint);
+    console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
 
-    // Verifica che le variabili d\'ambiente siano definite
+    // Verifica che le variabili d'ambiente siano definite
     if (!API_USERNAME || !API_PASSWORD) {
       throw new Error(
-        "Variabili d\'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite.",
+        "Variabili d'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite.",
       );
     }
 
@@ -93,8 +93,8 @@ const getAccessToken = async (): Promise<string> => {
 
     return accessToken;
   } catch (error) {
-    console.error("Errore nell\'ottenere il token:", error);
-    // Log dettagliato dell\'errore Axios se disponibile
+    console.error("Errore nell'ottenere il token:", error);
+    // Log dettagliato dell'errore Axios se disponibile
     if (axios.isAxiosError(error)) {
       console.error("Dettagli errore token:", {
         message: error.message,
@@ -223,7 +223,7 @@ export const getJobResults = async (jobId: string) => {
 };
 
 
-// Mappa i dati del form al formato richiesto dall\'API di ricerca (come definito nello Swagger)
+// Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
 const mapFormToSearchInput = (formData: FormValues) => {
   // Mappa interessi in categorie e sottocategorie
   const mapInterests = () => {
@@ -397,7 +397,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // This call is for the external API search
     const response = await apiRequest("POST", "/api/search", mapFormToSearchInput(preferenceData));
 
-    console.log("Risposta ricevuta dall\'endpoint /search:", response.data);
+    console.log("Risposta ricevuta dall'endpoint /search:", response.data);
 
     // Salva anche il record delle preferenze nel sistema locale (opzionale e separato dalla chiamata API esterna)
     try {
@@ -409,11 +409,11 @@ export const submitPreferences = async (preferenceData: FormValues) => {
         "Errore nel salvataggio delle preferenze locali:",
         prefError,
       );
-      // Continuiamo comunque perché l\'operazione principale è la ricerca
+      // Continuiamo comunque perché l'operazione principale è la ricerca
     }
 
-    // Log di debug per monitorare la risposta dell\'API esterna
-    console.log(`Risposta ricevuta dall\'API esterna (${API_URL}): `, {
+    // Log di debug per monitorare la risposta dell'API esterna
+    console.log(`Risposta ricevuta dall'API esterna (${API_URL}): `, {
       status: response.status,
       statusText: response.statusText,
       data: response.data,
@@ -423,10 +423,10 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // La pagina dei risultati si occuperà del polling
     if (response.data && response.data.job_id) {
       const jobId = response.data.job_id;
-      // Salva l\'email dell\'utente e il job_id nel localStorage per poter ripristinare la sessione
+      // Salva l'email dell'utente e il job_id nel localStorage per poter ripristinare la sessione
       localStorage.setItem('yookve_job_id', jobId);
 
-      // Se disponibile, salva l\'email per poter identificare l\'utente
+      // Se disponibile, salva l'email per poter identificare l'utente
       if (preferenceData.email) {
         localStorage.setItem('yookve_user_email', preferenceData.email);
       }
@@ -439,7 +439,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
   } catch (error) {
     console.error("Error submitting preferences:", error);
 
-    // Log dettagliato dell\'errore per il debugging
+    // Log dettagliato dell'errore per il debugging
     if (axios.isAxiosError(error)) {
       console.error("Dettagli errore Axios:", {
         message: error.message,
@@ -452,7 +452,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
           data: error.config?.data, // Log request body if available
         },
       });
-      // Aggiungi un log specifico se l\'errore corrisponde a quelli noti
+      // Aggiungi un log specifico se l'errore corrisponde a quelli noti
       if (error.response?.data && typeof error.response.data === "object") {
         const apiError = error.response.data as any;
         if (apiError.code === "INVALID_JSON_FORMAT" && apiError.errors) {
@@ -464,6 +464,17 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       }
     }
 
-    throw error; // Rilancia l\'errore per essere gestito dal chiamante
+    throw error; // Rilancia l'errore per essere gestito dal chiamante
   }
 };
+
+// Call the new backend endpoint to save the package with proper authentication
+export const savePackage = async (packageData: any) => {
+    try {
+        const res = await apiRequest("POST", "/api/saved_packages", packageData);
+        return res.data;
+    } catch (error) {
+        console.error("Error saving package:", error);
+        throw error;
+    }
+}

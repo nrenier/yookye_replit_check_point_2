@@ -80,30 +80,35 @@ def login_required(f):
     def decorated(*args, **kwargs):
         # Check if the user is in session (session-based auth not prioritized currently)
         user_id = session.get("user_id")
+        current_user = None
 
         # Try to verify the JWT token in the Authorization header
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
             try:
+                # Use the correct SECRET_KEY and algorithm for decoding
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-                user_id = payload.get("user_id") # Extract user_id from the payload
-
-                # Create a user object (minimal) from the payload
-                current_user = {"_id": user_id, "username": payload.get("username")} # Add other fields as needed
-            except PyJWTError as e:
+                
+                # Extract user_id from the payload - check both common fields
+                user_id = payload.get("user_id") or payload.get("sub")
+                
+                if user_id:
+                    # Create a user object (minimal) from the payload
+                    current_user = {"_id": user_id, "username": payload.get("sub") or payload.get("username")}
+                else:
+                    return jsonify({"message": "Invalid token structure: missing user identifier"}), 401
+            except Exception as e:
                 return jsonify({"message": "Invalid token", "error": str(e)}), 401
+        elif user_id:
+            # If user is only authenticated with session get the user_id
+            current_user = {"_id": user_id, "username": "session_user"}
         else:
-            if not user_id:
-                return jsonify({"message": "Unauthorized"}), 401
-            else:
-                # If user is only authenticated with session get the user_id
-                current_user = {"_id": user_id, "username": "session_user"}
+            return jsonify({"message": "Unauthorized: No authentication provided"}), 401
 
-        # If user_id is still None after all checks, reject the request
-        if not user_id:
-            return jsonify({"message": "Unauthorized"}), 401
-
+        # If current_user is still None after all checks, reject the request
+        if not current_user:
+            return jsonify({"message": "Unauthorized: Authentication failed"}), 401
 
         # Pass the current_user object to the decorated function
         return f(current_user=current_user, *args, **kwargs)

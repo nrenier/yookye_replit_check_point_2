@@ -14,8 +14,9 @@ saved_packages_bp = Blueprint('saved_packages', __name__)
 # Initialize repository
 saved_package_repository = SavedPackageRepository()
 
-# Corrected route to match /api/saved-packages (no trailing slash)
+# Ensure route matches exactly what the client is calling
 @saved_packages_bp.route('', methods=['POST'])
+@saved_packages_bp.route('/', methods=['POST'])
 @cross_origin()
 @login_required
 def save_package(current_user):
