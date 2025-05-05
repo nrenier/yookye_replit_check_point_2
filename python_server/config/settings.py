@@ -39,7 +39,7 @@ INDEX_USERS = "users"
 INDEX_PREFERENCES = "preferences"
 INDEX_TRAVEL_PACKAGES = "travel_packages"
 INDEX_BOOKINGS = "bookings"
-INDEX_SAVED_PACKAGES = "saved_packages" # New index name
+INDEX_SAVED_PACKAGES = "saved_packages"
 
 # Mapping per gli indici
 MAPPINGS = {
@@ -76,7 +76,7 @@ MAPPINGS = {
             "properties": {
                 "title": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                 "description": {"type": "text"},
-                "destination": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
+                "destination": {"type": "text", "fields": {"keyword": {"type": {"type": "keyword"}}}},
                 "imageUrl": {"type": "keyword"},
                 "rating": {"type": "keyword"},
                 "reviewCount": {"type": "integer"},
@@ -85,8 +85,7 @@ MAPPINGS = {
                 "transportType": {"type": "keyword"},
                 "durationDays": {"type": "integer"},
                 "durationNights": {"type": "integer"},
-                # Assuming experiences is array of strings in the frontend TravelPackage
-                "experiences": {"type": "keyword"}, 
+                "experiences": {"type": "keyword"}, # Assuming experiences is array of strings in the frontend TravelPackage
                 "price": {"type": "integer"},
                 "isRecommended": {"type": "boolean"},
                 "categories": {"type": "keyword"}
@@ -113,11 +112,11 @@ MAPPINGS = {
             }
         }
     },
-     INDEX_SAVED_PACKAGES: { # Add mapping for the new index
+    INDEX_SAVED_PACKAGES: {
         "mappings": {
             "properties": {
-                "userId": {"type": "keyword"}, # To associate with user
-                "savedAt": {"type": "date", "format": "strict_date_optional_time||epoch_millis"}, # Timestamp
+                "userId": {"type": "keyword"},  # To associate with user
+                "savedAt": {"type": "date", "format": "strict_date_optional_time||epoch_millis"},  # Timestamp
                 # Copy relevant fields from INDEX_TRAVEL_PACKAGES mapping here
                 "title": {"type": "text", "fields": {"keyword": {"type": "keyword"}}},
                 "description": {"type": "text"},
@@ -130,12 +129,10 @@ MAPPINGS = {
                 "transportType": {"type": "keyword"},
                 "durationDays": {"type": "integer"},
                 "durationNights": {"type": "integer"},
-                 # Assuming experiences is an array of strings in the frontend TravelPackage
-                "experiences": {"type": "keyword"}, 
+                "experiences": {"type": "keyword"},  # Assuming experiences is array of strings in the frontend TravelPackage
                 "price": {"type": "integer"},
                 "isRecommended": {"type": "boolean"},
                 "categories": {"type": "keyword"}
-                # Add any other fields from the TravelPackage interface (like 'id' if needed)
             }
         }
     }

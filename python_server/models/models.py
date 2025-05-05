@@ -9,6 +9,9 @@ class YookveBaseModel(BaseModel):
     
     class Config:
         populate_by_name = True
+        # Allow extra fields for flexibility when creating models from dicts
+        # Be cautious with this, validate carefully in repositories/endpoints
+        extra = 'allow' 
 
 # Modelli per gli utenti
 class UserBase(YookveBaseModel):
@@ -84,11 +87,19 @@ class TravelPackage(TravelPackageBase):
     """Modello completo del pacchetto di viaggio."""
     pass
 
+# Modello per i pacchetti salvati (NEW)
+class SavedPackage(TravelPackageBase):
+    """Modello per un pacchetto salvato dall'utente."""
+    userId: str = Field(...) # ID dell'utente che ha salvato il pacchetto, required
+    savedAt: str = Field(default_factory=lambda: datetime.utcnow().isoformat()) # Timestamp di salvataggio UTC
+    # Inherits all fields from TravelPackageBase (id, title, description, etc.)
+
+
 # Modelli per le prenotazioni
 class BookingBase(YookveBaseModel):
     """Informazioni di base per una prenotazione."""
     userId: str
-    packageId: str
+    packageId: str # This might need to be a string depending on your package ID type
     travelDate: str
     returnDate: str
     numAdults: int = 1
@@ -97,7 +108,7 @@ class BookingBase(YookveBaseModel):
     totalPrice: int
     specialRequests: Optional[str] = None
     contactPhone: Optional[str] = None
-    contactEmail: Optional[str] = None
+    contactEmail: Optional[EmailStr] = None # Use EmailStr for email validation
 
 class BookingCreate(BookingBase):
     """Dati necessari per creare una nuova prenotazione."""
