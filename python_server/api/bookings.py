@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, request, session
 import stripe
 import logging
@@ -22,7 +21,7 @@ else:
 @booking_bp.route("/", methods=["GET"])
 @login_required
 @log_request()
-def get_user_bookings():
+def get_user_bookings(current_user):
     """Recupera tutte le prenotazioni dell'utente corrente."""
     try:
         user_id = session.get("user_id")
@@ -47,7 +46,7 @@ def get_user_bookings():
 @booking_bp.route("/<booking_id>", methods=["GET"])
 @login_required
 @log_request()
-def get_booking_by_id(booking_id):
+def get_booking_by_id(booking_id, current_user):
     """Recupera una prenotazione specifica."""
     try:
         user_id = session.get("user_id")
@@ -80,7 +79,7 @@ def get_booking_by_id(booking_id):
 @booking_bp.route("/", methods=["POST"])
 @login_required
 @log_request()
-async def create_new_booking():
+async def create_new_booking(current_user):
     """Crea una nuova prenotazione."""
     user_id = session.get("user_id")
     data = request.json
@@ -102,7 +101,7 @@ async def create_new_booking():
 @booking_bp.route("/<booking_id>/status", methods=["PATCH"])
 @login_required
 @log_request()
-async def update_booking_status_route(booking_id):
+async def update_booking_status_route(booking_id, current_user):
     """Aggiorna lo stato di una prenotazione."""
     user_id = session.get("user_id")
     data = request.json
@@ -127,8 +126,8 @@ async def update_booking_status_route(booking_id):
 @booking_bp.route("/create-payment-intent", methods=["POST"])
 @login_required
 @log_request()
-async def create_payment_intent_handler():
-    """Crea un intent di pagamento con Stripe."""
+async def create_payment_intent_handler(current_user):
+    """Crea un intento di pagamento con Stripe."""
     if not stripe_client:
         return jsonify({"message": "Servizio di pagamento non disponibile"}), 503
     
