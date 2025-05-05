@@ -56,42 +56,67 @@ const getAccessToken = async (): Promise<string> => {
 
   // Altrimenti richiediamo un nuovo token
   try {
-    // Authentication endpoint should also ideally be relative to the local backend,
-    // but keeping it using API_URL for now based on existing code structure.
-    const tokenEndpoint = `${API_URL}/api/auth/token`;
+    // Usa endpoint locale per autenticazione
+    const tokenEndpoint = `/api/auth/login`;
     console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
 
     // Verifica che le variabili d'ambiente siano definite
     if (!API_USERNAME || !API_PASSWORD) {
-      throw new Error(
-        "Variabili d'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite.",
+      console.warn(
+        "Variabili d'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite, utilizzo utente locale.",
       );
+      // Tenta di autenticare con il sistema locale
+      const response = await axios.post(
+        tokenEndpoint,
+        {
+          username: "admin", // Usa credenziali di default o configurate localmente
+          password: "password"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Salva il token dal sistema locale
+      if (response.data && response.data.data && response.data.data.access_token) {
+        accessToken = response.data.data.access_token;
+        tokenExpiryTime = Date.now() + (60 * 60 * 1000); // 1 ora di default
+        console.log("Token locale ottenuto con successo");
+        return accessToken;
+      }
+    } else {
+      // Tenta con le credenziali dell'API esterna se sono disponibili
+      const externalTokenEndpoint = `${API_URL}/api/auth/token`;
+      console.log("Richiedo token esterno all'endpoint:", externalTokenEndpoint);
+      
+      const response = await axios.post(
+        externalTokenEndpoint,
+        new URLSearchParams({
+          username: API_USERNAME,
+          password: API_PASSWORD,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      // Salva il token e imposta la scadenza
+      accessToken = response.data.access_token;
+      const expiresIn = response.data.expires_in || 60 * 60; // seconds
+      tokenExpiryTime = Date.now() + expiresIn * 1000; // milliseconds
+      console.log(
+        "Token esterno ottenuto con successo. Scadenza:",
+        new Date(tokenExpiryTime).toISOString(),
+      );
+      
+      return accessToken;
     }
 
-    const response = await axios.post(
-      tokenEndpoint,
-      new URLSearchParams({
-        username: API_USERNAME,
-        password: API_PASSWORD,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      },
-    );
-
-    // Salva il token e imposta la scadenza (assumiamo che duri 1 ora, 3600 secondi * 1000 ms/s)
-    accessToken = response.data.access_token;
-    // Imposta la scadenza basandosi su expires_in se disponibile, altrimenti default a 1 ora
-    const expiresIn = response.data.expires_in || 60 * 60; // seconds
-    tokenExpiryTime = Date.now() + expiresIn * 1000; // milliseconds
-    console.log(
-      "Token ottenuto con successo. Scadenza:",
-      new Date(tokenExpiryTime).toISOString(),
-    );
-
-    return accessToken;
+    throw new Error("Nessun token ricevuto");
   } catch (error) {
     console.error("Errore nell'ottenere il token:", error);
     // Log dettagliato dell'errore Axios se disponibile
@@ -107,6 +132,36 @@ const getAccessToken = async (): Promise<string> => {
         },
       });
     }
+    
+    // Fallback in caso di errore - tentativo con l'endpoint alternativo
+    try {
+      // Se il tentativo esterno fallisce, prova con il sistema locale
+      if (API_URL && API_URL !== "/api") {
+        console.log("Tentativo fallback con autenticazione locale");
+        const response = await axios.post(
+          "/api/auth/login",
+          {
+            username: "admin", // Usa credenziali di default
+            password: "password"
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        
+        if (response.data && response.data.data && response.data.data.access_token) {
+          accessToken = response.data.data.access_token;
+          tokenExpiryTime = Date.now() + (60 * 60 * 1000); // 1 ora di default
+          console.log("Token locale di fallback ottenuto con successo");
+          return accessToken;
+        }
+      }
+    } catch (fallbackError) {
+      console.error("Anche il fallback ha fallito:", fallbackError);
+    }
+    
     throw new Error("Impossibile ottenere il token di autenticazione");
   }
 };

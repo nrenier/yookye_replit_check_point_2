@@ -88,27 +88,50 @@ def login_required(f):
             token = auth_header.split(" ")[1]
             try:
                 # Use the correct SECRET_KEY and algorithm for decoding
+                print(f"Attempting to decode token with SECRET_KEY: {SECRET_KEY[:3]}...")
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 
                 # Extract user_id from the payload - check both common fields
                 user_id = payload.get("user_id") or payload.get("sub")
                 
+                print(f"Token decoded successfully, user_id: {user_id}")
+                
                 if user_id:
                     # Create a user object (minimal) from the payload
                     current_user = {"_id": user_id, "username": payload.get("sub") or payload.get("username")}
                 else:
-                    return jsonify({"message": "Invalid token structure: missing user identifier"}), 401
+                    print("Invalid token structure: missing user identifier")
+                    return jsonify({
+                        "success": False,
+                        "message": "Invalid token structure: missing user identifier"
+                    }), 401
             except Exception as e:
-                return jsonify({"message": "Invalid token", "error": str(e)}), 401
+                print(f"Token validation error: {str(e)}")
+                import traceback
+                print(traceback.format_exc())
+                return jsonify({
+                    "success": False,
+                    "message": "Invalid token",
+                    "error": str(e)
+                }), 401
         elif user_id:
             # If user is only authenticated with session get the user_id
+            print(f"Using session-based authentication, user_id: {user_id}")
             current_user = {"_id": user_id, "username": "session_user"}
         else:
-            return jsonify({"message": "Unauthorized: No authentication provided"}), 401
+            print("No authentication provided")
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized: No authentication provided"
+            }), 401
 
         # If current_user is still None after all checks, reject the request
         if not current_user:
-            return jsonify({"message": "Unauthorized: Authentication failed"}), 401
+            print("Authentication failed: current_user is None")
+            return jsonify({
+                "success": False,
+                "message": "Unauthorized: Authentication failed"
+            }), 401
 
         # Pass the current_user object to the decorated function
         return f(current_user=current_user, *args, **kwargs)
