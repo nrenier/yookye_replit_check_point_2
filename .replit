@@ -19,7 +19,7 @@ localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "Build & Start App"
+runButton = "Start Flask Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -62,3 +62,16 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd client && npm install && npm run build && cd .. && pip install python-jose python-dotenv opensearch-py passlib bcrypt pyjwt && python python_server/run.py"
+
+[[workflows.workflow]]
+name = "Start Flask Server"
+author = 41883172
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install flask jwt python-jose pyjwt"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python python_server/run.py"

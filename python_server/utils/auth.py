@@ -89,10 +89,19 @@ def login_required(f):
             try:
                 # Use the correct SECRET_KEY and algorithm for decoding
                 print(f"Attempting to decode token with SECRET_KEY: {SECRET_KEY[:3]}...")
-                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                try:
+                    # Try decoding with PyJWT
+                    import jwt as pyjwt
+                    payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                except Exception as jwt_error:
+                    print(f"PyJWT decode failed: {str(jwt_error)}, trying with jose.jwt")
+                    # Fallback to jose.jwt if PyJWT fails
+                    from jose import jwt as jose_jwt
+                    payload = jose_jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 
                 # Extract user_id from the payload - check both common fields
                 user_id = payload.get("user_id") or payload.get("sub")
+                print(f"Token decoded successfully, user_id: {user_id}, payload: {payload}")
                 
                 print(f"Token decoded successfully, user_id: {user_id}")
                 
