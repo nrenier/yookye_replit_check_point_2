@@ -1,0 +1,55 @@
+Received token: eyJhbGciOi...
+Unverified payload: {'sub': 'virtual_expert', 'ver': 1, 'exp': 1746456005}
+Token header: {'alg': 'HS256', 'typ': 'JWT'}
+Attempting to decode token with SECRET_KEY: yoo...
+PyJWT decode failed: Signature verification failed, trying with jose.jwt
+Jose.jwt decode failed: Signature verification failed.
+Both JWT libraries failed in production environment
+Token validation error: Signature verification failed.
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/utils/auth.py", line 105, in decorated
+    payload = pyjwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jwt/api_jwt.py", line 222, in decode
+    decoded = self.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jwt/api_jwt.py", line 156, in decode_complete
+    decoded = api_jws.decode_complete(
+              ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jwt/api_jws.py", line 220, in decode_complete
+    self._verify_signature(signing_input, header, signature, key, algorithms)
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jwt/api_jws.py", line 328, in _verify_signature
+    raise InvalidSignatureError("Signature verification failed")
+jwt.exceptions.InvalidSignatureError: Signature verification failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jose/jws.py", line 264, in _verify_signature
+    raise JWSSignatureError()
+jose.exceptions.JWSSignatureError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jose/jwt.py", line 154, in decode
+    payload = jws.verify(token, key, algorithms, verify=verify_signature)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jose/jws.py", line 77, in verify
+    _verify_signature(signing_input, header, signature, key, algorithms)
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jose/jws.py", line 266, in _verify_signature
+    raise JWSError("Signature verification failed.")
+jose.exceptions.JWSError: Signature verification failed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/utils/auth.py", line 123, in decorated
+    raise jose_error
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/utils/auth.py", line 112, in decorated
+    payload = jose_jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/jose/jwt.py", line 156, in decode
+    raise JWTError(e)
+jose.exceptions.JWTError: Signature verification failed.
+
