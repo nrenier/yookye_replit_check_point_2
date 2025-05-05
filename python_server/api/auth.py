@@ -75,7 +75,8 @@ def login():
 
     # Se l'utente non esiste
     if not user:
-        print(f"User not found: {username}")\        return jsonify({"success": False, "message": "Invalid username or password"}), 401
+        print(f"User not found: {username}")
+        return jsonify({"success": False, "message": "Invalid username or password"}), 401
 
     print(f"User found: {user.username}, checking password")
 
