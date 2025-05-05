@@ -138,18 +138,6 @@ def get_current_user():
     if not user_id:
         return jsonify({"success": False, "message": "Not authenticated"}), 401
 
-@auth_bp.route("/test-auth", methods=["GET"])
-@auth_bp.route("/api/test-auth", methods=["GET"])
-@login_required
-def test_auth(current_user):
-    """Test endpoint to verify authentication is working."""
-    return jsonify({
-        "success": True,
-        "message": "Authentication working correctly",
-        "user": current_user
-    })
-
-
     # Ottieni l'utente
     user = user_repo.get_by_id(user_id)
     if not user:
@@ -167,4 +155,15 @@ def test_auth(current_user):
     return jsonify({
         "success": True,
         "user": user_dict
+    })
+
+@auth_bp.route("/test-auth", methods=["GET"])
+@auth_bp.route("/api/test-auth", methods=["GET"])
+@login_required
+def test_auth(current_user):
+    """Test endpoint to verify authentication is working."""
+    return jsonify({
+        "success": True,
+        "message": "Authentication working correctly",
+        "user": current_user
     })
