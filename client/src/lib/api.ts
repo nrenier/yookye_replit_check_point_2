@@ -1,4 +1,4 @@
-
+// client/src/lib/api.ts
 import axios from "axios";
 import type { z } from "zod";
 import { format } from "date-fns";
@@ -26,7 +26,7 @@ export type FormValues = {
   email: string;
 };
 
-// Usa l'URL del server REST esterno se disponibile, altrimenti fallback su /api
+// Usa l\'URL del server REST esterno se disponibile, altrimenti fallback su /api
 const API_URL = import.meta.env.VITE_TRAVEL_API_URL || "/api";
 const API_USERNAME = import.meta.env.VITE_TRAVEL_API_USERNAME;
 const API_PASSWORD = import.meta.env.VITE_TRAVEL_API_PASSWORD;
@@ -56,13 +56,15 @@ const getAccessToken = async (): Promise<string> => {
 
   // Altrimenti richiediamo un nuovo token
   try {
+    // Authentication endpoint should also ideally be relative to the local backend,
+    // but keeping it using API_URL for now based on existing code structure.
     const tokenEndpoint = `${API_URL}/api/auth/token`;
-    console.log("Richiedo nuovo token di accesso all'endpoint:", tokenEndpoint);
+    console.log("Richiedo nuovo token di accesso all\'endpoint:", tokenEndpoint);
 
-    // Verifica che le variabili d'ambiente siano definite
+    // Verifica che le variabili d\'ambiente siano definite
     if (!API_USERNAME || !API_PASSWORD) {
       throw new Error(
-        "Variabili d'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite.",
+        "Variabili d\'ambiente VITE_TRAVEL_API_USERNAME o VITE_TRAVEL_API_PASSWORD non definite.",
       );
     }
 
@@ -91,8 +93,8 @@ const getAccessToken = async (): Promise<string> => {
 
     return accessToken;
   } catch (error) {
-    console.error("Errore nell'ottenere il token:", error);
-    // Log dettagliato dell'errore Axios se disponibile
+    console.error("Errore nell\'ottenere il token:", error);
+    // Log dettagliato dell\'errore Axios se disponibile
     if (axios.isAxiosError(error)) {
       console.error("Dettagli errore token:", {
         message: error.message,
@@ -109,7 +111,7 @@ const getAccessToken = async (): Promise<string> => {
   }
 };
 
-// NUOVA funzione per effettuare richieste API autenticate
+// Function to make authenticated API requests to the EXTERNAL API (using API_URL)
 export const apiRequest = async (method: string, url: string, data?: any) => {
   try {
     const token = await getAccessToken();
@@ -121,22 +123,22 @@ export const apiRequest = async (method: string, url: string, data?: any) => {
 
     const config = {
       method: method.toLowerCase(),
-      url: `${API_URL}${url}`, // Use API_URL as base
+      url: `${API_URL}${url}`, // Use API_URL as base for external API calls
       headers,
       data: data ? data : undefined, // Include data for POST/PUT/PATCH
     };
 
-    console.log("Effettuo richiesta API:", config);
+    console.log("Effettuo richiesta API (External):", config);
 
     const response = await axios(config);
 
-    console.log("Risposta API ricevuta:", response);
+    console.log("Risposta API (External) ricevuta:", response);
     return response;
 
   } catch (error) {
-    console.error(`Errore durante la richiesta API ${method.toUpperCase()} ${url}:`, error);
+    console.error(`Errore durante la richiesta API (External) ${method.toUpperCase()} ${url}:`, error);
      if (axios.isAxiosError(error)) {
-      console.error("Dettagli errore Axios:", {
+      console.error("Dettagli errore Axios (External):", {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
@@ -148,14 +150,64 @@ export const apiRequest = async (method: string, url: string, data?: any) => {
         },
       });
     }
-    throw error; // Re-throw the error to be handled by the caller (e.g., react-query mutation/query)
+    throw error; // Re-throw the error to be handled by the caller
+  }
+};
+
+
+// NEW Function to make authenticated API requests to the LOCAL BACKEND (/api)
+const LOCAL_API_BASE_URL = "/api"; // Use /api as the base for the local backend
+
+export const localApiRequest = async (method: string, url: string, data?: any) => {
+  try {
+    // Assuming local backend also uses JWT authentication with the same token
+    // If not, you might need a different auth mechanism or no auth for local endpoints
+    const token = await getAccessToken(); // Reuse getAccessToken for local auth
+
+    const headers: any = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    const config = {
+      method: method.toLowerCase(),
+      url: `${LOCAL_API_BASE_URL}${url}`, // Use LOCAL_API_BASE_URL for local backend calls
+      headers,
+      data: data ? data : undefined,
+    };
+
+    console.log("Effettuo richiesta API (Local):", config);
+
+    const response = await axios(config);
+
+    console.log("Risposta API (Local) ricevuta:", response);
+    return response;
+
+  } catch (error) {
+    console.error(`Errore durante la richiesta API (Local) ${method.toUpperCase()} ${url}:`, error);
+     if (axios.isAxiosError(error)) {
+      console.error("Dettagli errore Axios (Local):", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          baseURL: error.config?.baseURL,
+          data: error.config?.data, // Log request body if available
+        },
+      });
+    }
+    throw error; // Re-throw the error
   }
 };
 
 
 // Funzione per controllare lo stato del job di ricerca
 export const checkJobStatus = async (jobId: string) => {
-  // Use apiRequest for authenticated call
+  // This endpoint seems related to the external API search job
+  // Keep using apiRequest for this one
   const response = await apiRequest("GET", `/api/search/${jobId}`);
   console.log("Stato del job:", response.data);
   return response.data;
@@ -163,13 +215,15 @@ export const checkJobStatus = async (jobId: string) => {
 
 // Funzione per ottenere i risultati del job di ricerca
 export const getJobResults = async (jobId: string) => {
-  // Use apiRequest for authenticated call
+  // This endpoint also seems related to the external API search job results
+  // Keep using apiRequest for this one
   const response = await apiRequest("GET", `/api/search/${jobId}/result`);
   console.log("Risultati ricevuti:", response.data);
   return response.data;
 };
 
-// Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
+
+// Mappa i dati del form al formato richiesto dall\'API di ricerca (come definito nello Swagger)
 const mapFormToSearchInput = (formData: FormValues) => {
   // Mappa interessi in categorie e sottocategorie
   const mapInterests = () => {
@@ -186,7 +240,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
       },
       vacanze_attive: {
         trekking_di_più_giorni: false,
-        tour_in_e_bike_di_più_giorni: false,
+        tour_in_e_bike_di_più_giorno: false,
         tour_in_bicicletta_di_più_giorni: false,
         sci_snowboard_di_più_giorni: false,
       },
@@ -208,7 +262,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
         case "architettura":
           interessi.storia_e_arte.monumenti_e_architettura = true;
           break;
-          
+
         // Food & Wine
         case "cantine":
           interessi["Food_&_wine"].visite_alle_cantine = true;
@@ -219,7 +273,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
         case "corsi_cucina":
           interessi["Food_&_wine"].corsi_di_cucina = true;
           break;
-          
+
         // Vacanze attive
         case "trekking":
           interessi.vacanze_attive.trekking_di_più_giorni = true;
@@ -233,7 +287,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
         case "sci":
           interessi.vacanze_attive.sci_snowboard_di_più_giorni = true;
           break;
-          
+
         // Altre categorie
         case "local_life":
           interessi.vita_locale = true;
@@ -241,7 +295,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
         case "benessere":
           interessi.salute_e_benessere = true;
           break;
-          
+
         // Mappatura legacy per retrocompatibilità
         case "enogastronomia":
           interessi["Food_&_wine"].visite_alle_cantine = true;
@@ -263,13 +317,13 @@ const mapFormToSearchInput = (formData: FormValues) => {
     luoghi_da_non_perdere: {
       luoghi_specifici: formData.luoghiDaNonPerdere === "si",
       city:
-        formData.luoghiSpecifici && formData.luoghiSpecifici.length > 0
+        formData.luoghiDaNonPerdere === "si" && formData.luoghiSpecifici && formData.luoghiSpecifici.length > 0
           ? formData.luoghiSpecifici[0]
           : "",
     },
     mete_clou: {
       destinazioni_popolari: formData.tipoDestinazioni === "popolari",
-      destinazioni_avventura: formData.tipoDestinazioni === "avventura",
+      destinazioni_avventura: formData.tipoDestinazioni === "avventura", // Check if this mapping is correct based on your backend API
       entrambe: formData.tipoDestinazioni === "entrambi",
     },
     ritmo_ideale: {
@@ -279,9 +333,9 @@ const mapFormToSearchInput = (formData: FormValues) => {
     },
     sistemazione: {
       livello: {
-        fascia_media: formData.livelloSistemazione === "standard",
+        fascia_media: formData.livelloSistemazione === "media", // Corrected mapping
         boutique: formData.livelloSistemazione === "boutique",
-        eleganti: formData.livelloSistemazione === "lusso",
+        eleganti: formData.livelloSistemazione === "lusso", // Corrected mapping
       },
       tipologia: {
         hotel: formData.tipologiaSistemazione?.includes("hotel") || false,
@@ -304,17 +358,17 @@ const mapFormToSearchInput = (formData: FormValues) => {
       family: formData.tipologiaViaggiatore === "famiglia",
       coppia: formData.tipologiaViaggiatore === "coppia",
       amici: formData.tipologiaViaggiatore === "amici",
-      single: false,
-      azienda: formData.tipologiaViaggiatore === "business",
+      single: false, // Assuming 'single' is a distinct category if not covered by others
+      azienda: formData.tipologiaViaggiatore === "azienda", // Corrected mapping
     },
     date: {
       check_in_time:
         formData.checkInDate instanceof Date
-          ? formData.checkInDate.toISOString().split("T")[0]
+          ? format(formData.checkInDate, 'yyyy-MM-dd') // Format date as YYYY-MM-DD
           : "",
       check_out_time:
         formData.checkOutDate instanceof Date
-          ? formData.checkOutDate.toISOString().split("T")[0]
+          ? format(formData.checkOutDate, 'yyyy-MM-dd') // Format date as YYYY-MM-DD
           : "",
     },
     trasporti: {
@@ -331,51 +385,35 @@ const mapFormToSearchInput = (formData: FormValues) => {
       fascia_media: formData.budget === "mid_range",
       comfort: formData.budget === "comfort",
       lusso: formData.budget === "luxury",
-      nessun_budget: formData.budget === "illimitato",
+      nessun_budget: formData.budget === "no_limit", // Corrected mapping
     },
     esigenze_particolari: formData.noteAggiuntive || null,
   };
 };
 
+
 export const submitPreferences = async (preferenceData: FormValues) => {
   try {
-    // Ottieni un token valido prima della richiesta
-    const token = await getAccessToken();
+    // This call is for the external API search
+    const response = await apiRequest("POST", "/api/search", mapFormToSearchInput(preferenceData));
 
-    // Trasforma i dati nel formato richiesto dall'API di ricerca (come definito nello Swagger)
-    const searchData = mapFormToSearchInput(preferenceData);
-
-    const searchEndpoint = `${API_URL}/api/search`;
-    console.log("Invio richiesta all'endpoint di ricerca:", searchEndpoint);
-    console.log("Dati inviati:", searchData);
-
-    // Utilizza l'endpoint /search come specificato nello Swagger con il token di autenticazione
-    // e il body in formato JSON
-    const response = await axios.post(searchEndpoint, searchData, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log("Risposta ricevuta dall'endpoint /search:", response.data);
+    console.log("Risposta ricevuta dall\'endpoint /search:", response.data);
 
     // Salva anche il record delle preferenze nel sistema locale (opzionale e separato dalla chiamata API esterna)
     try {
-      // Use apiRequest for this authenticated call as well
-      await apiRequest("POST", "/api/preferences", preferenceData);
+      // Use localApiRequest for this authenticated call to the local backend
+      await localApiRequest("POST", "/api/preferences", preferenceData);
       console.log("Preferenze salvate localmente con successo.");
     } catch (prefError) {
       console.warn(
         "Errore nel salvataggio delle preferenze locali:",
         prefError,
       );
-      // Continuiamo comunque perché l'operazione principale è la ricerca
+      // Continuiamo comunque perché l\'operazione principale è la ricerca
     }
 
-    // Log di debug per monitorare la risposta dell'API
-    console.log(`Risposta ricevuta dall'API (${API_URL}): `, {
+    // Log di debug per monitorare la risposta dell\'API esterna
+    console.log(`Risposta ricevuta dall\'API esterna (${API_URL}): `, {
       status: response.status,
       statusText: response.statusText,
       data: response.data,
@@ -385,23 +423,23 @@ export const submitPreferences = async (preferenceData: FormValues) => {
     // La pagina dei risultati si occuperà del polling
     if (response.data && response.data.job_id) {
       const jobId = response.data.job_id;
-      // Salva l'email dell'utente e il job_id nel localStorage per poter ripristinare la sessione
+      // Salva l\'email dell\'utente e il job_id nel localStorage per poter ripristinare la sessione
       localStorage.setItem('yookve_job_id', jobId);
-      
-      // Se disponibile, salva l'email per poter identificare l'utente
+
+      // Se disponibile, salva l\'email per poter identificare l\'utente
       if (preferenceData.email) {
         localStorage.setItem('yookve_user_email', preferenceData.email);
       }
-      
+
       // Redirect alla pagina dei risultati
       window.location.href = `/results?job_id=${jobId}`;
     }
-    
+
     return response.data;
   } catch (error) {
     console.error("Error submitting preferences:", error);
 
-    // Log dettagliato dell'errore per il debugging
+    // Log dettagliato dell\'errore per il debugging
     if (axios.isAxiosError(error)) {
       console.error("Dettagli errore Axios:", {
         message: error.message,
@@ -411,10 +449,10 @@ export const submitPreferences = async (preferenceData: FormValues) => {
           url: error.config?.url,
           method: error.config?.method,
           baseURL: error.config?.baseURL,
-          data: error.config?.data ? JSON.parse(error.config.data) : undefined, // Log request body if available
+          data: error.config?.data, // Log request body if available
         },
       });
-      // Aggiungi un log specifico se l'errore corrisponde a quelli noti
+      // Aggiungi un log specifico se l\'errore corrisponde a quelli noti
       if (error.response?.data && typeof error.response.data === "object") {
         const apiError = error.response.data as any;
         if (apiError.code === "INVALID_JSON_FORMAT" && apiError.errors) {
@@ -426,6 +464,6 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       }
     }
 
-    throw error; // Rilancia l'errore per essere gestito dal chiamante
+    throw error; // Rilancia l\'errore per essere gestito dal chiamante
   }
 };

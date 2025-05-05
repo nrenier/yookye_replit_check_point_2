@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { Loader2, Save } from "lucide-react"; // Import Save icon
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { checkJobStatus, getJobResults, apiRequest } from "@/lib/api"; // Import apiRequest
+import { checkJobStatus, getJobResults, apiRequest, localApiRequest } from "@/lib/api"; // Import apiRequest
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card"; // Import Card and CardFooter
@@ -31,7 +31,7 @@ export default function ResultsPage() {
   const savePackageMutation = useMutation({
     mutationFn: async (packageData: TravelPackage) => {
         // Call the new backend endpoint to save the package
-        const res = await apiRequest("POST", "/api/saved-packages", packageData);
+        const res = await localApiRequest("POST", "/saved-packages", packageData);
         if (!res.ok) {
             const errorBody = await res.json();
             throw new Error(errorBody.message || "Errore nel salvataggio del pacchetto");
