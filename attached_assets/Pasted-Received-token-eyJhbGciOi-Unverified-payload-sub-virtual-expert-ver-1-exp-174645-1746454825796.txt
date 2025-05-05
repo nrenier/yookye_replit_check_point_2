@@ -1,0 +1,79 @@
+Received token: eyJhbGciOi...
+Unverified payload: {'sub': 'virtual_expert', 'ver': 1, 'exp': 1746456574}
+Token header: {'alg': 'HS256', 'typ': 'JWT'}
+Attempting to decode token with SECRET_KEY: yoo...
+PyJWT decode failed: Signature verification failed, trying with jose.jwt
+Jose.jwt decode failed: Signature verification failed.
+Both JWT libraries failed. Using unverified payload for debugging purposes ONLY.
+Token processed, user_id: virtual_expert, payload keys: ['sub', 'ver', 'exp']
+Saving package for user virtual_expert: {'id': 'composed-Palermo-1746454792976', 'title': 'Viaggio Personalizzato a Palermo', 'description': 'Pacchetto composto con San Paolo Palace Hotel e 1 esperienze.', 'destination': 'Palermo', 'imageUrl': '', 'rating': '4', 'reviewCount': 0, 'accommodationName': 'San Paolo Palace Hotel', 'accommodationType': 'Hotel', 'transportType': '', 'durationDays': 0, 'durationNights': 0, 'experiences': ['Degustazione di Vini naturali Siciliani'], 'price': 152.33, 'isRecommended': False, 'categories': [], 'user_id': 'virtual_expert'}
+INFO:opensearch:PUT http://localhost:9200/saved_packages/_doc/composed-Palermo-1746454792976?refresh=wait_for [status:201 request:0.261s]
+INFO:python_server.models.repositories:Document created/updated with ID 'composed-Palermo-1746454792976' in index 'saved_packages'. Result: created
+INFO:opensearch:GET http://localhost:9200/saved_packages/_doc/composed-Palermo-1746454792976 [status:200 request:0.001s]
+ERROR:python_server.models.repositories:Error fetching document ID 'composed-Palermo-1746454792976' from index 'saved_packages': 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/models/repositories.py", line 67, in get_by_id
+    return self.model_cls(**data)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+ERROR:python_server.models.repositories:Failed to retrieve document immediately after creation/update. ID: composed-Palermo-1746454792976, Index: saved_packages
+ERROR:python_server.models.repositories:Error creating document in index 'saved_packages': 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing. Data: {'title': 'Viaggio Personalizzato a Palermo', 'description': 'Pacchetto composto con San Paolo Palace Hotel e 1 esperienze.', 'destination': 'Palermo', 'imageUrl': '', 'rating': '4', 'reviewCount': 0, 'accommodationName': 'San Paolo Palace Hotel', 'accommodationType': 'Hotel', 'transportType': '', 'durationDays': 0, 'durationNights': 0, 'experiences': ['Degustazione di Vini naturali Siciliani'], 'price': 152.33, 'isRecommended': False, 'categories': [], 'user_id': 'virtual_expert', 'id': 'composed-Palermo-1746454792976'}
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/models/repositories.py", line 129, in create
+    return self.model_cls(**obj_dict)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Error saving package: 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/api/saved_packages.py", line 26, in save_package
+    saved_package = saved_package_repo.create(data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/models/repositories.py", line 129, in create
+    return self.model_cls(**obj_dict)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 2 validation errors for SavedPackage
+price
+  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=152.33, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.11/v/int_from_float
+userId
+  Field required [type=missing, input_value={'title': 'Viaggio Person...-Palermo-1746454792976'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
