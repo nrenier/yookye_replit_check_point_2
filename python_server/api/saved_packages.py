@@ -14,7 +14,7 @@ saved_packages_bp = Blueprint('saved_packages', __name__)
 # Initialize repository
 saved_package_repository = SavedPackageRepository()
 
-@saved_packages_bp.route('/', methods=['POST'])
+@saved_packages_bp.route('', methods=['POST']) # Corrected route to match /api/saved-packages
 @cross_origin() # Consider handling CORS globally in app.py
 @login_required
 def save_package(current_user):
@@ -60,7 +60,7 @@ def save_package(current_user):
         logger.error(f"Error saving package for user {user_id_str}: {e}", exc_info=True)
         return jsonify({'message': 'Error saving package', 'error': str(e)}), 500
 
-@saved_packages_bp.route('/', methods=['GET'])
+@saved_packages_bp.route('', methods=['GET']) # Corrected route to match /api/saved-packages
 @cross_origin()
 @login_required
 def get_saved_packages(current_user):
@@ -85,7 +85,7 @@ def get_saved_packages(current_user):
         logger.error(f"Error fetching saved packages for user {user_id}: {e}", exc_info=True)
         return jsonify({'message': 'Error fetching saved packages', 'error': str(e)}), 500
 
-@saved_packages_bp.route('/<package_id>', methods=['DELETE'])
+@saved_packages_bp.route('/<package_id>', methods=['DELETE']) # This route remains the same
 @cross_origin()
 @login_required
 def delete_saved_package(current_user, package_id):
