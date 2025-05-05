@@ -62,21 +62,21 @@ class Preference(PreferenceBase):
 
 # Modelli per i pacchetti di viaggio
 class TravelPackageBase(YookveBaseModel):
-    """Informazioni di base per i pacchetti di viaggio."""
+    """Classe base per i pacchetti di viaggio."""
     title: str
     description: str
     destination: str
-    imageUrl: Optional[str] = None
+    imageUrl: str = ""
     rating: Optional[str] = None
-    reviewCount: Optional[int] = 0
-    accommodationName: Optional[str] = None
+    reviewCount: int = 0
+    accommodationName: str = ""
     accommodationType: Optional[str] = None
     transportType: Optional[str] = None
-    durationDays: Optional[int] = None
-    durationNights: Optional[int] = None
-    experiences: Optional[Union[List[str], str]] = None  # Può essere una lista o un testo
-    price: Optional[int] = None
-    isRecommended: Optional[bool] = False
+    durationDays: int = 0
+    durationNights: int = 0
+    experiences: Optional[List[str]] = None
+    price: float = 0
+    isRecommended: bool = False
     categories: Optional[List[str]] = None
 
 class TravelPackageCreate(TravelPackageBase):

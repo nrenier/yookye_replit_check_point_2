@@ -52,7 +52,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install flask flask-cors opensearch-py pyjwt python-jose passlib bcrypt"
+args = "pip install flask flask-cors opensearch-py pyjwt python-jose passlib bcrypt pydantic"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

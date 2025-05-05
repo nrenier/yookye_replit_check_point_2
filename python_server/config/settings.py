@@ -86,7 +86,7 @@ MAPPINGS = {
                 "durationDays": {"type": "integer"},
                 "durationNights": {"type": "integer"},
                 "experiences": {"type": "keyword"}, # Assuming experiences is array of strings in the frontend TravelPackage
-                "price": {"type": "integer"},
+                "price": {"type": "float"},
                 "isRecommended": {"type": "boolean"},
                 "categories": {"type": "keyword"}
             }
@@ -130,7 +130,7 @@ MAPPINGS = {
                 "durationDays": {"type": "integer"},
                 "durationNights": {"type": "integer"},
                 "experiences": {"type": "keyword"},  # Assuming experiences is array of strings in the frontend TravelPackage
-                "price": {"type": "integer"},
+                "price": {"type": "float"},
                 "isRecommended": {"type": "boolean"},
                 "categories": {"type": "keyword"}
             }
