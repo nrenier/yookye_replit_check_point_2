@@ -180,6 +180,7 @@ export const apiRequest = async (method: string, url: string, data?: any) => {
       method: method.toLowerCase(),
       url: `${API_URL}${url}`, // Use API_URL as base for external API calls
       headers,
+      timeout: 300000, // Aumento timeout a 5 minuti (300000 ms) per evitare timeout 504
       data: data ? data : undefined, // Include data for POST/PUT/PATCH
     };
 
@@ -229,6 +230,7 @@ export const localApiRequest = async (method: string, url: string, data?: any) =
       method: method.toLowerCase(),
       url: `${LOCAL_API_BASE_URL}${url}`, // Use LOCAL_API_BASE_URL for local backend calls
       headers,
+      timeout: 120000, // Aumento timeout a 2 minuti (120000 ms) 
       data: data ? data : undefined,
     };
 
