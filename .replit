@@ -19,7 +19,7 @@ localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "Start Flask Server"
+runButton = "Start Python Server"
 
 [[workflows.workflow]]
 name = "Project"
@@ -49,6 +49,10 @@ waitForPort = 5000
 name = "Start Python Server"
 author = 42069639
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install flask flask-cors opensearch-py pyjwt python-jose passlib bcrypt"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
