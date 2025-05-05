@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @saved_packages_bp.route("", methods=["GET"])
 @verify_token
 @log_request()
-def get_saved_packages():
+def get_saved_packages(current_user=None):
     """Get all saved packages for the current user"""
     try:
         # Get user ID from session
@@ -34,7 +34,7 @@ def get_saved_packages():
 @saved_packages_bp.route("", methods=["POST"])
 @verify_token
 @log_request()
-def save_package():
+def save_package(current_user=None):
     """Save a package for the current user"""
     try:
         # Get user ID from session
@@ -65,7 +65,7 @@ def save_package():
 @saved_packages_bp.route("/my-packages", methods=["GET"])
 @verify_token
 @log_request()
-def get_my_packages():
+def get_my_packages(current_user=None):
     """Get all saved packages for the current user (endpoint per 'I miei pacchetti')"""
     try:
         # Get user ID from session
@@ -85,7 +85,7 @@ def get_my_packages():
 @saved_packages_bp.route("/itinerary", methods=["GET"])
 @verify_token
 @log_request()
-def get_detailed_itinerary():
+def get_detailed_itinerary(current_user=None):
     """Get detailed itinerary with accommodations and experiences"""
     try:
         # Get user ID from session
