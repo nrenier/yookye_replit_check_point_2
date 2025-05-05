@@ -46,10 +46,20 @@ def get_saved_packages(current_user):
     """Ottiene tutti i pacchetti salvati dall'utente corrente."""
     try:
         # Ottieni i pacchetti
-        packages = saved_package_repo.get_by_user_id(current_user["_id"])
+        packages = saved_package_repo.find_by_user(current_user["_id"])
+        
+        # Converti i pacchetti in formato serializzabile
+        serialized_packages = []
+        for package in packages:
+            if hasattr(package, 'dict'):
+                serialized_packages.append(package.dict())
+            else:
+                # Fallback se package non ha il metodo dict()
+                serialized_packages.append(package)
+        
         return jsonify({
             "success": True,
-            "data": packages
+            "data": serialized_packages
         })
     except Exception as e:
         print(f"Error retrieving saved packages: {str(e)}")

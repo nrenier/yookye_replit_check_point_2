@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Redirect, useLocation } from "wouter";
 import { Loader2, Save } from "lucide-react"; // Import Save icon
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { checkJobStatus, getJobResults, apiRequest, localApiRequest } from "@/lib/api"; // Import apiRequest
+import { checkJobStatus, getJobResults, apiRequest, localApiRequest, getSavedPackages } from "@/lib/api"; // Import apiRequest and getSavedPackages
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card"; // Import Card and CardFooter
@@ -68,6 +68,7 @@ export default function ResultsPage() {
   // This useQuery was likely intended for pre-generated packages or was part of the old flow.
   // With the new polling mechanism, we rely on pollingResults.
   // Keeping it for now if it serves another purpose, but removing cityPackages logic.
+  // Query per recuperare i pacchetti raccomandati
   const { data: recommendations, isLoading: packagesLoading, error: packagesError, refetch } = useQuery<any>({
     queryKey: ["/api/recommendations", jobId],
     queryFn: async () => {
@@ -95,10 +96,25 @@ export default function ResultsPage() {
     enabled: !!jobId && !isPolling && !pollingResults // Modified enabled condition
   });
 
+  // Nuova query per recuperare i pacchetti salvati dall'utente
+  const { data: savedPackages, isLoading: savedPackagesLoading, error: savedPackagesError } = useQuery({
+    queryKey: ["saved-packages"],
+    queryFn: async () => {
+      try {
+        const data = await getSavedPackages();
+        return data;
+      } catch (error) {
+        console.error("Errore nel recupero dei pacchetti salvati:", error);
+        return [];
+      }
+    },
+    enabled: !!user // Attiva la query solo se l'utente è autenticato
+  });
+
   // Removed the useQuery for cityPackages mock data
 
-  const isLoading = packagesLoading || isPolling; // Updated loading condition
-  const error = packagesError; // Updated error condition
+  const isLoading = packagesLoading || isPolling || savedPackagesLoading; // Updated loading condition
+  const error = packagesError || savedPackagesError; // Updated error condition
 
   // Function to handle selections change from CityExperiencePackage
   const handleSelectionsChange = useCallback((selections: Selections) => {
@@ -317,8 +333,11 @@ export default function ResultsPage() {
   // Check if recommendations are loaded and are an array
   const validRecommendations = recommendations && recommendations.packages && Array.isArray(recommendations.packages);
 
-  // Display packages if valid recommendations exist OR composed packages exist
-  const displayAnyPackages = (validRecommendations && recommendations.packages.length > 0) || composedPackages.length > 0;
+  // Display packages if valid recommendations exist OR composed packages exist OR saved packages exist
+  const displayAnyPackages = 
+    (validRecommendations && recommendations.packages.length > 0) || 
+    composedPackages.length > 0 || 
+    (savedPackages && savedPackages.length > 0);
   // Display conditions for the packages tab content
   const showPackagesContent = displayAnyPackages && !displayLoading && !displayError && !displayPollingError;
 
@@ -364,27 +383,63 @@ export default function ResultsPage() {
                    )}
                 </div>
               ) : showPackagesContent ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {/* Display recommendations only if they are a valid array */} 
-                  {validRecommendations && recommendations.packages.map((travelPackage) => (
-                    <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
-                  ))}
-                   {/* Display composed packages with Save button */}
-                  {composedPackages.map((travelPackage) => (
-                    <Card key={travelPackage.id} className="overflow-hidden flex flex-col">
-                        <TravelCard travelPackage={travelPackage} />
-                        <CardFooter className="mt-auto pt-4 flex justify-end">
-                             <Button 
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleSavePackage(travelPackage)}
-                                disabled={savePackageMutation.isPending}
-                              >
-                                <Save className="w-4 h-4 mr-1" /> Salva Pacchetto
-                             </Button>
-                        </CardFooter>
-                    </Card>
-                  ))}
+                <div className="space-y-10">
+                  {/* Sezione Pacchetti Raccomandati */}
+                  {validRecommendations && recommendations.packages && recommendations.packages.length > 0 && (
+                    <div>
+                      <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Raccomandati</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {recommendations.packages.map((travelPackage) => (
+                          <TravelCard key={travelPackage.id} travelPackage={travelPackage} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sezione Pacchetti Composti */}
+                  {composedPackages && composedPackages.length > 0 && (
+                    <div>
+                      <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Personalizzati</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {composedPackages.map((travelPackage) => (
+                          <Card key={travelPackage.id} className="overflow-hidden flex flex-col">
+                              <TravelCard travelPackage={travelPackage} />
+                              <CardFooter className="mt-auto pt-4 flex justify-end">
+                                <Button 
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleSavePackage(travelPackage)}
+                                    disabled={savePackageMutation.isPending}
+                                  >
+                                    <Save className="w-4 h-4 mr-1" /> Salva Pacchetto
+                                </Button>
+                              </CardFooter>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sezione Pacchetti Salvati */}
+                  {savedPackages && savedPackages.length > 0 && (
+                    <div>
+                      <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">I Tuoi Pacchetti Salvati</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {savedPackages.map((pkg) => (
+                          <TravelCard key={pkg.id} travelPackage={pkg} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Se non ci sono pacchetti da mostrare */}
+                  {(!validRecommendations || recommendations.packages.length === 0) && 
+                   (!composedPackages || composedPackages.length === 0) && 
+                   (!savedPackages || savedPackages.length === 0) && (
+                    <div className="text-center py-10">
+                      <p className="text-gray-500">Nessun pacchetto disponibile. Prova a modificare le tue preferenze o a comporre un pacchetto personalizzato.</p>
+                    </div>
+                  )}
                 </div>
               ) : displayError || displayPollingError ? (
                    <div className="text-center py-10 text-red-600">

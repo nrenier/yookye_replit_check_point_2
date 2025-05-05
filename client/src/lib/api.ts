@@ -214,7 +214,22 @@ export const apiRequest = async (method: string, url: string, data?: any) => {
 // NEW Function to make authenticated API requests to the LOCAL BACKEND (/api)
 const LOCAL_API_BASE_URL = "/api"; // Use /api as the base for the local backend
 
-export const localApiRequest = async (method: string, url: string, data?: any) => {
+// Funzione per recuperare i pacchetti salvati
+export const getSavedPackages = async () => {
+  try {
+    const response = await localApiRequest("GET", "/saved-packages");
+    if (!response.ok) {
+      throw new Error("Errore nel recupero dei pacchetti salvati");
+    }
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    console.error("Errore nel recupero dei pacchetti salvati:", error);
+    throw error;
+  }
+};
+
+export const localApiRequest = async (method: string, url: string, data?: any, responseType: 'json' = 'json') => {
   try {
     // Assuming local backend also uses JWT authentication with the same token
     // If not, you might need a different auth mechanism or no auth for local endpoints

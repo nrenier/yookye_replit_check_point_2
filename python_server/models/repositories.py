@@ -409,6 +409,10 @@ class SavedPackageRepository(BaseRepository[SavedPackage, SavedPackage]): # Use 
             ]
         }
         return self.search(query, size=size)
+        
+    def get_by_user_id(self, user_id: str) -> List[SavedPackage]:
+        """Ottiene i pacchetti salvati di un utente (alias di find_by_user)."""
+        return self.find_by_user(user_id)
 
     def delete_for_user(self, package_id: str, user_id: str) -> bool:
         """Deletes a package only if it belongs to the specified user."""
