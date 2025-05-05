@@ -1,4 +1,3 @@
-
 import os
 import uuid
 from datetime import datetime, timedelta
@@ -29,7 +28,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         if pwd_context.identify(hashed_password):
             return pwd_context.verify(plain_password, hashed_password)
         
-        # Se non è un formato bcrypt, prova con il formato JavaScript (hex.salt)
+        # Se non è un formato bcrypt, prova con il formato JavaScript (hex.salt))
         if "." in hashed_password:
             hashed, salt = hashed_password.split(".")
             # Emula scrypt di Node.js
@@ -76,22 +75,37 @@ import jwt
 from jwt import PyJWTError
 
 def login_required(f):
-    """Decoratore per proteggere le route che richiedono autenticazione."""
+    """Decorator to protect routes that require authentication, passing user data."""
     @wraps(f)
     def decorated(*args, **kwargs):
-        # Verifica se l'utente è in sessione
-        if not session.get("user_id"):
-            # Prova a verificare il token JWT nell'header Authorization
-            auth_header = request.headers.get("Authorization")
-            if auth_header and auth_header.startswith("Bearer "):
-                token = auth_header.split(" ")[1]
-                try:
-                    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-                    session["user_id"] = payload.get("user_id")
-                except PyJWTError:
-                    return jsonify({"message": "Non autorizzato"}), 401
+        # Check if the user is in session (session-based auth not prioritized currently)
+        user_id = session.get("user_id")
+
+        # Try to verify the JWT token in the Authorization header
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            try:
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                user_id = payload.get("user_id") # Extract user_id from the payload
+
+                # Create a user object (minimal) from the payload
+                current_user = {"_id": user_id, "username": payload.get("username")} # Add other fields as needed
+            except PyJWTError as e:
+                return jsonify({"message": "Invalid token", "error": str(e)}), 401
+        else:
+            if not user_id:
+                return jsonify({"message": "Unauthorized"}), 401
             else:
-                return jsonify({"message": "Non autorizzato"}), 401
-                
-        return f(*args, **kwargs)
+                # If user is only authenticated with session get the user_id
+                current_user = {"_id": user_id, "username": "session_user"}
+
+        # If user_id is still None after all checks, reject the request
+        if not user_id:
+            return jsonify({"message": "Unauthorized"}), 401
+
+
+        # Pass the current_user object to the decorated function
+        return f(current_user=current_user, *args, **kwargs)
+
     return decorated
