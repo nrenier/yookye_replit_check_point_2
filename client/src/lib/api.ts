@@ -258,6 +258,32 @@ export const localApiRequest = async (method: string, url: string, data?: any, r
 
   } catch (error) {
     console.error(`Errore durante la richiesta API (Local) ${method.toUpperCase()} ${url}:`, error);
+
+// Funzione per recuperare l'itinerario dettagliato
+export const getDetailedItinerary = async (jobId: string) => {
+  try {
+    const response = await localApiRequest("GET", `/api/saved-packages/itinerary?job_id=${jobId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel recupero dell'itinerario dettagliato:", error);
+    throw error;
+  }
+};
+
+// Funzione per recuperare i pacchetti personali dal profilo
+export const getMyPackages = async () => {
+  try {
+    const response = await localApiRequest("GET", "/api/saved-packages/my-packages");
+    if (!response.data.success) {
+      throw new Error("Errore nel recupero dei pacchetti salvati");
+    }
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Errore nel recupero dei pacchetti personali:", error);
+    throw error;
+  }
+};
+
      if (axios.isAxiosError(error)) {
       console.error("Dettagli errore Axios (Local):", {
         message: error.message,

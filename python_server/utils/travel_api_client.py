@@ -1,231 +1,244 @@
 import os
 import requests
 import logging
-from time import sleep
+import json
+from ..config.settings import API_URL, API_USERNAME, API_PASSWORD
+
 
 logger = logging.getLogger(__name__)
 
-class TravelApiClient:
-    """Client for interacting with the external travel API."""
 
-    def __init__(self):
-        """Initialize the TravelApiClient with configuration."""
-        self.base_url = os.environ.get("TRAVEL_API_URL", "http://localhost:8000")
-        self.username = os.environ.get("TRAVEL_API_USERNAME", "")
-        self.password = os.environ.get("TRAVEL_API_PASSWORD", "")
-        self._token = None
-        self._token_expiry = 0
-        self._last_search_id = None
-
-    def _get_token(self):
-        """Get a valid authentication token from the API."""
-        try:
-            response = requests.post(
-                f"{self.base_url}/api/auth/token",
-                data={
-                    "username": self.username,
-                    "password": self.password
-                },
-                headers={
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            )
-            response.raise_for_status()
-            token_data = response.json()
-            self._token = token_data.get("access_token")
-            return self._token
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error getting authentication token: {e}")
-            return None
-
-    def send_preferences(self, preference_data: dict):
-        """Send user preferences to the external API."""
-        token = self._get_token()
-        if not token:
-            return None
-
-        # Ensure we have all required fields
-        if "interessi" not in preference_data:
-            preference_data["interessi"] = {
-                "storia_e_arte": {
-                    "siti_archeologici": False,
-                    "musei_e_gallerie": False,
-                    "monumenti_e_architettura": False
-                },
-                "Food_&_wine": {
-                    "visite_alle_cantine": False,
-                    "soggiorni_nella_wine_country": False,
-                    "corsi_di_cucina": False
-                },
-                "vacanze_attive": {
-                    "trekking_di_più_giorni": False,
-                    "tour_in_e_bike_di_più_giorni": False,
-                    "tour_in_bicicletta_di_più_giorni": False,
-                    "sci_snowboard_di_più_giorni": False
-                },
-                "vita_locale": False,
-                "salute_e_benessere": False
-            }
-
-        # Make sure trasporti has auto_propria and Unknown fields
-        if "trasporti" in preference_data:
-            if "auto_propria" not in preference_data["trasporti"]:
-                preference_data["trasporti"]["auto_propria"] = False
-            if "Unknown" not in preference_data["trasporti"]:
-                preference_data["trasporti"]["Unknown"] = False
-
-        try:
-            # Send preferences to external API
-            search_url = f"{self.base_url}/api/search"
-            response = requests.post(
-                search_url, 
-                json=preference_data,
-                headers={
-                    "Authorization": f"Bearer {token}",
-                    "Content-Type": "application/json"
-                }
-            )
-            response.raise_for_status()
-            search_result = response.json()
-
-            # Store the search ID for later use
-            if "job_id" in search_result:
-                self._last_search_id = search_result["job_id"]
-                print(f"Search job ID: {self._last_search_id}")
-
-            return search_result
-        except requests.exceptions.RequestException as e:
-            print(f"Error sending preferences to external API: {e}")
-            if hasattr(e, 'response') and e.response is not None:
-                print(f"Response status: {e.response.status_code}")
-                print(f"Response body: {e.response.text}")
-                
-                # Try to parse and print more detailed error information
-                try:
-                    error_data = e.response.json()
-                    print(f"Detailed API error: {json.dumps(error_data, indent=2)}")
-                    
-                    # Print the actual request payload for debugging
-                    print(f"Request payload sent: {json.dumps(preference_data, indent=2)}")
-                except:
-                    print("Could not parse error response as JSON")
-            return None
-
-    def get_recommendations(self):
-        """Get recommendations from the external API based on last search."""
-        token = self._get_token()
-        if not token or not self._last_search_id:
-            # Mock response if no real data available
-            return {
-                "success": True,
-                "message": "Elaborazione in corso, riprova più tardi",
-                "packages": []
-            }
-
-        try:
-            token = self._get_token()
-            
-            # Prima controlla lo stato del job usando l'endpoint /search/{job_id}
-            status_url = f"{self.base_url}/api/search/{self._last_search_id}"
-            status_response = requests.get(
-                status_url,
-                headers={
-                    "Authorization": f"Bearer {token}"
-                }
-            )
-            
-            status_response.raise_for_status()
-            job_status = status_response.json()
-            
-            print(f"Job status: {job_status}")
-            
-            # Se il job non è ancora completato, ritorna lo stato attuale
-            if job_status["status"] != "COMPLETED":
-                return {
-                    "success": False,
-                    "job_id": self._last_search_id,
-                    "status": job_status["status"],
-                    "message": "Elaborazione in corso, riprova più tardi",
-                    "packages": []
-                }
-            
-            # Il job è completo, possiamo recuperare il risultato
-            result_url = f"{self.base_url}/api/search/{self._last_search_id}/result"
-            response = requests.get(
-                result_url,
-                headers={
-                    "Authorization": f"Bearer {token}"
-                }
-            )
-            
-            response.raise_for_status()
-            result_data = response.json()
-            
-            return {
-                "success": True,
-                "job_id": self._last_search_id,
-                "status": "COMPLETED",
-                "data": result_data
-            }
-            
-        except requests.exceptions.RequestException as e:
-            print(f"Error getting recommendations from external API: {e}")
-            if hasattr(e, 'response') and e.response is not None:
-                print(f"Response status: {e.response.status_code}")
-                print(f"Response body: {e.response.text}")
-            return None
-
-def get_recommendations_from_api(preferences):
+def get_access_token():
     """
-    Get recommendations from external API based on user preferences
+    Get JWT token for external API
     """
     try:
-        # Initialize the client
-        client = TravelApiClient()
+        token_url = f"{API_URL}/api/auth/token"
+        payload = {
+            "username": API_USERNAME,
+            "password": API_PASSWORD
+        }
 
-        # Get recommendations
-        recommendations = client.get_recommendations()
+        response = requests.post(
+            token_url, 
+            data=payload,
+            headers={"Content-Type": "application/x-www-form-urlencoded"}
+        )
 
-        # Check if we have city-based data
-        if recommendations and isinstance(recommendations, dict) and ("accomodation" in recommendations or "esperienze" in recommendations):
-            return recommendations
+        if response.status_code != 200:
+            logger.error(f"Error getting token: {response.text}")
+            return None
 
-        # If we received traditional recommendations, return them
-        if recommendations and "packages" in recommendations:
-            return recommendations
+        token_data = response.json()
+        return token_data.get("access_token")
+    except Exception as e:
+        logger.error(f"Exception getting token: {str(e)}")
+        return None
 
-        # Fallback to mock data if API call failed
+
+def get_recommendations_from_api(preference, job_id=None, itinerary=False):
+    """
+    Get recommendations from external API
+    If job_id is provided, it will poll for the job status
+    If itinerary is True, it will return the detailed itinerary format
+    """
+    try:
+        # First get token
+        token = get_access_token()
+        if not token:
+            logger.error("Failed to get access token")
+            return {"error": "Failed to get access token"}
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+
+        # If job_id is provided, poll for the job status
+        if job_id:
+            status_url = f"{API_URL}/api/search/{job_id}"
+            status_response = requests.get(status_url, headers=headers)
+
+            if status_response.status_code != 200:
+                logger.error(f"Error polling job: {status_response.text}")
+                return {"error": f"Error polling job: {status_response.text}"}
+
+            status_data = status_response.json()
+
+            # If job is completed, get the results
+            if status_data.get("status") == "COMPLETED":
+                # If we want the detailed itinerary, use a different endpoint
+                if itinerary:
+                    itinerary_url = f"{API_URL}/api/search/{job_id}/itinerary"
+                    itinerary_response = requests.get(itinerary_url, headers=headers)
+
+                    if itinerary_response.status_code != 200:
+                        logger.error(f"Error getting itinerary: {itinerary_response.text}")
+                        # Fallback to normal results if itinerary endpoint fails
+                        result_url = f"{API_URL}/api/search/{job_id}/result"
+                        result_response = requests.get(result_url, headers=headers)
+
+                        if result_response.status_code != 200:
+                            logger.error(f"Error getting results: {result_response.text}")
+                            return {"error": f"Error getting results: {result_response.text}"}
+
+                        result_data = result_response.json()
+                        # Process the standard result to create an itinerary format
+                        return format_results_as_itinerary(result_data)
+
+                    itinerary_data = itinerary_response.json()
+                    return itinerary_data
+                else:
+                    # Normal package results
+                    result_url = f"{API_URL}/api/search/{job_id}/result"
+                    result_response = requests.get(result_url, headers=headers)
+
+                    if result_response.status_code != 200:
+                        logger.error(f"Error getting results: {result_response.text}")
+                        return {"error": f"Error getting results: {result_response.text}"}
+
+                    result_data = result_response.json()
+                    return result_data
+            else:
+                # Return the status response
+                return status_data
+
+        # If no job_id, start a new search
+        search_url = f"{API_URL}/api/search"
+
+        # Map preference to input format
+        search_input = map_preference_to_search_input(preference)
+
+        search_response = requests.post(search_url, json=search_input, headers=headers)
+
+        if search_response.status_code != 200:
+            logger.error(f"Error searching: {search_response.text}")
+            return {"error": f"Error searching: {search_response.text}"}
+
+        search_data = search_response.json()
+        return search_data
+    except Exception as e:
+        logger.error(f"Exception in recommendations: {str(e)}")
+        return {"error": str(e)}
+
+
+def format_results_as_itinerary(results_data):
+    """
+    Format standard results as an itinerary format
+    """
+    try:
+        # Extract destinations from the packages
+        destinations = []
+        accommodations = []
+        experiences = []
+
+        # Process packages to extract information
+        if "packages" in results_data:
+            # Get unique destinations
+            destinations_set = set()
+            for pkg in results_data["packages"]:
+                if "destination" in pkg and pkg["destination"]:
+                    destinations_set.add(pkg["destination"])
+
+            destinations = list(destinations_set)
+
+            # Extract accommodations
+            for pkg in results_data["packages"]:
+                if pkg.get("accommodationName") and pkg.get("accommodationType"):
+                    accommodation = {
+                        "name": pkg.get("accommodationName", ""),
+                        "type": pkg.get("accommodationType", ""),
+                        "location": pkg.get("destination", ""),
+                        "description": f"Sistemazione prevista nel pacchetto {pkg.get('title', '')}",
+                        "rating": pkg.get("rating", ""),
+                        "price": pkg.get("price", 0),
+                        "nights": pkg.get("durationNights", 0),
+                        "imageUrl": pkg.get("imageUrl", "")
+                    }
+                    accommodations.append(accommodation)
+
+            # Extract experiences
+            for pkg in results_data["packages"]:
+                if pkg.get("experiences"):
+                    for exp in pkg.get("experiences", []):
+                        experience = {
+                            "name": exp,
+                            "location": pkg.get("destination", ""),
+                            "description": f"Esperienza inclusa nel pacchetto {pkg.get('title', '')}",
+                            "duration": "Variabile",
+                            "price": "Incluso nel pacchetto"
+                        }
+                        experiences.append(experience)
+
         return {
-            "success": True,
-            "packages": [
-                {
-                    "id": "mock-1",
-                    "title": "Weekend a Roma",
-                    "description": "Scopri le meraviglie della città eterna",
-                    "destination": "Roma",
-                    "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5",
-                    "price": 350,
-                    "rating": "4.7",
-                    "duration": "3 giorni"
-                },
-                {
-                    "id": "mock-2",
-                    "title": "Tour della Costiera Amalfitana",
-                    "description": "Visita i panorami mozzafiato della Costiera",
-                    "destination": "Amalfi",
-                    "imageUrl": "https://images.unsplash.com/photo-1533165858814-1e017c30f838",
-                    "price": 580,
-                    "rating": "4.9",
-                    "duration": "5 giorni"
-                }
-            ]
+            "destinations": destinations,
+            "accommodations": accommodations,
+            "experiences": experiences
         }
     except Exception as e:
-        import traceback
-        print(f"Error in get_recommendations_from_api: {str(e)}")
-        print(traceback.format_exc())
+        logger.error(f"Error formatting results as itinerary: {str(e)}")
         return {
-            "success": False,
-            "message": f"Errore nel recuperare le raccomandazioni: {str(e)}",
-            "packages": []
+            "destinations": [],
+            "accommodations": [],
+            "experiences": []
         }
+
+
+def map_preference_to_search_input(preference):
+    """
+    Map a preference to the search input format
+    """
+    try:
+        # This is just a placeholder - customize this mapping based on your preference model
+        # and the expected input for the external API
+        return {
+            "interessi": {
+                "storia_e_arte": {
+                    "siti_archeologici": "archeologia" in (preference.interests or []),
+                    "musei_e_gallerie": "musei" in (preference.interests or []),
+                    "monumenti_e_architettura": "architettura" in (preference.interests or [])
+                },
+                "Food_&_wine": {
+                    "visite_alle_cantine": "cantine" in (preference.interests or []),
+                    "soggiorni_nella_wine_country": "wine_country" in (preference.interests or []),
+                    "corsi_di_cucina": "corsi_cucina" in (preference.interests or [])
+                },
+                "vacanze_attive": {
+                    "trekking_di_più_giorni": "trekking" in (preference.interests or []),
+                    "tour_in_e_bike_di_più_giorno": "ebike" in (preference.interests or []),
+                    "tour_in_bicicletta_di_più_giorni": "bicicletta" in (preference.interests or []),
+                    "sci_snowboard_di_più_giorni": "sci" in (preference.interests or [])
+                },
+                "vita_locale": "local_life" in (preference.interests or []),
+                "salute_e_benessere": "benessere" in (preference.interests or [])
+            },
+            "luoghi_da_non_perdere": {
+                "luoghi_specifici": preference.destination is not None,
+                "city": preference.destination or ""
+            },
+            "mete_clou": {
+                "destinazioni_popolari": preference.travelType == "popolari",
+                "destinazioni_avventura": preference.travelType == "avventura",
+                "entrambe": preference.travelType == "entrambi"
+            },
+            "budget_per_persona_giorno": {
+                "economico": preference.budget == "economy",
+                "fascia_media": preference.budget == "mid_range",
+                "comfort": preference.budget == "comfort",
+                "lusso": preference.budget == "luxury",
+                "nessun_budget": preference.budget == "no_limit"
+            },
+            "date": {
+                "check_in_time": preference.departureDate or "",
+                "check_out_time": preference.returnDate or ""
+            },
+            "viaggiatori": {
+                "adults_number": preference.numAdults or 2,
+                "children_number": preference.numChildren or 0,
+                "baby_number": preference.numInfants or 0,
+                "Room_number": 1  # Default value
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error mapping preference: {str(e)}")
+        return {}

@@ -24,6 +24,7 @@ export default function ResultsPage() {
   const [isPolling, setIsPolling] = useState<boolean>(false);
   const [userSelections, setUserSelections] = useState<Selections>({});
   const [composedPackages, setComposedPackages] = useState<TravelPackage[]>([]); // State for composed packages
+  const [itineraryData, setItineraryData] = useState<any | null>(null); // State for detailed itinerary data
 
   const { toast } = useToast();
 
@@ -152,6 +153,20 @@ export default function ResultsPage() {
           const results = await getJobResults(jobId);
           console.log("Risultati ricevuti:", results);
           setPollingResults(results);
+
+          // Fetch the detailed itinerary in parallel
+          try {
+            const itineraryResponse = await localApiRequest("GET", `/api/saved-packages/itinerary?job_id=${jobId}`);
+            console.log("Itinerary response:", itineraryResponse.data);
+            if (itineraryResponse.data && itineraryResponse.data.success) {
+              setItineraryData(itineraryResponse.data.data);
+            }
+          } catch (itineraryError) {
+            console.error("Error fetching detailed itinerary:", itineraryError);
+            // Continue anyway, as we have the package results
+          }
+
+
           setIsPolling(false);
           // Optional: remove job_id from localStorage after successful completion
           // localStorage.removeItem('yookve_job_id');
@@ -175,7 +190,7 @@ export default function ResultsPage() {
       } catch (error) {
         console.error("Errore durante il polling:", error);
         failedAttempts += 1;
-        
+
         // Se ci sono troppi tentativi falliti consecutivi, interrompi il polling
         if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
           console.error("Troppi tentativi falliti, interrompo il polling");
@@ -342,7 +357,7 @@ export default function ResultsPage() {
   const showPackagesContent = displayAnyPackages && !displayLoading && !displayError && !displayPollingError;
 
   // Display itinerary if pollingResults exist and we are not loading or in an error state
-  const displayItinerary = pollingResults && !displayLoading && !displayError && !displayPollingError;
+  const displayItinerary = itineraryData && !displayLoading && !displayError && !displayPollingError;
 
   // Check if there are no packages AND no itinerary results after loading/polling is done
   const displayNoResults = !displayLoading && !displayError && !displayPollingError && !showPackagesContent && !displayItinerary;
@@ -489,7 +504,7 @@ export default function ResultsPage() {
               ) : displayItinerary ? (
                 // Render CityExperiencePackage and pass the selections and the handler
                 <>
-                   <CityExperiencePackage data={pollingResults} onSelectionsChange={handleSelectionsChange} />
+                   <CityExperiencePackage data={itineraryData} onSelectionsChange={handleSelectionsChange} />
                    {/* Add the Compose Package button below CityExperiencePackage */} 
                    <div className="mt-8 text-center">
                       <Button onClick={handleComposePackage} disabled={Object.keys(userSelections).length === 0 || Object.values(userSelections).every(citySel => !citySel.selectedAccommodationId)}> {/* Disable if no selections */} 

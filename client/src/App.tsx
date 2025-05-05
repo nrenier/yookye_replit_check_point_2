@@ -10,6 +10,7 @@ import PreferencesPage from "@/pages/preferences-page";
 import ResultsPage from "@/pages/results-page";
 import PackageDetailPage from "@/pages/package-detail-page";
 import BookingsPage from "@/pages/bookings-page";
+import MyPackagesPage from "@/pages/my-packages-page"; // Added import for MyPackagesPage
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
@@ -22,6 +23,7 @@ function Router() {
       <ProtectedRoute path="/results" component={ResultsPage} />
       <ProtectedRoute path="/package/:id" component={PackageDetailPage} />
       <ProtectedRoute path="/bookings" component={BookingsPage} />
+      <ProtectedRoute path="/my-packages" component={MyPackagesPage} /> {/* Added route for MyPackagesPage */}
       <Route component={NotFound} />
     </Switch>
   );
