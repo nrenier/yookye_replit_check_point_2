@@ -526,7 +526,8 @@ export const submitPreferences = async (preferenceData: FormValues) => {
 // Call the new backend endpoint to save the package with proper authentication
 export const savePackage = async (packageData: any) => {
     try {
-        const res = await localApiRequest("POST", "/saved-packages", packageData);
+        console.log("Sending saved package request with token:", localStorage.getItem("token")?.substring(0, 15) + "...");
+        const res = await localApiRequest("POST", "/api/saved-packages", packageData);
         return res.data;
     } catch (error) {
         console.error("Error saving package:", error);
