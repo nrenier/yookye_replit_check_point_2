@@ -24,9 +24,12 @@ def save_package(current_user):
 
         # Salva il pacchetto
         saved_package = saved_package_repo.create(data)
+        # Converti l'oggetto SavedPackage in un dizionario
+        package_data = saved_package.dict() if hasattr(saved_package, 'dict') else saved_package
+
         return jsonify({
             "success": True,
-            "data": saved_package
+            "data": package_data
         })
     except Exception as e:
         print(f"Error saving package: {str(e)}")

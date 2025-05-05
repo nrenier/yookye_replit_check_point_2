@@ -88,7 +88,7 @@ class TravelPackage(TravelPackageBase):
     pass
 
 # Modello per i pacchetti salvati (NEW)
-class SavedPackage(TravelPackageBase):
+class SavedPackage(YookveBaseModel):
     """Modello per un pacchetto salvato dall'utente."""
     userId: str = Field(...) # ID dell'utente che ha salvato il pacchetto, required
     savedAt: str = Field(default_factory=lambda: datetime.utcnow().isoformat()) # Timestamp di salvataggio UTC
@@ -98,6 +98,13 @@ class SavedPackage(TravelPackageBase):
         # Se user_id è presente ma userId no, usare user_id per userId
         if not self.userId and self.user_id:
             self.userId = self.user_id
+
+    def dict(self):
+        """Converte il modello in dizionario per serializzazione JSON."""
+        return {
+            key: value for key, value in self.__dict__.items() 
+            if not key.startswith('_')
+        }
 
 
 # Modelli per le prenotazioni

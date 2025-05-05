@@ -482,3 +482,16 @@ class SavedPackageRepository(BaseRepository[SavedPackage, SavedPackage]): # Use 
         except Exception as e:
             logger.error(f"Error creating document in index '{self.index_name}': {str(e)}. Data: {data}")
             raise
+
+def get_saved_package_by_id(index_name: str, doc_id: str, client) -> Optional[Dict]:
+    """Recupera un documento dal suo ID."""
+    try:
+        result = client.get(index=index_name, id=doc_id)
+        doc = result.get("_source", {})
+        logger.info(f"Retrieved document ID '{doc_id}' from index '{index_name}'")
+
+        # Restituisci il documento come dizionario
+        return doc
+    except Exception as e:
+        logger.error(f"Error fetching document ID '{doc_id}' from index '{index_name}': {str(e)}")
+        return None
