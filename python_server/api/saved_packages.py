@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request, session
 from ..models.repositories import SavedPackageRepository, TravelPackageRepository
 from ..models.models import SavedPackage
-from ..middleware import verify_token, log_request
+from ..utils.auth import login_required as verify_token
+from ..middleware import log_request
 import logging
 
 saved_packages_bp = Blueprint("saved_packages", __name__)
