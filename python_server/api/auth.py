@@ -5,7 +5,7 @@ import uuid
 from ..models.repositories import UserRepository
 from ..models.models import UserCreate, User, UserLogin, Token
 from ..utils.auth import get_password_hash, verify_password, create_access_token
-from ..config.settings import JWT_ACCESS_TOKEN_EXPIRES
+from ..config.settings import JWT_ACCESS_TOKEN_EXPIRES, SECRET_KEY #Import SECRET_KEY
 
 auth_bp = Blueprint("auth", __name__)
 user_repo = UserRepository()
@@ -68,15 +68,14 @@ def login():
     print(f"Login attempt for user: {username}")
 
     if not username or not password:
-        return jsonify({"success": False, "message": "Username and password required"}), 400
+        return jsonify({"success": False, "message": "Invalid username or password"}), 400
 
     # Verifica le credenziali
     user = user_repo.get_by_username(username)
 
     # Se l'utente non esiste
     if not user:
-        print(f"User not found: {username}")
-        return jsonify({"success": False, "message": "Invalid username or password"}), 401
+        print(f"User not found: {username}")\        return jsonify({"success": False, "message": "Invalid username or password"}), 401
 
     print(f"User found: {user.username}, checking password")
 
