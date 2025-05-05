@@ -1,3 +1,4 @@
+
 // client/src/lib/api.ts
 import axios from "axios";
 import type { z } from "zod";
@@ -214,22 +215,7 @@ export const apiRequest = async (method: string, url: string, data?: any) => {
 // NEW Function to make authenticated API requests to the LOCAL BACKEND (/api)
 const LOCAL_API_BASE_URL = "/api"; // Use /api as the base for the local backend
 
-// Funzione per recuperare i pacchetti salvati
-export const getSavedPackages = async () => {
-  try {
-    const response = await localApiRequest("GET", "/saved-packages");
-    if (!response.ok) {
-      throw new Error("Errore nel recupero dei pacchetti salvati");
-    }
-    const data = await response.json();
-    return data.data || [];
-  } catch (error) {
-    console.error("Errore nel recupero dei pacchetti salvati:", error);
-    throw error;
-  }
-};
-
-export const localApiRequest = async (method: string, url: string, data?: any, responseType: 'json' = 'json') => {
+export const localApiRequest = async (method: string, url: string, data?: any, responseType: string = 'json') => {
   try {
     // Assuming local backend also uses JWT authentication with the same token
     // If not, you might need a different auth mechanism or no auth for local endpoints
@@ -247,6 +233,7 @@ export const localApiRequest = async (method: string, url: string, data?: any, r
       headers,
       timeout: 120000, // Aumento timeout a 2 minuti (120000 ms) 
       data: data ? data : undefined,
+      responseType,
     };
 
     console.log("Effettuo richiesta API (Local):", config);
@@ -258,33 +245,7 @@ export const localApiRequest = async (method: string, url: string, data?: any, r
 
   } catch (error) {
     console.error(`Errore durante la richiesta API (Local) ${method.toUpperCase()} ${url}:`, error);
-
-// Funzione per recuperare l'itinerario dettagliato
-export const getDetailedItinerary = async (jobId: string) => {
-  try {
-    const response = await localApiRequest("GET", `/api/saved-packages/itinerary?job_id=${jobId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Errore nel recupero dell'itinerario dettagliato:", error);
-    throw error;
-  }
-};
-
-// Funzione per recuperare i pacchetti personali dal profilo
-export const getMyPackages = async () => {
-  try {
-    const response = await localApiRequest("GET", "/api/saved-packages/my-packages");
-    if (!response.data.success) {
-      throw new Error("Errore nel recupero dei pacchetti salvati");
-    }
-    return response.data.data || [];
-  } catch (error) {
-    console.error("Errore nel recupero dei pacchetti personali:", error);
-    throw error;
-  }
-};
-
-     if (axios.isAxiosError(error)) {
+    if (axios.isAxiosError(error)) {
       console.error("Dettagli errore Axios (Local):", {
         message: error.message,
         status: error.response?.status,
@@ -301,6 +262,44 @@ export const getMyPackages = async () => {
   }
 };
 
+// Funzione per recuperare i pacchetti salvati
+export const getSavedPackages = async () => {
+  try {
+    const response = await localApiRequest("GET", "/saved-packages");
+    if (!response.data.success) {
+      throw new Error("Errore nel recupero dei pacchetti salvati");
+    }
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Errore nel recupero dei pacchetti salvati:", error);
+    throw error;
+  }
+};
+
+// Funzione per recuperare l'itinerario dettagliato
+export const getDetailedItinerary = async (jobId: string) => {
+  try {
+    const response = await localApiRequest("GET", `/saved-packages/itinerary?job_id=${jobId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel recupero dell'itinerario dettagliato:", error);
+    throw error;
+  }
+};
+
+// Funzione per recuperare i pacchetti personali dal profilo
+export const getMyPackages = async () => {
+  try {
+    const response = await localApiRequest("GET", "/saved-packages/my-packages");
+    if (!response.data.success) {
+      throw new Error("Errore nel recupero dei pacchetti salvati");
+    }
+    return response.data.data || [];
+  } catch (error) {
+    console.error("Errore nel recupero dei pacchetti personali:", error);
+    throw error;
+  }
+};
 
 // Funzione per controllare lo stato del job di ricerca
 export const checkJobStatus = async (jobId: string) => {
