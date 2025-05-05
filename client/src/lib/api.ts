@@ -90,7 +90,7 @@ const getAccessToken = async (): Promise<string> => {
       // Tenta con le credenziali dell'API esterna se sono disponibili
       const externalTokenEndpoint = `${API_URL}/api/auth/token`;
       console.log("Richiedo token esterno all'endpoint:", externalTokenEndpoint);
-      
+
       const response = await axios.post(
         externalTokenEndpoint,
         new URLSearchParams({
@@ -112,7 +112,7 @@ const getAccessToken = async (): Promise<string> => {
         "Token esterno ottenuto con successo. Scadenza:",
         new Date(tokenExpiryTime).toISOString(),
       );
-      
+
       return accessToken;
     }
 
@@ -132,7 +132,7 @@ const getAccessToken = async (): Promise<string> => {
         },
       });
     }
-    
+
     // Fallback in caso di errore - tentativo con l'endpoint alternativo
     try {
       // Se il tentativo esterno fallisce, prova con il sistema locale
@@ -150,7 +150,7 @@ const getAccessToken = async (): Promise<string> => {
             },
           }
         );
-        
+
         if (response.data && response.data.data && response.data.data.access_token) {
           accessToken = response.data.data.access_token;
           tokenExpiryTime = Date.now() + (60 * 60 * 1000); // 1 ora di default
@@ -161,7 +161,7 @@ const getAccessToken = async (): Promise<string> => {
     } catch (fallbackError) {
       console.error("Anche il fallback ha fallito:", fallbackError);
     }
-    
+
     throw new Error("Impossibile ottenere il token di autenticazione");
   }
 };
@@ -480,6 +480,7 @@ export const submitPreferences = async (preferenceData: FormValues) => {
       const jobId = response.data.job_id;
       // Salva l'email dell'utente e il job_id nel localStorage per poter ripristinare la sessione
       localStorage.setItem('yookve_job_id', jobId);
+      localStorage.setItem('token', await getAccessToken()); // Salva il token nel localStorage
 
       // Se disponibile, salva l'email per poter identificare l'utente
       if (preferenceData.email) {
@@ -488,6 +489,9 @@ export const submitPreferences = async (preferenceData: FormValues) => {
 
       // Redirect alla pagina dei risultati
       window.location.href = `/results?job_id=${jobId}`;
+
+      // Previeni ulteriori operazioni dopo il redirect
+      return response.data;
     }
 
     return response.data;

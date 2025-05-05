@@ -148,8 +148,9 @@ export default function PreferenceForm() {
 
         console.log("Risposta API search:", result);
 
-        // Reindirizza alla pagina dei risultati con l'ID della ricerca
-        setTimeout(() => navigate(`/results?job_id=${result.job_id}`), 2000);
+        // Forza la navigazione alla pagina dei risultati tramite useNavigate invece di window.location
+        // Il reindirizzamento diretto è già gestito in api.ts, questo è un fallback
+        navigate(`/results?job_id=${result.job_id}`, { replace: true });
       } else {
         toast({
           title: "Preferenze inviate",

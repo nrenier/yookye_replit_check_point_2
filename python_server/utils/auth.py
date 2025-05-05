@@ -96,6 +96,7 @@ def login_required(f):
                 import jwt as pyjwt
                 unverified_payload = pyjwt.decode(token, options=options, algorithms=[ALGORITHM])
                 print(f"Unverified payload: {unverified_payload}")
+                print(f"Token header: {pyjwt.get_unverified_header(token)}")
                 
                 # Ora prova con la verifica
                 print(f"Attempting to decode token with SECRET_KEY: {SECRET_KEY[:3]}...")
@@ -111,9 +112,15 @@ def login_required(f):
                         payload = jose_jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                         print("jose.jwt decode successful")
                     except Exception as jose_error:
-                        # In caso di fallimento, accetta il token senza verifica (USARE SOLO PER DEBUG)
-                        print(f"Both JWT libraries failed. Using unverified payload for debugging purposes ONLY.")
-                        payload = unverified_payload
+                        print(f"Jose.jwt decode failed: {str(jose_error)}")
+                        # Per il funzionamento temporaneo, accetta il token senza verifica in ambiente di sviluppo
+                        if os.environ.get("ENVIRONMENT") == "development":
+                            print(f"WARNING: Using unverified payload in development environment")
+                            payload = unverified_payload
+                        else:
+                            # In ambiente di produzione solleva l'errore
+                            print(f"Both JWT libraries failed in production environment")
+                            raise jose_error
                 
                 # Extract user_id from the payload - check both common fields
                 user_id = payload.get("user_id") or payload.get("sub") or payload.get("id")
