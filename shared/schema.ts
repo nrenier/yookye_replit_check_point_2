@@ -1,4 +1,6 @@
+
 // Shared type definitions
+import { z } from "zod";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -66,3 +68,14 @@ export interface PackageDataResponse {
   data: any[];
   message?: string;
 }
+
+// Add missing schema for user registration
+export const insertUserSchema = z.object({
+  username: z.string().min(3, { message: "Username deve contenere almeno 3 caratteri" }),
+  password: z.string().min(8, { message: "Password deve contenere almeno 8 caratteri" }),
+  name: z.string().min(1, { message: "Il nome è obbligatorio" }),
+  email: z.string().email({ message: "Email non valida" }),
+});
+
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = UserProfile;
