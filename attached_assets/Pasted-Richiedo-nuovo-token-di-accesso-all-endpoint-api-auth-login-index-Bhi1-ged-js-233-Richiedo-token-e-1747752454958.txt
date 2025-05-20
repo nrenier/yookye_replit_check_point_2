@@ -1,0 +1,471 @@
+Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+results:1 Access to XMLHttpRequest at 'https://localhost:8993/api/auth/token' from origin 'http://localhost:5002' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Comprendi l'errore
+index-Bhi1-ged.js:233 Errore nell'ottenere il token: xe {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Dettagli errore token: {message: 'Network Error', status: undefined, data: undefined, config: {…}}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Tentativo fallback con autenticazione locale
+index-Bhi1-ged.js:230 
+            
+            
+           POST https://localhost:8993/api/auth/token net::ERR_FAILED 503 (Service Temporarily Unavailable)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:230 
+            
+            
+           POST http://localhost:5002/api/auth/login 405 (METHOD NOT ALLOWED)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Anche il fallback ha fallito: xe {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante la richiesta API (External) GET /api/search/9083e540-43fc-46d1-95e0-b36a63199e0c: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+Zv @ index-Bhi1-ged.js:233
+await in Zv
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante il polling: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+results:1 Access to XMLHttpRequest at 'https://localhost:8993/api/auth/token' from origin 'http://localhost:5002' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Comprendi l'errore
+index-Bhi1-ged.js:233 Errore nell'ottenere il token: xe {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Dettagli errore token: {message: 'Network Error', status: undefined, data: undefined, config: {…}}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Tentativo fallback con autenticazione locale
+index-Bhi1-ged.js:230 
+            
+            
+           POST https://localhost:8993/api/auth/token net::ERR_FAILED 503 (Service Temporarily Unavailable)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:230 
+            
+            
+           POST http://localhost:5002/api/auth/login 405 (METHOD NOT ALLOWED)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Anche il fallback ha fallito: xe {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante la richiesta API (External) GET /api/search/9083e540-43fc-46d1-95e0-b36a63199e0c: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+Zv @ index-Bhi1-ged.js:233
+await in Zv
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante il polling: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+results:1 Access to XMLHttpRequest at 'https://localhost:8993/api/auth/token' from origin 'http://localhost:5002' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.Comprendi l'errore
+index-Bhi1-ged.js:233 Errore nell'ottenere il token: xe {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Dettagli errore token: {message: 'Network Error', status: undefined, data: undefined, config: {…}}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Tentativo fallback con autenticazione locale
+index-Bhi1-ged.js:230 
+            
+            
+           POST https://localhost:8993/api/auth/token net::ERR_FAILED 503 (Service Temporarily Unavailable)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:230 
+            
+            
+           POST http://localhost:5002/api/auth/login 405 (METHOD NOT ALLOWED)
+(anonime) @ index-Bhi1-ged.js:230
+xhr @ index-Bhi1-ged.js:230
+l0 @ index-Bhi1-ged.js:232
+_request @ index-Bhi1-ged.js:233
+request @ index-Bhi1-ged.js:232
+(anonime) @ index-Bhi1-ged.js:233
+(anonime) @ index-Bhi1-ged.js:228
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Anche il fallback ha fallito: xe {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}
+overrideMethod @ hook.js:608
+Yv @ index-Bhi1-ged.js:233
+await in Yv
+Zv @ index-Bhi1-ged.js:233
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante la richiesta API (External) GET /api/search/9083e540-43fc-46d1-95e0-b36a63199e0c: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+Zv @ index-Bhi1-ged.js:233
+await in Zv
+JU @ index-Bhi1-ged.js:233
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Errore durante il polling: Error: Impossibile ottenere il token di autenticazione
+    at Yv (index-Bhi1-ged.js:233:6707)
+    at async Zv (index-Bhi1-ged.js:233:6841)
+    at async JU (index-Bhi1-ged.js:233:8685)
+    at async S (index-Bhi1-ged.js:233:99169)
+overrideMethod @ hook.js:608
+S @ index-Bhi1-ged.js:233
+setInterval
+(anonime) @ index-Bhi1-ged.js:233
+sf @ index-Bhi1-ged.js:40
+Oi @ index-Bhi1-ged.js:40
+Ex @ index-Bhi1-ged.js:40
+lo @ index-Bhi1-ged.js:38
+Y2 @ index-Bhi1-ged.js:40
+go @ index-Bhi1-ged.js:40
+bN @ index-Bhi1-ged.js:40
+_ @ index-Bhi1-ged.js:25
+O @ index-Bhi1-ged.js:25Comprendi l'errore
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpoint: /api/auth/login
+index-Bhi1-ged.js:233 Richiedo token esterno all'endpoint: https://localhost:8993/api/auth/token
+index-Bhi1-ged.js:233 Richiedo nuovo token di accesso all'endpo
