@@ -1,0 +1,273 @@
+[
+    {
+        "id_pacchetto": "pacchetto_1",
+        "master": {
+            "citta_coinvolte": [
+                "firenze",
+                "verona"
+            ],
+            "temi_viaggio": [
+                "soggiorni_nella_wine_country",
+                "visite_alle_cantine",
+                "vita_locale"
+            ],
+            "durata_complessiva_soggiorni_giorni": 2,
+            "numero_hotel": 2,
+            "numero_esperienze": 1
+        },
+        "detail": {
+            "hotels": [
+                {
+                    "citta": "firenze",
+                    "nome": "Hotel Nuova Italia",
+                    "checkin": "2025-10-13",
+                    "checkout": "2025-10-14",
+                    "prezzo_giornaliero": 170.5,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 2,
+                    "indirizzo": "Via Faenza 26, Firenze",
+                    "telefono": "+39055287508",
+                    "email": "info@hotel-nuovaitalia.com",
+                    "descrizione": "«Hotel Nuova Italia» Cerchi un posto dove pernottare...",
+                    "latitudine": 43.776485,
+                    "longitudine": 11.251829,
+                    "hid_originale": 7478057,
+                    "id_originale_hotel": "hotel_nuova_italia"
+                },
+                {
+                    "citta": "verona",
+                    "nome": "Hotel Mastino",
+                    "checkin": "2025-10-14",
+                    "checkout": "2025-10-15",
+                    "prezzo_giornaliero": 148.67,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 3,
+                    "indirizzo": "Corso Porta Nuova 16, Verona",
+                    "telefono": "39045595388",
+                    "email": "info@hotelmastino.it",
+                    "descrizione": "La struttura a Il luogo ideale per rilassarsi...",
+                    "latitudine": 45.437187,
+                    "longitudine": 10.990718,
+                    "hid_originale": 7352551,
+                    "id_originale_hotel": "hotel_mastino"
+                }
+            ],
+            "esperienze": [
+                {
+                    "citta": "firenze",
+                    "nome": "Tour nel Chianti in Vespa con Pasto Km0 e Degustazioni",
+                    "url": "https://yookye.com/it/proposte/tour-nel-chianti-vespa-con-pasto-km0-e-degustazioni",
+                    "descrizione": "In pochissimo tempo il nostro minibus vi porterà...",
+                    "tags": [
+                        "Azienda",
+                        "Coppia",
+                        "Famiglia",
+                        "Gruppo",
+                        "Individuale",
+                        "1 day",
+                        "Accompagnatore",
+                        "Fotografia",
+                        "Noleggi",
+                        "Vespa",
+                        "Collina",
+                        "Firenze",
+                        "Chi siamo"
+                    ],
+                    "tipologia": "visite_alle_cantine, vita_locale, soggiorni_nella_wine_country",
+                    "dettagli_specifici": {
+                        "scenario": "Collina",
+                        "stagione": "Autunno Estate Inverno Primavera",
+                        "durata": "1 day",
+                        "difficolta": "Facile",
+                        "target": "Azienda Coppia Famiglia Gruppo Individuale",
+                        "dettagli_aggiuntivi": "tipodattività: Accompagnatore Fotografia Noleggi Vespa"
+                    },
+                    "dati_extra": "servizisinclusi: {'siaconsiglia': 'di indossare scarpe comode.', 'nonsicuriguida': 'Nel caso in cui non vi sentiate sicuri nel guidare da soli potrete avere la possibilità di essere affiancati durante la passeggiata da uno dei nostri esperti accompagnatori.', 'patenteguida': 'Si richiede una patente di guida valida per partecipare al tour.', 'sicurezza': 'Se durante la lezione di preparazione riteniamo che per la vostra sicurezza non sia opportuno che guidiate da soli vi verrà suggerito di avvalervi durante la passeggiata della collaborazione di uno dei nostri accompagnatori oppure di continuare il tour sul minibus. In questi casi non sarà possibile ottenere un rimborso.', 'pioggia': \"Il tour parte anche in caso di pioggia. Faremo di tutto per garantire in ogni caso l'attività in Vespa, ma nel caso in cui le condizioni metereologiche non migliorino il giro in Vespa verrà ridotto drasticamente o annullato. In questo caso, il tour verrà condotto in sicurezza con il nostro minivan. In caso di pioggia non è previsto alcun rimborso, ma qualora rinunciaste a prendere parte al tour potrete spostarlo senza alcuna penale.\"} | mappa: Firenze Italia",
+                    "stato": "Attiva",
+                    "provincia": "Firenze"
+                }
+            ]
+        }
+    },
+    {
+        "id_pacchetto": "pacchetto_2",
+        "master": {
+            "citta_coinvolte": [
+                "firenze",
+                "verona"
+            ],
+            "temi_viaggio": [
+                "corsi_di_cucina",
+                "visite_alle_cantine"
+            ],
+            "durata_complessiva_soggiorni_giorni": 2,
+            "numero_hotel": 2,
+            "numero_esperienze": 1
+        },
+        "detail": {
+            "hotels": [
+                {
+                    "citta": "firenze",
+                    "nome": "Hotel Nuova Italia",
+                    "checkin": "2025-10-13",
+                    "checkout": "2025-10-14",
+                    "prezzo_giornaliero": 170.5,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 2,
+                    "indirizzo": "Via Faenza 26, Firenze",
+                    "telefono": "+39055287508",
+                    "email": "info@hotel-nuovaitalia.com",
+                    "descrizione": "«Hotel Nuova Italia» Cerchi un posto dove pernottare...",
+                    "latitudine": 43.776485,
+                    "longitudine": 11.251829,
+                    "hid_originale": 7478057,
+                    "id_originale_hotel": "hotel_nuova_italia"
+                },
+                {
+                    "citta": "verona",
+                    "nome": "Hotel Mastino",
+                    "checkin": "2025-10-14",
+                    "checkout": "2025-10-15",
+                    "prezzo_giornaliero": 148.67,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 3,
+                    "indirizzo": "Corso Porta Nuova 16, Verona",
+                    "telefono": "39045595388",
+                    "email": "info@hotelmastino.it",
+                    "descrizione": "La struttura a Il luogo ideale per rilassarsi...",
+                    "latitudine": 45.437187,
+                    "longitudine": 10.990718,
+                    "hid_originale": 7352551,
+                    "id_originale_hotel": "hotel_mastino"
+                }
+            ],
+            "esperienze": [
+                {
+                    "citta": "firenze",
+                    "nome": "Visita Guidata nella storia di Firenze con Degustazione di Olio",
+                    "url": "https://yookye.com/it/proposte/visita-guidata-nella-storia-di-firenze-con-degustazione-di-olio",
+                    "descrizione": "Vi proponiamo una visita guidata privata alla scoperta della città...",
+                    "tags": [
+                        "Coppia",
+                        "Famiglia",
+                        "Gruppo",
+                        "1 day",
+                        "Accompagnatore",
+                        "Guida",
+                        "Cittu00e0",
+                        "Firenze"
+                    ],
+                    "tipologia": "visite_alle_cantine, corsi_di_cucina",
+                    "dettagli_specifici": {
+                        "tipo_attivita": "Accompagnatore Guida",
+                        "scenario": "Cittu00e0",
+                        "stagione": [
+                            "Autunno",
+                            "Estate",
+                            "Inverno",
+                            "Primavera"
+                        ],
+                        "durata": "1 day",
+                        "target": [
+                            "Coppia",
+                            "Famiglia",
+                            "Gruppo"
+                        ],
+                        "esperienza_inclusa": "Guida esperta, Degustazione di Olio, Audioguide",
+                        "info_aggiuntive": "consigli: Indossare un abbigliamento e scarpe comode"
+                    },
+                    "dati_extra": "mappa: Firenze, Italia",
+                    "stato": "Attiva",
+                    "provincia": "Firenze"
+                }
+            ]
+        }
+    },
+    {
+        "id_pacchetto": "pacchetto_3",
+        "master": {
+            "citta_coinvolte": [
+                "firenze",
+                "verona"
+            ],
+            "temi_viaggio": [
+                "monumenti_e_architettura"
+            ],
+            "durata_complessiva_soggiorni_giorni": 2,
+            "numero_hotel": 2,
+            "numero_esperienze": 1
+        },
+        "detail": {
+            "hotels": [
+                {
+                    "citta": "firenze",
+                    "nome": "Hotel Nuova Italia",
+                    "checkin": "2025-10-13",
+                    "checkout": "2025-10-14",
+                    "prezzo_giornaliero": 170.5,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 2,
+                    "indirizzo": "Via Faenza 26, Firenze",
+                    "telefono": "+39055287508",
+                    "email": "info@hotel-nuovaitalia.com",
+                    "descrizione": "«Hotel Nuova Italia» Cerchi un posto dove pernottare...",
+                    "latitudine": 43.776485,
+                    "longitudine": 11.251829,
+                    "hid_originale": 7478057,
+                    "id_originale_hotel": "hotel_nuova_italia"
+                },
+                {
+                    "citta": "verona",
+                    "nome": "Hotel Mastino",
+                    "checkin": "2025-10-14",
+                    "checkout": "2025-10-15",
+                    "prezzo_giornaliero": 148.67,
+                    "pasto_incluso": "breakfast",
+                    "tipo_camera": "Camera tripla",
+                    "stelle": 3,
+                    "indirizzo": "Corso Porta Nuova 16, Verona",
+                    "telefono": "39045595388",
+                    "email": "info@hotelmastino.it",
+                    "descrizione": "La struttura a Il luogo ideale per rilassarsi...",
+                    "latitudine": 45.437187,
+                    "longitudine": 10.990718,
+                    "hid_originale": 7352551,
+                    "id_originale_hotel": "hotel_mastino"
+                }
+            ],
+            "esperienze": [
+                {
+                    "citta": "firenze",
+                    "nome": "Visita Guidata tra i segreti e le piazze di Firenze - HalfDay",
+                    "url": "https://yookye.com/it/proposte/visita-guidata-tra-i-segreti-e-le-piazze-di-firenze-halfday",
+                    "descrizione": "La mattina faremo una visita guidata introduttiva alla città...",
+                    "tags": [
+                        "Coppia",
+                        "Famiglia",
+                        "Gruppo",
+                        "1 day",
+                        "Accompagnatore",
+                        "Cittu00e0",
+                        "Firenze"
+                    ],
+                    "tipologia": "monumenti_e_architettura",
+                    "dettagli_specifici": {
+                        "tipo_attivita": "Accompagnatore",
+                        "scenario": "Cittu00e0",
+                        "stagione": "Autunno Estate Primavera",
+                        "durata": "1 day",
+                        "target": "Coppia Famiglia Gruppo"
+                    },
+                    "dati_extra": null,
+                    "stato": "Attiva",
+                    "provincia": "Firenze"
+                }
+            ]
+        }
+    }
+]
