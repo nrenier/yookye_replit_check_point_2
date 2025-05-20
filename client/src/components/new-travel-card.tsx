@@ -1,9 +1,7 @@
-
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/ui/logo';
 import { Eye, Star, Save, ShoppingCart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { NewPackageResponse } from '@shared/schema';
@@ -42,7 +40,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
 
   // Calcola il numero di notti in base agli hotel (se disponibili)
   const numNights = detail.hotels?.length || 0;
-  
+
   return (
     <Card 
       className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg border-2 border-gray-100"
@@ -60,7 +58,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         </div>
-        
+
         {/* Badge per prezzo */}
         <div className="absolute top-2 right-2">
           <Badge className="bg-yookve-red hover:bg-yookve-red/90">
@@ -68,48 +66,48 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
           </Badge>
         </div>
       </div>
-      
+
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg font-semibold line-clamp-2">{titolo}</CardTitle>
         </div>
         <CardDescription className="flex items-center text-sm space-x-1 mt-1">
-          <Icons.mapPin className="h-3.5 w-3.5 text-yookve-red" />
+          {/* <Icons.mapPin className="h-3.5 w-3.5 text-yookve-red" /> */}
           <span>{citta_coinvolte.length > 0 ? citta_coinvolte.join(', ') : 'Varie destinazioni'}</span>
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent className="flex-grow pb-2">
         {/* Descrizione */}
         <p className="text-sm text-gray-600 line-clamp-3 mb-3">{descrizione}</p>
-        
+
         {/* Dettagli del pacchetto */}
         <div className="space-y-2">
           {/* Durata */}
           {numNights > 0 && (
             <div className="flex items-center text-sm text-gray-700">
-              <Icons.calendar className="h-4 w-4 mr-2 text-yookve-red" />
+              {/* <Icons.calendar className="h-4 w-4 mr-2 text-yookve-red" /> */}
               <span>{numNights} {numNights === 1 ? 'notte' : 'notti'}</span>
             </div>
           )}
-          
+
           {/* Hotel */}
           {detail.hotels && detail.hotels.length > 0 && (
             <div className="flex items-center text-sm text-gray-700">
-              <Icons.hotel className="h-4 w-4 mr-2 text-yookve-red" />
+              {/* <Icons.hotel className="h-4 w-4 mr-2 text-yookve-red" /> */}
               <span>{detail.hotels.length} {detail.hotels.length === 1 ? 'hotel' : 'hotel'}</span>
             </div>
           )}
-          
+
           {/* Tour */}
           {detail.tours && detail.tours.length > 0 && (
             <div className="flex items-center text-sm text-gray-700">
-              <Icons.map className="h-4 w-4 mr-2 text-yookve-red" />
+              {/* <Icons.map className="h-4 w-4 mr-2 text-yookve-red" /> */}
               <span>{detail.tours.length} {detail.tours.length === 1 ? 'tour' : 'tour'}</span>
             </div>
           )}
         </div>
-        
+
         {/* Tag del viaggio */}
         {temi_viaggio && temi_viaggio.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1">
@@ -126,7 +124,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
           </div>
         )}
       </CardContent>
-      
+
       <CardFooter className="pt-2 pb-4 gap-2 flex">
         <Button 
           variant="outline" 
@@ -136,7 +134,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
         >
           <Eye className="h-4 w-4 mr-1" /> Dettagli
         </Button>
-        
+
         {showSaveButton && onSave && (
           <Button 
             variant="secondary" 
@@ -147,7 +145,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
             <Save className="h-4 w-4 mr-1" /> Salva
           </Button>
         )}
-        
+
         {onBook && (
           <Button 
             size="sm" 
