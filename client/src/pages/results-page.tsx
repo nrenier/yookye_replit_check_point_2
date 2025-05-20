@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import MainLayout from "@/components/layouts/main-layout";
 import { Redirect, useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
-import { checkJobStatus, getNewPackages, localApiRequest, saveNewPackage } from "@/lib/api";
+import { checkJobStatus, getJobResults, getNewPackages, localApiRequest, saveNewPackage } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -68,15 +68,17 @@ export default function ResultsPage() {
         failedAttempts = 0; // Reset il contatore degli errori
 
         if (statusResponse.status === 'COMPLETED') {
-          console.log("Recupero i risultati del job:", `/api/search/${jobId}/result`);
-
-          // Recupera i nuovi pacchetti direttamente dall'endpoint esterno /search
-          const results = await getNewPackages(jobId);
-          console.log("Risultati dei pacchetti ricevuti:", results);
-
-          // Imposta i pacchetti ricevuti nello stato
-          if (Array.isArray(results)) {
-            setTravelPackages(results);
+          console.log("Job completato, recupero i risultati");
+          
+          // Recupera i risultati direttamente dall'endpoint esterno /search
+          const results = await getJobResults(jobId);
+          console.log("Risultati ricevuti:", results);
+          
+          // Verifica se ci sono pacchetti nei risultati e imposta i pacchetti nello stato
+          if (results && results.packages && Array.isArray(results.packages)) {
+            setTravelPackages(results.packages);
+          } else {
+            console.warn("I risultati non contengono pacchetti validi");
           }
 
           setIsPolling(false);
@@ -125,7 +127,7 @@ export default function ResultsPage() {
   }, [jobId, isPolling, user, toast]);
 
   // Funzione per salvare un pacchetto
-  const handleSavePackage = async (packageData: NewPackageResponse) => {
+  const handleSavePackage = async (packageData: any) => {
     if (!user) {
       toast({
         title: "Accesso negato",
@@ -194,9 +196,9 @@ export default function ResultsPage() {
                 <div>
                   <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Consigliati</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {travelPackages.map((packageData) => (
+                    {travelPackages.map((packageData, index) => (
                       <NewTravelCard 
-                        key={packageData.id_pacchetto} 
+                        key={packageData.id_pacchetto || `package-${index}`} 
                         packageData={packageData} 
                         showSaveButton={true}
                         onSave={() => handleSavePackage(packageData)}
