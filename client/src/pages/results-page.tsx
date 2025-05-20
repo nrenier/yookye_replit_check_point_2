@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import MainLayout from "@/components/layouts/main-layout";
@@ -189,15 +188,15 @@ export default function ResultsPage() {
             </div>
           ) : (
             <div className="space-y-10">
-              {/* Pacchetti trovati dalla ricerca - Mostrati direttamente come restituiti dall'API */}
+              {/* Pacchetti trovati dalla ricerca nel nuovo formato */}
               {hasPackages && (
                 <div>
                   <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Consigliati</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {travelPackages.map((packageData) => (
+                    {travelPackages.map((packageData, index) => (
                       <NewTravelCard 
-                        key={packageData.id_pacchetto} 
-                        packageData={packageData} 
+                        key={packageData.id_pacchetto || `package-${index}`}
+                        packageData={packageData}
                         showSaveButton={true}
                         onSave={() => handleSavePackage(packageData)}
                       />

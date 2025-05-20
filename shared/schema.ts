@@ -1,150 +1,98 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp, date } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: text("id").primaryKey(), 
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  name: text("name"),
-  email: text("email").notNull().unique(),
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export const NewPackageSchema = z.object({
+  id_pacchetto: z.string(),
+  master: z.object({
+    citta_coinvolte: z.array(z.string()),
+    temi_viaggio: z.array(z.string()),
+    durata_complessiva_soggiorni_giorni: z.number(),
+    numero_hotel: z.number(),
+    numero_esperienze: z.number()
+  }),
+  detail: z.object({
+    hotels: z.array(z.object({
+      citta: z.string(),
+      nome: z.string(),
+      checkin: z.string(),
+      checkout: z.string(),
+      prezzo_giornaliero: z.number(),
+      pasto_incluso: z.string(),
+      tipo_camera: z.string(),
+      stelle: z.number(),
+      indirizzo: z.string(),
+      telefono: z.string(),
+      email: z.string(),
+      descrizione: z.string(),
+      latitudine: z.number(),
+      longitudine: z.number(),
+      hid_originale: z.number(),
+      id_originale_hotel: z.string()
+    })),
+    esperienze: z.array(z.object({
+      citta: z.string(),
+      nome: z.string(),
+      url: z.string(),
+      descrizione: z.string(),
+      tags: z.array(z.string()),
+      tipologia: z.string(),
+      dettagli_specifici: z.record(z.any()),
+      dati_extra: z.string().nullable(),
+      stato: z.string(),
+      provincia: z.string()
+    }))
+  })
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  name: true,
-  email: true,
-});
+export type NewPackageResponse = z.infer<typeof NewPackageSchema>;
 
-export const preferences = pgTable("preferences", {
-  id: text("id").primaryKey(), 
-  userId: text("user_id").notNull(), 
-  destination: text("destination"),
-  specificCity: text("specific_city"),
-  departureDate: text("departure_date"),
-  returnDate: text("return_date"),
-  adults: integer("adults").default(1),
-  children: integer("children").default(0),
-  infants: integer("infants").default(0),
-  interests: text("interests").array(),
-  accommodationType: text("accommodation_type"),
-  starRating: text("star_rating"),
-  transportType: text("transport_type"),
-  departureCity: text("departure_city"),
-  budget: text("budget"),
-});
+export interface LoginData {
+  username: string;
+  password: string;
+}
 
-export const insertPreferenceSchema = createInsertSchema(preferences).omit({
-  id: true,
-});
+export interface LoginResponse {
+  success: boolean;
+  data: {
+    access_token: string;
+    user_id: string;
+    name: string;
+    roles: string[];
+  };
+  message?: string;
+}
 
-export const travelPackages = pgTable("travel_packages", {
-  id: text("id").primaryKey(), 
-  title: text("title").notNull(),
-  description: text("description"),
-  destination: text("destination").notNull(),
-  imageUrl: text("image_url"),
-  rating: text("rating"),
-  reviewCount: integer("review_count"),
-  accommodationName: text("accommodation_name"),
-  accommodationType: text("accommodation_type"),
-  transportType: text("transport_type"),
-  durationDays: integer("duration_days"),
-  durationNights: integer("duration_nights"),
-  experiences: text("experiences").array(),
-  price: integer("price"),
-  isRecommended: boolean("is_recommended").default(false),
-  categories: text("categories").array(),
-});
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+}
 
-export const insertTravelPackageSchema = createInsertSchema(travelPackages).omit({
-  id: true,
-});
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
 
-// Nuova tabella per le prenotazioni
-export const bookings = pgTable("bookings", {
-  id: text("id").primaryKey(), 
-  userId: text("user_id").notNull(), 
-  packageId: text("package_id").notNull(), 
-  bookingDate: timestamp("booking_date").defaultNow().notNull(),
-  travelDate: date("travel_date").notNull(),
-  returnDate: date("return_date").notNull(),
-  numAdults: integer("num_adults").default(1),
-  numChildren: integer("num_children").default(0),
-  numInfants: integer("num_infants").default(0),
-  totalPrice: integer("total_price").notNull(),
-  specialRequests: text("special_requests"),
-  status: text("status").default("pending").notNull(), 
-  paymentStatus: text("payment_status").default("unpaid").notNull(), 
-  contactPhone: text("contact_phone"),
-  contactEmail: text("contact_email"),
-});
+export interface PackageDataResponse {
+  success: boolean;
+  data: any[];
+  message?: string;
+}
 
-export const insertBookingSchema = createInsertSchema(bookings).omit({
-  id: true,
-  bookingDate: true,
-}).extend({
-  travelDate: z.string().min(1, "Data di partenza richiesta"),
-  returnDate: z.string().min(1, "Data di ritorno richiesta"),
+// Add missing schema for user registration
+export const insertUserSchema = z.object({
+  username: z.string().min(3, { message: "Username deve contenere almeno 3 caratteri" }),
+  password: z.string().min(8, { message: "Password deve contenere almeno 8 caratteri" }),
+  name: z.string().min(1, { message: "Il nome è obbligatorio" }),
+  email: z.string().email({ message: "Email non valida" }),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = typeof users.$inferSelect;
-export type Preference = typeof preferences.$inferSelect;
-export type InsertPreference = z.infer<typeof insertPreferenceSchema>;
-export type TravelPackage = typeof travelPackages.$inferSelect;
-export type InsertTravelPackage = z.infer<typeof insertTravelPackageSchema>;
-export type Booking = typeof bookings.$inferSelect;
-export type InsertBooking = z.infer<typeof insertBookingSchema>;
-// Existing exports...
-
-// Nuovo formato pacchetto
-export interface NewPackageResponse {
-  id_pacchetto: string;
-  master: {
-    citta_coinvolte: string[];
-    temi_viaggio: string[];
-    durata_complessiva_soggiorni_giorni: number;
-    numero_hotel: number;
-    numero_esperienze: number;
-  };
-  detail: {
-    hotels: Hotel[];
-    esperienze: Experience[];
-  };
-}
-
-export interface Hotel {
-  citta: string;
-  nome: string;
-  checkin: string;
-  checkout: string;
-  prezzo_giornaliero: number;
-  pasto_incluso: string;
-  tipo_camera: string;
-  stelle: number;
-  indirizzo: string;
-  telefono: string;
-  email: string;
-  descrizione: string;
-  latitudine: number;
-  longitudine: number;
-  hid_originale: number;
-  id_originale_hotel: string;
-}
-
-export interface Experience {
-  citta: string;
-  nome: string;
-  url: string;
-  descrizione: string;
-  tags: string[];
-  tipologia: string;
-  dettagli_specifici: {
-    [key: string]: any;
-  };
-  dati_extra: string | null;
-  stato: string;
-  provincia: string;
-}
+export type User = UserProfile;
