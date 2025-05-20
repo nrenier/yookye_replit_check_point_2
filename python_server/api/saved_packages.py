@@ -86,7 +86,7 @@ def get_my_packages(current_user=None):
 @verify_token
 @log_request()
 def get_detailed_itinerary(current_user=None):
-    """Get detailed itinerary with accommodations and experiences"""
+    """Get packages from external API directly without detailed itinerary"""
     try:
         # Get user ID from session
         user_id = session.get("user_id")
@@ -98,7 +98,7 @@ def get_detailed_itinerary(current_user=None):
         if not job_id:
             return jsonify({"success": False, "message": "Job ID is required"}), 400
 
-        # Get itinerary data from the recommendations endpoint
+        # Get package data directly from the recommendations endpoint
         from ..utils.travel_api_client import get_recommendations_from_api
         from ..models.repositories import PreferenceRepository
 
@@ -111,24 +111,20 @@ def get_detailed_itinerary(current_user=None):
         # Usa la preferenza più recente
         latest_preference = preferences[-1]
 
-        # Get the detailed itinerary
-        itinerary = get_recommendations_from_api(latest_preference, job_id=job_id, itinerary=True)
+        # Get packages directly (not as itinerary)
+        packages = get_recommendations_from_api(latest_preference, job_id=job_id, itinerary=False)
 
-        if not itinerary or "status" in itinerary and itinerary["status"] != "COMPLETED":
+        if not packages or "status" in packages and packages["status"] != "COMPLETED":
             return jsonify({
-                "job_id": itinerary.get("job_id"),
-                "status": itinerary.get("status", "PROCESSING"),
-                "message": itinerary.get("message", "Elaborazione in corso"),
+                "job_id": packages.get("job_id"),
+                "status": packages.get("status", "PROCESSING"),
+                "message": packages.get("message", "Elaborazione in corso"),
             }), 200
 
-        # Return the detailed itinerary
+        # Return packages directly
         return jsonify({
             "success": True,
-            "data": {
-                "destinations": itinerary.get("destinations", []),
-                "accommodations": itinerary.get("accommodations", []),
-                "experiences": itinerary.get("experiences", [])
-            }
+            "data": packages
         }), 200
     except Exception as e:
         logger.error(f"Error getting detailed itinerary: {str(e)}")

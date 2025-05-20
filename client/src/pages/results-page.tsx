@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import MainLayout from "@/components/layouts/main-layout";
@@ -69,7 +70,7 @@ export default function ResultsPage() {
         if (statusResponse.status === 'COMPLETED') {
           console.log("Recupero i risultati del job:", `/api/search/${jobId}/result`);
 
-          // Recupera i nuovi pacchetti
+          // Recupera i nuovi pacchetti direttamente dall'endpoint esterno /search
           const results = await getNewPackages(jobId);
           console.log("Risultati dei pacchetti ricevuti:", results);
 
@@ -188,7 +189,7 @@ export default function ResultsPage() {
             </div>
           ) : (
             <div className="space-y-10">
-              {/* Pacchetti trovati dalla ricerca */}
+              {/* Pacchetti trovati dalla ricerca - Mostrati direttamente come restituiti dall'API */}
               {hasPackages && (
                 <div>
                   <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">Pacchetti Consigliati</h2>
@@ -211,10 +212,8 @@ export default function ResultsPage() {
                   <h2 className="font-montserrat font-bold text-2xl mb-4 border-b pb-2">I Tuoi Pacchetti Salvati</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {savedPackages.map((pkg) => (
-                      <div key={pkg.id} className="card-wrapper">
-                        {/* Usa il vecchio formato per i pacchetti salvati in precedenza */}
-                        {/* Si potrebbe implementare un controllo qui per mostrare NewTravelCard 
-                            per i nuovi pacchetti salvati e TravelCard per i vecchi */}
+                      <div key={pkg.id || pkg.id_pacchetto} className="card-wrapper">
+                        {/* Usa il nuovo formato per i pacchetti salvati */}
                         {pkg.id_pacchetto ? (
                           <NewTravelCard packageData={pkg as unknown as NewPackageResponse} />
                         ) : (

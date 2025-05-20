@@ -1,4 +1,3 @@
-
 // client/src/lib/api.ts
 import axios from "axios";
 import type { z } from "zod";
@@ -320,11 +319,25 @@ export const getJobResults = async (jobId: string) => {
 };
 
 // Funzione per ottenere i pacchetti di viaggio nella nuova struttura dati
-export const getNewPackages = async (jobId: string) => {
+export const getNewPackages = async (jobId: string): Promise<NewPackageResponse[]> => {
   try {
-    const response = await apiRequest("GET", `/api/search/${jobId}/result`);
-    console.log("Nuovi pacchetti ricevuti:", response.data);
-    return response.data;
+    const response = await localApiRequest("GET", `/itinerary?job_id=${jobId}`);
+
+    // Se la risposta contiene ancora lo stato del job, non è pronta
+    if (response.data?.job_id && response.data?.status) {
+      console.log("Job non ancora completato:", response.data);
+      return [];
+    }
+
+    // Restituisci direttamente i pacchetti dalla risposta dell'API esterna
+    console.log("Risposta da /itinerary:", response);
+
+    // Se i dati sono già disponibili nel formato corretto, restituiscili direttamente
+    if (Array.isArray(response.data?.data)) {
+      return response.data.data;
+    }
+
+    return [];
   } catch (error) {
     console.error("Errore nel recupero dei nuovi pacchetti:", error);
     throw error;
@@ -399,7 +412,7 @@ const mapFormToSearchInput = (formData: FormValues) => {
           interessi.vacanze_attive.trekking_di_più_giorni = true;
           break;
         case "ebike":
-          interessi.vacanze_attive.tour_in_e_bike_di_più_giorni = true;
+          interessi.vacanze_attive.tour_in_e_bike_di_più_giorno = true;
           break;
         case "bicicletta":
           interessi.vacanze_attive.tour_in_bicicletta_di_più_giorni = true;
