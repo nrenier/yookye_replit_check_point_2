@@ -319,6 +319,29 @@ export const getJobResults = async (jobId: string) => {
   return response.data;
 };
 
+// Funzione per ottenere i pacchetti di viaggio nella nuova struttura dati
+export const getNewPackages = async (jobId: string) => {
+  try {
+    const response = await apiRequest("GET", `/api/search/${jobId}/result`);
+    console.log("Nuovi pacchetti ricevuti:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel recupero dei nuovi pacchetti:", error);
+    throw error;
+  }
+};
+
+// Funzione per salvare un pacchetto nel nuovo formato
+export const saveNewPackage = async (packageData: any) => {
+  try {
+    const response = await localApiRequest("POST", "/saved-packages/new-format", packageData);
+    return response.data;
+  } catch (error) {
+    console.error("Errore nel salvataggio del nuovo pacchetto:", error);
+    throw error;
+  }
+};
+
 
 // Mappa i dati del form al formato richiesto dall'API di ricerca (come definito nello Swagger)
 const mapFormToSearchInput = (formData: FormValues) => {

@@ -97,3 +97,54 @@ export type TravelPackage = typeof travelPackages.$inferSelect;
 export type InsertTravelPackage = z.infer<typeof insertTravelPackageSchema>;
 export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
+// Existing exports...
+
+// Nuovo formato pacchetto
+export interface NewPackageResponse {
+  id_pacchetto: string;
+  master: {
+    citta_coinvolte: string[];
+    temi_viaggio: string[];
+    durata_complessiva_soggiorni_giorni: number;
+    numero_hotel: number;
+    numero_esperienze: number;
+  };
+  detail: {
+    hotels: Hotel[];
+    esperienze: Experience[];
+  };
+}
+
+export interface Hotel {
+  citta: string;
+  nome: string;
+  checkin: string;
+  checkout: string;
+  prezzo_giornaliero: number;
+  pasto_incluso: string;
+  tipo_camera: string;
+  stelle: number;
+  indirizzo: string;
+  telefono: string;
+  email: string;
+  descrizione: string;
+  latitudine: number;
+  longitudine: number;
+  hid_originale: number;
+  id_originale_hotel: string;
+}
+
+export interface Experience {
+  citta: string;
+  nome: string;
+  url: string;
+  descrizione: string;
+  tags: string[];
+  tipologia: string;
+  dettagli_specifici: {
+    [key: string]: any;
+  };
+  dati_extra: string | null;
+  stato: string;
+  provincia: string;
+}

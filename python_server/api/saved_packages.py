@@ -133,3 +133,36 @@ def get_detailed_itinerary(current_user=None):
     except Exception as e:
         logger.error(f"Error getting detailed itinerary: {str(e)}")
         return jsonify({"success": False, "message": str(e)}), 500
+@saved_packages_bp.route("/new-format", methods=["POST"])
+@verify_token
+@log_request()
+def save_new_format_package():
+    """Salva un pacchetto nel nuovo formato"""
+    try:
+        # Get user ID from session
+        user_id = session.get("user_id")
+        if not user_id:
+            return jsonify({"success": False, "message": "User not authenticated"}), 401
+
+        # Get package data
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "message": "No data provided"}), 400
+
+        # Add user ID to data
+        data["user_id"] = user_id
+        
+        # Add timestamp
+        data["saved_at"] = datetime.now().isoformat()
+
+        # Save package
+        saved_repo.client.index(
+            index=saved_repo.index_name,
+            body=data,
+            refresh=True
+        )
+
+        return jsonify({"success": True, "message": "Package saved successfully"}), 200
+    except Exception as e:
+        logger.error(f"Error saving new format package: {str(e)}")
+        return jsonify({"success": False, "message": str(e)}), 500
