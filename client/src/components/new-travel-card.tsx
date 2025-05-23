@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -73,6 +72,8 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
                 <div className="text-sm text-gray-600">
                   <p>📍 {hotel.address}</p>
                   <p>💶 €{hotel.daily_prices}/notte</p>
+                  <p>📅 Check-in: {hotel.checkin}</p>
+                  <p>📅 Check-out: {hotel.checkout}</p>
                   {hotel.room_type && <p>🛏️ {hotel.room_type}</p>}
                 </div>
               </div>
