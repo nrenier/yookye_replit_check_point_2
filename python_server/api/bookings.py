@@ -21,12 +21,13 @@ else:
 @booking_bp.route("/", methods=["GET"])
 @login_required
 @log_request()
-async def get_user_bookings(current_user):
+def get_user_bookings(current_user):
     """Recupera tutte le prenotazioni dell'utente corrente."""
     try:
         user_id = session.get("user_id")
         booking_repo = BookingRepository()
-        bookings = await booking_repo.get_by_user_id(user_id)
+        import asyncio
+        bookings = asyncio.run(booking_repo.get_by_user_id(user_id))
         return jsonify([booking.dict() for booking in bookings])
     except Exception as e:
         logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")

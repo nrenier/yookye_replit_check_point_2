@@ -147,7 +147,7 @@ def save_new_format_package():
 
         # Add user ID to data
         data["user_id"] = user_id
-        
+
         # Add timestamp
         data["saved_at"] = datetime.now().isoformat()
 
@@ -162,3 +162,19 @@ def save_new_format_package():
     except Exception as e:
         logger.error(f"Error saving new format package: {str(e)}")
         return jsonify({"success": False, "message": str(e)}), 500
+
+@saved_packages_bp.route("/", methods=["GET"])
+@login_required
+@log_request()
+def get_user_saved_packages(current_user):
+    try:
+        # Get user_id from session
+        user_id = session.get("user_id")
+        saved_package_repo = SavedPackageRepository()
+        # Create and run coroutine in the same context
+        import asyncio
+        saved_packages = asyncio.run(saved_package_repo.find_by_user(user_id))
+        return jsonify([package.dict() for package in saved_packages])
+    except Exception as e:
+        logger.error(f"Error getting saved packages: {str(e)}")
+        return jsonify({"message": f"Error getting saved packages: {str(e)}"}), 500
