@@ -15,7 +15,7 @@ export default function HomePage() {
         subtitle="Crea il tuo pacchetto vacanza personalizzato in base alle tue passioni e preferenze"
         ctaLink={user ? "/preferences" : "/auth"}
         ctaText="Inizia Ora"
-        backgroundImage="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&h=1000&q=80"
+        backgroundImage="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&h=1000&q=80"
       />
       
       <section id="preferences" className="py-8">
