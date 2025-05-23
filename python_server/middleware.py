@@ -1,6 +1,8 @@
+
 import time
 import json
 import logging
+import asyncio
 from functools import wraps
 from flask import request, g
 
@@ -14,31 +16,20 @@ def log_request():
             start_time = time.time()
             logger.info(f"Richiesta a {request.path} con metodo {request.method}")
 
-            response = f(*args, **kwargs)
-
-            # Verifica se la risposta è un coroutine (async)
-            if hasattr(response, '__await__'):
-                # Per funzioni asincrone, dobbiamo modificare l'implementazione
-                @wraps(f)
-                async def async_wrapper(*args, **kwargs):
-                    start_time = time.time()
-                    try:
-                        # Attendere il risultato del coroutine
-                        response = await f(*args, **kwargs)
-                        end_time = time.time()
-                        execution_time = end_time - start_time
-                        logger.info(f"Risposta asincrona da {request.path}: {getattr(response, 'status_code', 'N/A')}, tempo di esecuzione: {execution_time:.2f}s")
-                        return response
-                    except Exception as e:
-                        logger.error(f"Errore in richiesta asincrona a {request.path}: {str(e)}")
-                        raise
-                return async_wrapper(*args, **kwargs)
-            else:
-                # Per funzioni sincrone, usa l'implementazione originale
+            try:
+                response = f(*args, **kwargs)
+                
+                # Gestione funzioni asincrone
+                if asyncio.iscoroutine(response):
+                    response = asyncio.run(response)
+                    
                 end_time = time.time()
                 execution_time = end_time - start_time
                 logger.info(f"Risposta da {request.path}: {getattr(response, 'status_code', 'N/A')}, tempo di esecuzione: {execution_time:.2f}s")
                 return response
+            except Exception as e:
+                logger.error(f"Errore in richiesta a {request.path}: {str(e)}")
+                raise
 
         return decorated_function
     return decorator
