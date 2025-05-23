@@ -31,7 +31,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="flex items-center">
               <Link href="/" className="mr-8">
                 <img
-                  src="/attached_assets/LogoYookye.png"
+                  src="/static/LogoYookye.png"
                   alt="Yookye"
                   className="h-8"
                 />
@@ -240,3 +240,4 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 };
 
 export default MainLayout;
+```

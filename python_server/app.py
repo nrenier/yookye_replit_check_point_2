@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def init_app():
     """Inizializza l'applicazione Flask."""
-    app = Flask(__name__, static_folder=None)
+    app = Flask(__name__, static_folder='static')
     app.config['SECRET_KEY'] = SECRET_KEY
 
     # Configura CORS
