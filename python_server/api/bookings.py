@@ -26,8 +26,7 @@ def get_user_bookings(current_user):
     try:
         user_id = session.get("user_id")
         booking_repo = BookingRepository()
-        import asyncio
-        bookings = asyncio.run(booking_repo.get_by_user_id(user_id))
+        bookings = booking_repo.get_by_user_id(user_id)
         return jsonify([booking.dict() for booking in bookings])
     except Exception as e:
         logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")

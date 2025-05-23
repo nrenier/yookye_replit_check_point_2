@@ -180,10 +180,10 @@ class BaseRepository(Generic[T, CreateT]):
             logger.error(f"Error deleting document ID '{id}' from index '{self.index_name}': {e}", exc_info=True)
             return False
 
-    async def search(self, query: Dict[str, Any], size: int = 100) -> List[T]:
+    def search(self, query: Dict[str, Any], size: int = 100) -> List[T]:
         """Cerca elementi con un query OpenSearch."""
         try:
-            response = await self.client.search(
+            response = self.client.search(
                 index=self.index_name,
                 body=query,
                 size=size
@@ -362,7 +362,7 @@ class BookingRepository(BaseRepository[Booking, BookingCreate]):
     def __init__(self):
         super().__init__(Booking, INDEX_BOOKINGS)
 
-    async def get_by_user_id(self, user_id: str) -> List[Booking]:
+    def get_by_user_id(self, user_id: str) -> List[Booking]:
         """Ottiene le prenotazioni di un utente."""
         if not user_id:
             return []
@@ -376,8 +376,7 @@ class BookingRepository(BaseRepository[Booking, BookingCreate]):
                 {"bookingDate": {"order": "desc"}}
             ]
         }
-        results = await self.search(query)
-        return results
+        return self.search(query)
 
     def update_status(self, id: str, status: str) -> Optional[Booking]:
         """Aggiorna lo stato di una prenotazione."""
