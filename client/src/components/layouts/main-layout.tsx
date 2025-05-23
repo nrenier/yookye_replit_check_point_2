@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import Logo from "@/components/ui/logo";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,88 +23,42 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-black text-white">
+      <header className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between h-20">
             <div className="flex items-center">
               <Link href="/" className="mr-8">
-                <Logo />
+                <img src="https://yookye.com/wp-content/uploads/2023/12/Logo-yookye.svg" alt="Yookye" className="h-8" />
               </Link>
-              <nav>
-                <ul className="hidden md:flex space-x-6">
-                  <li>
-                    <Link href="/chi-siamo" className="hover:text-gray-300">Chi siamo</Link>
-                  </li>
-                  <li className="relative group">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="flex items-center hover:text-gray-300">
-                          Lavora con noi
-                          <ChevronDown className="h-4 w-4 ml-1" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
-                        <DropdownMenuItem>
-                          <Link href="/lavora-con-noi/opportunita">Opportunità di lavoro</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link href="/lavora-con-noi/partner">Partner commerciali</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link href="/lavora-con-noi/guide">Guide turistiche</Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </li>
-                  <li className="relative group">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button className="flex items-center hover:text-gray-300">
-                          Eventi
-                          <ChevronDown className="h-4 w-4 ml-1" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
-                        <DropdownMenuItem>
-                          <Link href="/eventi/fiere">Fiere</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link href="/eventi/workshop">Workshop</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Link href="/eventi/webinar">Webinar</Link>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </li>
-                  <li>
-                    <Link href="/contatti" className="hover:text-gray-300">Contatti e supporto</Link>
-                  </li>
-                </ul>
+              <nav className="hidden md:flex space-x-8">
+                <Link href="/chi-siamo" className="text-gray-700 hover:text-[#FF385C] font-medium">Come funziona</Link>
+                <Link href="/destinations" className="text-gray-700 hover:text-[#FF385C] font-medium">Destinazioni</Link>
+                <Link href="/contatti" className="text-gray-700 hover:text-[#FF385C] font-medium">Contatti</Link>
               </nav>
             </div>
-            <div className="flex items-center space-x-4">
+
+            <div className="flex items-center space-x-6">
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="hover:text-gray-300">
-                      <UserRound className="h-5 w-5" />
+                    <button className="text-gray-700 hover:text-[#FF385C]">
+                      <UserRound className="h-6 w-6" />
                     </button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem>
-                      <Link href="/profilo">Il mio profilo</Link>
+                      <Link href="/profilo" className="w-full">Il mio profilo</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Link href="/preferences">Le mie preferenze</Link>
+                      <Link href="/preferences" className="w-full">Le mie preferenze</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Link href="/results">I miei pacchetti</Link>
+                      <Link href="/results" className="w-full">I miei pacchetti</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Link href="/bookings">Le mie prenotazioni</Link>
+                      <Link href="/bookings" className="w-full">Le mie prenotazioni</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout}>
                       Logout
@@ -114,15 +67,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                 </DropdownMenu>
               ) : (
                 <Link href="/auth">
-                  <Button variant="ghost" className="hover:text-gray-300 p-0">
-                    <UserRound className="h-5 w-5" />
+                  <Button variant="ghost" className="text-gray-700 hover:text-[#FF385C]">
+                    <UserRound className="h-6 w-6" />
                   </Button>
                 </Link>
               )}
-              <Link href="/carrello" className="hover:text-gray-300">
-                <ShoppingCart className="h-5 w-5" />
+              <Link href="/carrello" className="text-gray-700 hover:text-[#FF385C]">
+                <ShoppingCart className="h-6 w-6" />
               </Link>
-              <button className="hover:text-gray-300">IT</button>
+              <button className="text-gray-700 hover:text-[#FF385C] font-medium">IT</button>
             </div>
           </div>
         </div>
@@ -134,78 +87,59 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-yookve-dark text-white py-12">
+      <footer className="bg-[#F8F8F8] py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-montserrat font-bold text-lg mb-4">Yookve</h3>
-              <p className="text-gray-400 text-sm">Yookve è una piattaforma innovativa che propone pacchetti di vacanza personalizzati in base alle preferenze dei viaggiatori.</p>
-              <div className="mt-4 flex space-x-4">
-                <a href="#" className="text-gray-400 hover:text-white">
+              <img src="https://yookye.com/wp-content/uploads/2023/12/Logo-yookye.svg" alt="Yookye" className="h-8 mb-6" />
+              <p className="text-gray-600 text-sm">Yookye è la piattaforma che ti permette di organizzare viaggi su misura in modo semplice e veloce.</p>
+              <div className="mt-6 flex space-x-4">
+                <a href="https://www.facebook.com/yookye" target="_blank" className="text-gray-400 hover:text-[#FF385C]">
                   <i className="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a href="https://www.instagram.com/yookye" target="_blank" className="text-gray-400 hover:text-[#FF385C]">
                   <i className="fab fa-instagram"></i>
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white">
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white">
+                <a href="https://www.linkedin.com/company/yookye" target="_blank" className="text-gray-400 hover:text-[#FF385C]">
                   <i className="fab fa-linkedin-in"></i>
                 </a>
               </div>
             </div>
-            
+
             <div>
-              <h3 className="font-montserrat font-bold text-lg mb-4">Destinazioni</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Roma</a></li>
-                <li><a href="#" className="hover:text-white">Firenze</a></li>
-                <li><a href="#" className="hover:text-white">Venezia</a></li>
-                <li><a href="#" className="hover:text-white">Milano</a></li>
-                <li><a href="#" className="hover:text-white">Costiera Amalfitana</a></li>
-                <li><a href="#" className="hover:text-white">Toscana</a></li>
+              <h3 className="font-bold text-lg mb-4">Scopri</h3>
+              <ul className="space-y-3 text-gray-600">
+                <li><a href="#" className="hover:text-[#FF385C]">Come funziona</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">Destinazioni</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">FAQ</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">Blog</a></li>
               </ul>
             </div>
-            
+
             <div>
-              <h3 className="font-montserrat font-bold text-lg mb-4">Servizi</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Pacchetti personalizzati</a></li>
-                <li><a href="#" className="hover:text-white">Esperienze locali</a></li>
-                <li><a href="#" className="hover:text-white">Transfer e trasporti</a></li>
-                <li><a href="#" className="hover:text-white">Guide turistiche</a></li>
-                <li><a href="#" className="hover:text-white">Assistenza viaggiatori</a></li>
+              <h3 className="font-bold text-lg mb-4">Azienda</h3>
+              <ul className="space-y-3 text-gray-600">
+                <li><a href="#" className="hover:text-[#FF385C]">Chi siamo</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">Lavora con noi</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">Contatti</a></li>
+                <li><a href="#" className="hover:text-[#FF385C]">Privacy Policy</a></li>
               </ul>
             </div>
-            
+
             <div>
-              <h3 className="font-montserrat font-bold text-lg mb-4">Contatti</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li className="flex items-center">
-                  <i className="fas fa-map-marker-alt w-5"></i> Via Roma 123, Milano
-                </li>
-                <li className="flex items-center">
-                  <i className="fas fa-phone w-5"></i> +39 02 1234567
-                </li>
-                <li className="flex items-center">
-                  <i className="fas fa-envelope w-5"></i> info@yookve.it
-                </li>
-              </ul>
-              <div className="mt-4">
-                <h4 className="font-montserrat font-semibold text-sm mb-2">Iscriviti alla newsletter</h4>
-                <div className="flex">
-                  <input type="email" placeholder="La tua email" className="px-4 py-2 w-full bg-gray-700 text-white rounded-l-md focus:outline-none" />
-                  <button className="bg-yookve-red px-4 py-2 rounded-r-md">
-                    <i className="fas fa-arrow-right"></i>
-                  </button>
-                </div>
+              <h3 className="font-bold text-lg mb-4">Newsletter</h3>
+              <p className="text-gray-600 mb-4">Iscriviti alla nostra newsletter per ricevere offerte esclusive</p>
+              <div className="flex">
+                <input type="email" placeholder="La tua email" className="px-4 py-2 w-full border border-gray-300 rounded-l-md focus:outline-none focus:border-[#FF385C]" />
+                <button className="bg-[#FF385C] text-white px-4 py-2 rounded-r-md hover:bg-[#E0314F] transition-colors">
+                  <i className="fas fa-arrow-right"></i>
+                </button>
               </div>
             </div>
           </div>
-          
-          <div className="mt-12 pt-8 border-t border-gray-700 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} Yookve. Tutti i diritti riservati.</p>
+
+          <div className="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+            <p>© {new Date().getFullYear()} Yookye. Tutti i diritti riservati.</p>
           </div>
         </div>
       </footer>
