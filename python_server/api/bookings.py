@@ -21,24 +21,16 @@ else:
 @booking_bp.route("/", methods=["GET"])
 @login_required
 @log_request()
-def get_user_bookings(current_user):
+async def get_user_bookings(current_user):
     """Recupera tutte le prenotazioni dell'utente corrente."""
     try:
         user_id = session.get("user_id")
         booking_repo = BookingRepository()
-        
-        # Creiamo una funzione asincrona interna per gestire l'operazione async
-        async def fetch_bookings():
-            try:
-                bookings = await booking_repo.get_by_user_id(user_id)
-                return jsonify([booking.dict() for booking in bookings])
-            except Exception as e:
-                logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
-                return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
-        
-        # Eseguiamo la funzione asincrona e restituiamo il risultato
-        import asyncio
-        return asyncio.run(fetch_bookings())
+        bookings = await booking_repo.get_by_user_id(user_id)
+        return jsonify([booking.dict() for booking in bookings])
+    except Exception as e:
+        logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
+        return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
     except Exception as e:
         logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
         return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
