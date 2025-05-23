@@ -44,8 +44,8 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
   const firstCity = cities[0];
   const firstHotel = firstCity ? packageData.hotels_selezionati[firstCity] : null;
   const checkIn = firstHotel?.checkin ? new Date(firstHotel.checkin.split('/').reverse().join('-')) : new Date();
-  const checkOut = new Date(firstHotel.checkout.split('/').reverse().join('-'));
-  const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24));
+  const checkOut = firstHotel?.checkout ? new Date(firstHotel.checkout.split('/').reverse().join('-')) : new Date();
+  const nights = checkIn && checkOut ? Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
 
   return (
     <Card className="overflow-hidden">
