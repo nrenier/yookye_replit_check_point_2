@@ -34,9 +34,9 @@ interface NewTravelCardProps {
 }
 
 export default function NewTravelCard({ packageData, showSaveButton = false, onSave }: NewTravelCardProps) {
-  const totalPrice = Object.values(packageData.hotels_selezionati).reduce((sum, hotel) => {
+  const averagePrice = Object.values(packageData.hotels_selezionati).reduce((sum, hotel) => {
     return sum + hotel.daily_prices;
-  }, 0);
+  }, 0) / Object.values(packageData.hotels_selezionati).length;
 
   const cities = Object.keys(packageData.hotels_selezionati);
   const firstCity = cities[0];
@@ -98,7 +98,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
         <div className="flex justify-between items-center mt-6">
           <div>
             <p className="text-sm text-gray-500">a partire da</p>
-            <p className="text-xl font-bold">€{Math.round(totalPrice)} <span className="text-sm font-normal">/ giorno</span></p>
+            <p className="text-xl font-bold">€{Math.round(averagePrice)} <span className="text-sm font-normal">/ giorno</span></p>
           </div>
 
           {showSaveButton && (
