@@ -1,0 +1,27 @@
+INFO:python_server.middleware:Richiesta a /api/saved-packages con metodo GET
+WARNING:opensearch:POST http://localhost:9200/saved_packages/_search?size=100 [status:400 request:0.003s]
+ERROR:python_server.models.repositories:Error searching index 'saved_packages': RequestError(400, 'search_phase_execution_exception', 'No mapping found for [savedAt] in order to sort on'). Query: {'query': {'term': {'userId.keyword': 'r8q18w03f9r'}}, 'sort': [{'savedAt': {'order': 'desc'}}]}
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic_checkpoint_Local_Expert_REST_integration_pre_modifica_output/python_server/models/repositories.py", line 186, in search
+    response = self.client.search(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/client/utils.py", line 176, in _wrapped
+    return func(*args, params=params, headers=headers, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/client/__init__.py", line 2431, in search
+    return self.transport.perform_request(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/transport.py", line 457, in perform_request
+    raise e
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/transport.py", line 418, in perform_request
+    status, headers_response, data = connection.perform_request(
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/connection/http_urllib3.py", line 308, in perform_request
+    self._raise_error(
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/opensearchpy/connection/base.py", line 315, in _raise_error
+    raise HTTP_EXCEPTIONS.get(status_code, TransportError)(
+opensearchpy.exceptions.RequestError: RequestError(400, 'search_phase_execution_exception', 'No mapping found for [savedAt] in order to sort on')
+INFO:python_server.middleware:Risposta da /api/saved-packages: N/A, tempo di esecuzione: 0.02s
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 10:04:44] "GET /api/saved-packages HTTP/1.1" 200 -
+INFO:python_server.app:Serving index.html for path: favicon.ico
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 10:04:45] "GET /favicon.ico HTTP/1.1" 304 -
