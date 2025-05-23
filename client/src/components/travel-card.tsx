@@ -79,7 +79,7 @@ export default function TravelCard({ travelPackage }: TravelCardProps) {
         <div className="flex justify-between items-center mt-6">
           <div>
             <p className="text-sm text-gray-500">a partire da</p>
-            <p className="text-xl font-bold">€{travelPackage.price} <span className="text-sm font-normal">/ persona</span></p>
+            <p className="text-xl font-bold">€{travelPackage.price} <span className="text-sm font-normal">/ giorno</span></p>
           </div>
           <Button 
             className="bg-yookve-red hover:bg-red-700"

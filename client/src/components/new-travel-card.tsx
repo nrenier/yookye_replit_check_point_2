@@ -102,7 +102,7 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
         <div className="flex justify-between items-center mt-6">
           <div>
             <p className="text-sm text-gray-500">a partire da</p>
-            <p className="text-xl font-bold">€{Math.round(totalPrice)} <span className="text-sm font-normal">/ persona</span></p>
+            <p className="text-xl font-bold">€{Math.round(totalPrice)} <span className="text-sm font-normal">/ giorno</span></p>
           </div>
 
           {showSaveButton && (
