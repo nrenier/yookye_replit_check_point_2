@@ -114,7 +114,7 @@ export default function ResultsPage() {
     // Start polling if isPolling is true and jobId and user are available
     if (isPolling && jobId && user) {
       pollJobStatus(); // Initial poll
-      pollingInterval = setInterval(pollJobStatus, 3000);
+      pollingInterval = setInterval(pollJobStatus, 30000);
     } else if (isPolling && !user) {
       // Interrompe il polling se l'utente non è autenticato
       console.log("Utente non autenticato, interrompo il polling");
