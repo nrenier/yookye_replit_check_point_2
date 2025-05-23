@@ -402,11 +402,7 @@ class SavedPackageRepository(BaseRepository[SavedPackage, SavedPackage]): # Use 
                 "term": {
                     "userId.keyword": user_id # Ensure userId field is mapped as keyword for exact match
                 }
-            },
-            "sort": [
-                 # Sort by savedAt descending to show newest first
-                {"savedAt": {"order": "desc"}} 
-            ]
+            }
         }
         return self.search(query, size=size)
 
