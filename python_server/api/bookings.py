@@ -27,10 +27,9 @@ async def get_user_bookings(current_user):
         user_id = session.get("user_id")
         booking_repo = BookingRepository()
         bookings = await booking_repo.get_by_user_id(user_id)
-        return jsonify([booking.dict() for booking in bookings])
-    except Exception as e:
-        logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
-        return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
+        if isinstance(bookings, list):
+            return jsonify([booking.dict() for booking in bookings])
+        return jsonify([])
     except Exception as e:
         logger.error(f"Errore nel recupero delle prenotazioni: {str(e)}")
         return jsonify({"message": f"Errore nel recupero delle prenotazioni: {str(e)}"}), 500
