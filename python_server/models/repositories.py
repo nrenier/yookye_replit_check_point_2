@@ -180,10 +180,10 @@ class BaseRepository(Generic[T, CreateT]):
             logger.error(f"Error deleting document ID '{id}' from index '{self.index_name}': {e}", exc_info=True)
             return False
 
-    def search(self, query: Dict[str, Any], size: int = 100) -> List[T]:
+    async def search(self, query: Dict[str, Any], size: int = 100) -> List[T]:
         """Cerca elementi con un query OpenSearch."""
         try:
-            response = self.client.search(
+            response = await self.client.search(
                 index=self.index_name,
                 body=query,
                 size=size
@@ -362,7 +362,7 @@ class BookingRepository(BaseRepository[Booking, BookingCreate]):
     def __init__(self):
         super().__init__(Booking, INDEX_BOOKINGS)
 
-    def get_by_user_id(self, user_id: str) -> List[Booking]:
+    async def get_by_user_id(self, user_id: str) -> List[Booking]:
         """Ottiene le prenotazioni di un utente."""
         if not user_id:
             return []
@@ -376,7 +376,8 @@ class BookingRepository(BaseRepository[Booking, BookingCreate]):
                 {"bookingDate": {"order": "desc"}}
             ]
         }
-        return self.search(query)
+        results = await self.search(query)
+        return results
 
     def update_status(self, id: str, status: str) -> Optional[Booking]:
         """Aggiorna lo stato di una prenotazione."""
@@ -409,7 +410,7 @@ class SavedPackageRepository(BaseRepository[SavedPackage, SavedPackage]): # Use 
             ]
         }
         return self.search(query, size=size)
-        
+
     def get_by_user_id(self, user_id: str) -> List[SavedPackage]:
         """Ottiene i pacchetti salvati di un utente (alias di find_by_user)."""
         return self.find_by_user(user_id)
