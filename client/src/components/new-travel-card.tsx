@@ -38,7 +38,9 @@ export default function NewTravelCard({ packageData, showSaveButton = false, onS
     return sum + hotel.daily_prices;
   }, 0) / Object.values(packageData.hotels_selezionati).length;
 
-  const cities = Object.keys(packageData.hotels_selezionati);
+  const cities = Object.keys(packageData.hotels_selezionati).map(city => 
+    city.charAt(0).toUpperCase() + city.slice(1).toLowerCase()
+  );
   const firstCity = cities[0];
   const firstHotel = packageData.hotels_selezionati[firstCity];
   const checkIn = new Date(firstHotel.checkin.split('/').reverse().join('-'));
