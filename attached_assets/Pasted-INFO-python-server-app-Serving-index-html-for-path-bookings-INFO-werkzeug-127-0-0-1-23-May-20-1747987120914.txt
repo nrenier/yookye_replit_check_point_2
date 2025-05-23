@@ -1,0 +1,43 @@
+INFO:python_server.app:Serving index.html for path: bookings
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:28] "GET /bookings HTTP/1.1" 304 -
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /assets/index-CwF2GI9v.css HTTP/1.1" 304 -
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /assets/index-sWNbiq8B.js HTTP/1.1" 304 -
+INFO:opensearch:GET http://localhost:9200/users/_doc/r8q18w03f9r [status:200 request:0.002s]
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /api/user HTTP/1.1" 200 -
+INFO:python_server.app:Serving index.html for path: favicon.ico
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /favicon.ico HTTP/1.1" 304 -
+Using session-based authentication, user_id: r8q18w03f9r
+INFO:python_server.middleware:Richiesta a /api/saved-packages con metodo GET
+ERROR:python_server.api.saved_packages:Error getting saved packages: Object of type coroutine is not JSON serializable
+INFO:python_server.middleware:Risposta da /api/saved-packages: N/A, tempo di esecuzione: 0.00s
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /api/saved-packages HTTP/1.1" 500 -
+Using session-based authentication, user_id: r8q18w03f9r
+INFO:python_server.middleware:Richiesta a /api/bookings/ con metodo GET
+INFO:python_server.middleware:Richiesta a /api/travel-packages/ con metodo GET
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /api/bookings/ HTTP/1.1" 500 -
+Traceback (most recent call last):
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask_cors/extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 920, in full_dispatch_request
+    return self.finalize_request(rv)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 939, in finalize_request
+    response = self.make_response(rv)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hb/yookye_site/replit/TravelMosaic/python_server/.venv/lib/python3.11/site-packages/flask/app.py", line 1249, in make_response
+    raise TypeError(
+TypeError: The view function did not return a valid response. The return type must be a string, dict, list, tuple with headers or status, Response instance, or WSGI callable, but it was a coroutine.
+INFO:opensearch:HEAD http://localhost:9200/travel_packages [status:200 request:0.002s]
+INFO:opensearch:POST http://localhost:9200/travel_packages/_search?size=100 [status:200 request:0.003s]
+INFO:python_server.middleware:Risposta da /api/travel-packages/: 200, tempo di esecuzione: 0.01s
+INFO:werkzeug:127.0.0.1 - - [23/May/2025 09:58:29] "GET /api/travel-packages/ HTTP/1.1" 200 -
