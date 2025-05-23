@@ -164,7 +164,7 @@ def save_new_format_package():
         return jsonify({"success": False, "message": str(e)}), 500
 
 @saved_packages_bp.route("/", methods=["GET"])
-@login_required
+@verify_token
 @log_request()
 def get_user_saved_packages(current_user):
     try:
