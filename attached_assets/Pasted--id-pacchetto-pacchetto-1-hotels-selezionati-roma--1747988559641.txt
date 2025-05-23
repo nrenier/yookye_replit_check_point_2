@@ -1,0 +1,403 @@
+[
+    {
+        "id_pacchetto": "pacchetto_1",
+        "hotels_selezionati": {
+            "roma": {
+                "hid": 6353305,
+                "address": "Via Nomentana, 31-33, Roma",
+                "phone": "390644238361",
+                "kind": "Hotel",
+                "latitude": 41.910023,
+                "star_rating": 4,
+                "name": "Des Epoques Hotel",
+                "email": "info@desepoqueshotel.com",
+                "longitude": 12.502172,
+                "description": "«Des Epoques Hotel» Vuoi rilassarti ed esplorare la città? Scegli hotel va Roma. L’hotel si trova a pochi minuti di distanza dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel — Museum of Contemporary Art of Rome, Castro Pretorio e Villa Medici. Assapora i piatti della cucina locale nell’atmosfera rilassante del ristorante. Il bar degli È disponibile il Wi-Fi gratuito. Chiedi maggiori informazioni al check-in. Per i turisti che viaggiano in auto, è disponibile un’area parcheggio. Nella struttura, è possibile organizzare riunioni d’affari, conferenze, assemblee, poiché sono disponibili un centro business e una struttura per gli eventi. Il desk di assistenza ai turisti di l’hotel ti aiuterà a prenotare un’escursione. Gli animali sono ammessi. Per spostarti liberamente per la città, l’hotel ti offre il servizio di transfer. Accessibile agli ospiti con disabilità: l’ascensore li aiuta a raggiungere i piani più alti. Sono disponibili altri servizi per gli ospiti di l’hotel. Ad esempio, una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo, italiano e francese. La camera è finemente decorata e ha tutto il necessario per rilassarsi dopo una lunga giornata piena di attività. Troverai una TV e un mini-bar. La dotazione della camera dipende dalla categoria",
+                "id": "des_epoques_hotel",
+                "daily_prices": 170.0,
+                "meal": "breakfast",
+                "room_name": "Camera doppia Economy (letto matrimoniale) (piccola, letto aggiunto non incluso)",
+                "checkin": "27/05/2025",
+                "checkout": "29/05/2025"
+            },
+            "firenze": {
+                "hid": 7472845,
+                "address": "Via Nazionale 24, Firenze",
+                "phone": "39055496324",
+                "kind": "Hotel",
+                "latitude": 43.778557,
+                "star_rating": 3,
+                "name": "Kursaal and Ausonia Hotel",
+                "email": "info@kursonia.com",
+                "longitude": 11.253529,
+                "description": "«Kursaal and Ausonia Hotel» Un’ottima scelta per le persone che amano essere sempre in movimento! Hotel ia Firenze. L’hotel si trova a piedi dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel — Medici Chapels, Academy Gallery e Santa Maria Novella Basilica and Museum. Puoi fare una sosta al bar. Il bar degli Se il caffè è la tua ragione di vita, fai una pausa al cafè. La connessione Wi-Fi gratuita disponibile ti permetterà di essere sempre online. Per i turisti che viaggiano in auto, è disponibile un’area parcheggio. Non ti annoierai, perché da all’hotel troverai una biblioteca. Per prenotare un’escursione, chiedi consulenza al desk di assistenza ai turisti di l’hotel. Accessibilità: è presente un ascensore. Gli ospiti troveranno inoltre a loro disposizione una lavanderia, il servizio di stiro, il servizio di noleggio auto e una cassaforte. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo, italiano e francese. Ecco cosa troverai in camera per rilassarti dopo una lunga giornata: una doccia e una TV. La dotazione della camera dipende dalla categoria",
+                "id": "hotel_kursaal_ausonia",
+                "daily_prices": 125.5,
+                "meal": "nomeal",
+                "room_name": "Camera tripla Standard",
+                "checkin": "29/05/2025",
+                "checkout": "31/05/2025"
+            }
+        },
+        "esperienze_selezionate": {
+            "roma": {
+                "url": [
+                    "https://yookye.com/it/proposte/degustazione-esclusiva-di-vini-tipici-italiani"
+                ],
+                "alias": [
+                    "Degustazione Esclusiva di Vini tipici Italiani"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Roma"
+                ],
+                "citta": [
+                    "Roma"
+                ],
+                "descrizione": "Vivi una degustazione esclusiva nel centro storico di Roma! Gusterai 6 tipologie di vini Italiani con assaggio di formaggi e olive. Durante queste due ore di degustazione, tratteremo le basi di come degustare il vino, come abbinarlo al cibo e come comprendere e riconoscere tutti i diversi stili di vino che vengono prodotti in ciascuna delle 20 diverse regioni del paese. Discuteremo anche cosa sia esattamente un vino naturale o a basso intervento e cosa lo distingue dalla maggior parte delle offerte convenzionali.",
+                "dettagli": {
+                    "dettagli_aggiuntivi": "durata_dell'esperienza: 2 ore",
+                    "tipo_attivita": "Cultura",
+                    "scenario": "Città",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Gruppo",
+                        "Individuale"
+                    ]
+                },
+                "tags": [
+                    "Coppia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Cultura",
+                    "Città",
+                    "Roma"
+                ],
+                "dati_extra": "mappa: Roma Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            },
+            "firenze": {
+                "url": [
+                    "https://yookye.com/it/proposte/tour-nel-chianti-vespa-con-pasto-km0-e-degustazioni"
+                ],
+                "alias": [
+                    "Tour nel Chianti in Vespa con Pasto Km0 e Degustazioni"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Firenze"
+                ],
+                "citta": [
+                    "Firenze"
+                ],
+                "descrizione": "In pochissimo tempo il nostro minibus vi porterà in un luogo meraviglioso, dove aria fresca, panorami mozzafiato, cibo delizioso e vino Chianti saranno i vostri compagni durante questa memorabile giornata. La prima parte dell'attività è dedicata ad una LEZIONE DI ORIENTAMENTO condotta da un tour leader esperto all'interno di un'area apposita in cui potrete testare le vostre Vespe e prenderci confidenza. A seguito di un vero e proprio test di guida il vostro accompagnatore giudicherà se tutti i membri del gruppo hanno la dimestichezza e la confidenza necessaria per guidare in autonomia e soprattutto in sicurezza per i soleggiati sentieri di campagna. Dopo tanta teoria è giunto il momento della pratica! Il giro in Vespa vi condurrà attraverso uno dei più bei paesaggi che il Chianti ha da offrire, DOLCI COLLINE, RIGOGLIOSI VIGNETI e oliveti che danno vita ad un vero e proprio paesaggio da cartolina. Durante il tragitto verranno fatte soste a più riprese per permettervi di scattare delle foto panoramiche. La prima fermata lungo il tragitto sarà presso una FAMOSA CANTINA, dove grazie ad un interessante tour guidato scoprirete tutti i segreti che si celano dietro alla produzione del vino Chianti.",
+                "tags": [
+                    "Azienda",
+                    "Coppia",
+                    "Famiglia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Accompagnatore",
+                    "Fotografia",
+                    "Noleggi",
+                    "Vespa",
+                    "Collina",
+                    "Firenze",
+                    "Chi siamo"
+                ],
+                "dati_extra": "servizisinclusi: {'siaconsiglia': 'di indossare scarpe comode.', 'nonsicuriguida': 'Nel caso in cui non vi sentiate sicuri nel guidare da soli potrete avere la possibilità di essere affiancati durante la passeggiata da uno dei nostri esperti accompagnatori.', 'patenteguida': 'Si richiede una patente di guida valida per partecipare al tour.', 'sicurezza': 'Se durante la lezione di preparazione riteniamo che per la vostra sicurezza non sia opportuno che guidiate da soli vi verrà suggerito di avvalervi durante la passeggiata della collaborazione di uno dei nostri accompagnatori oppure di continuare il tour sul minibus. In questi casi non sarà possibile ottenere un rimborso.', 'pioggia': \"Il tour parte anche in caso di pioggia. Faremo di tutto per garantire in ogni caso l'attività in Vespa, ma nel caso in cui le condizioni metereologiche non migliorino il giro in Vespa verrà ridotto drasticamente o annullato. In questo caso, il tour verrà condotto in sicurezza con il nostro minivan. In caso di pioggia non è previsto alcun rimborso, ma qualora rinunciaste a prendere parte al tour potrete spostarlo senza alcuna penale.\"} | mappa: Firenze Italia",
+                "dettagli": {
+                    "scenario": "Collina",
+                    "stagione": "Autunno Estate Inverno Primavera",
+                    "durata": "1 day",
+                    "difficolta": "Facile",
+                    "target": "Azienda Coppia Famiglia Gruppo Individuale",
+                    "dettagli_aggiuntivi": "tipodattività: Accompagnatore Fotografia Noleggi Vespa"
+                },
+                "tipologia": "visite_alle_cantine, vita_locale, soggiorni_nella_wine_country"
+            }
+        }
+    },
+    {
+        "id_pacchetto": "pacchetto_2",
+        "hotels_selezionati": {
+            "roma": {
+                "hid": 7472451,
+                "address": "Via Alessandria 110/a, Roma",
+                "phone": "+390644288",
+                "kind": "Hotel",
+                "latitude": 41.91213,
+                "star_rating": 3,
+                "name": "LH Hotel Lloyd Rome",
+                "email": "lloydroma@laminhotels.com",
+                "longitude": 12.502932,
+                "description": "«LH Hotel Lloyd Rome» Il luogo ideale per rilassarsi dopo una giornata piena di emozioni! Hotel ta Roma. L’hotel si trova a 3 km dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Museum of Contemporary Art of Rome, Castro Pretorio e Villa Medici. Puoi fare una sosta al bar. Il bar degli Se il caffè è la tua ragione di vita, fai una pausa al cafè. Vuoi essere sempre online? È disponibile il Wi-Fi. Per prenotare un’escursione, chiedi consulenza al desk di assistenza ai turisti di l’hotel. Porta con te il tuo animale. Gli animali sono ammessi. Accessibile agli ospiti con disabilità: l’ascensore li aiuta a raggiungere i piani più alti. Sono disponibili altri servizi per gli ospiti di l’hotel. Ad esempio, una lavanderia, un servizio di lavaggio a secco, giornali, una cassaforte e un concierge. Lo staff di l’hotel parla inglese, spagnolo, italiano, tedesco e francese. Ecco cosa troverai in camera per rilassarti dopo una lunga giornata: una doccia, una TV e un mini-bar. La dotazione della camera dipende dalla categoria",
+                "id": "hotel_lloyd",
+                "daily_prices": 148.33,
+                "meal": "breakfast",
+                "room_name": "Camera doppia Economy (letto matrimoniale)",
+                "checkin": "27/05/2025",
+                "checkout": "29/05/2025"
+            },
+            "firenze": {
+                "hid": 7475458,
+                "address": "Via Del Ponte Alle Mosse 16, Firenze",
+                "phone": "+39055354951",
+                "kind": "Hotel",
+                "latitude": 43.77929,
+                "star_rating": 4,
+                "name": "Porta al Prato",
+                "email": "info@portaalprato.com",
+                "longitude": 11.23852,
+                "description": "La struttura a Devi avere il massimo del comfort in vacanza! Scegli hotel \"Porta al Prato\" si trova a Firenze. Questo hotel a piedi dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Santa Maria Novella Basilica and Museum, Medici Chapels e Battistero di San Giovanni. Puoi fare una pausa al ristorante. Il bar degli Vuoi essere sempre online? È disponibile il Wi-Fi. Viaggi in auto? Avrai a disposizione l’area parcheggio. Inoltre, per gli ospiti degli all’hotel sono disponibili i seguenti servizi: un dottore. La struttura offre i seguenti servizi di intrattenimento: un casinò. Il desk di assistenza ai turisti di l’hotel ti aiuterà a prenotare un’escursione. Servizi aggiuntivi offerti da l’hotel ai propri ospiti: una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, il servizio di noleggio auto, una cassaforte e un concierge. Lo staff di l’hotel parla inglese, spagnolo, italiano, russo e francese. In camera troverai una doccia, una TV e ciabatte. La dotazione della camera dipende dalla categoria",
+                "id": "residence_porta_al_prato",
+                "daily_prices": 157.5,
+                "meal": "nomeal",
+                "room_name": "Appartamento 1 camera da letto",
+                "checkin": "29/05/2025",
+                "checkout": "31/05/2025"
+            }
+        },
+        "esperienze_selezionate": {
+            "roma": {
+                "url": [
+                    "https://yookye.com/it/proposte/degustazione-esclusiva-di-vini-tipici-italiani"
+                ],
+                "alias": [
+                    "Degustazione Esclusiva di Vini tipici Italiani"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Roma"
+                ],
+                "citta": [
+                    "Roma"
+                ],
+                "descrizione": "Vivi una degustazione esclusiva nel centro storico di Roma! Gusterai 6 tipologie di vini Italiani con assaggio di formaggi e olive. Durante queste due ore di degustazione, tratteremo le basi di come degustare il vino, come abbinarlo al cibo e come comprendere e riconoscere tutti i diversi stili di vino che vengono prodotti in ciascuna delle 20 diverse regioni del paese. Discuteremo anche cosa sia esattamente un vino naturale o a basso intervento e cosa lo distingue dalla maggior parte delle offerte convenzionali.",
+                "dettagli": {
+                    "dettagli_aggiuntivi": "durata_dell'esperienza: 2 ore",
+                    "tipo_attivita": "Cultura",
+                    "scenario": "Città",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Gruppo",
+                        "Individuale"
+                    ]
+                },
+                "tags": [
+                    "Coppia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Cultura",
+                    "Città",
+                    "Roma"
+                ],
+                "dati_extra": "mappa: Roma Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            },
+            "firenze": {
+                "url": [
+                    "https://yookye.com/it/proposte/visita-guidata-nella-storia-di-firenze-con-degustazione-di-olio"
+                ],
+                "alias": [
+                    "Visita Guidata nella storia di Firenze con Degustazione di Olio"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Firenze"
+                ],
+                "citta": [
+                    "Firenze"
+                ],
+                "descrizione": "Vi proponiamo una visita guidata privata alla scoperta della città, del suo carattere in tutte le proprie sfumature, compresa quella culinaria! Partirete dal cuore antico di Piazza della Repubblica, per poi proseguire verso Piazza San Giovanni, il primo quartiere mediceo, Piazza del Duomo. A questo punto ci sarà la sosta per una degustazione di olio extravergine di oliva da Alessi, negozio storico, per poi proseguire per Piazza della Signoria, attraversare il Ponte Vecchio.",
+                "dettagli": {
+                    "tipo_attivita": "Accompagnatore Guida",
+                    "scenario": "Cittu00e0",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Famiglia",
+                        "Gruppo"
+                    ],
+                    "esperienza_inclusa": "Guida esperta, Degustazione di Olio, Audioguide",
+                    "info_aggiuntive": "consigli: Indossare un abbigliamento e scarpe comode"
+                },
+                "tags": [
+                    "Coppia",
+                    "Famiglia",
+                    "Gruppo",
+                    "1 day",
+                    "Accompagnatore",
+                    "Guida",
+                    "Cittu00e0",
+                    "Firenze"
+                ],
+                "dati_extra": "mappa: Firenze, Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            }
+        }
+    },
+    {
+        "id_pacchetto": "pacchetto_3",
+        "hotels_selezionati": {
+            "roma": {
+                "hid": 7472452,
+                "address": "Via Ercole Pasquali 3, Roma",
+                "phone": "390644232217",
+                "kind": "Hotel",
+                "latitude": 41.90807,
+                "star_rating": 3,
+                "name": "Athena Hotel",
+                "email": "a.athena@tiscalinet.it",
+                "longitude": 12.519469,
+                "description": "La struttura a È bello avere un posto in cui tornare a rilassarsi dopo una giornata piena di attività in città Hotel \"Athena Hotel\" si trova a Roma. Questo hotel a 3 km dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel — Policlinico, Piazza Bologna e Museum of Contemporary Art of Rome. Puoi fare una sosta al bar. Il bar degli l’hotel è un luogo carino dove fare uno spuntino. È disponibile il Wi-Fi gratuito. Chiedi maggiori informazioni al check-in. Per i turisti che viaggiano in auto, è disponibile un’area parcheggio. Il desk di assistenza ai turisti di l’hotel ti aiuterà a prenotare un’escursione. Lo staff di l’hotel ti aiuterà a prenotare il servizio di transfer. Sono disponibili altri servizi per gli ospiti di l’hotel. Ad esempio, una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, giornali, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo, italiano, tedesco, russo, francese e giapponese. In camera, gli ospiti troveranno quanto segue: una sveglia e una TV. La dotazione della camera dipende dalla categoria",
+                "id": "athena_hotel",
+                "daily_prices": 135.0,
+                "meal": "nomeal",
+                "room_name": "Camera doppia (letto matrimoniale)",
+                "checkin": "27/05/2025",
+                "checkout": "29/05/2025"
+            },
+            "firenze": {
+                "hid": 7476237,
+                "address": "Via Nazionale 22/A, Firenze",
+                "phone": "39055496645",
+                "kind": "Hotel",
+                "latitude": 43.777924,
+                "star_rating": 3,
+                "name": "Hotel Galileo",
+                "email": "hotelgalileo@bzarhotel.it",
+                "longitude": 11.25298,
+                "description": "«Hotel Galileo» È bello avere un posto in cui tornare a rilassarsi dopo una giornata piena di attività in città Hotel va Firenze. L’hotel si trova a pochi minuti di distanza dal centro città. Passeggiando puoi esplorare la zona circostante agli all’hotel. Luoghi nelle vicinanze: Medici Chapels, Academy Gallery e Santa Maria Novella Basilica and Museum. Puoi fare una sosta al bar. Assapora i piatti della cucina locale nell’atmosfera rilassante del ristorante. Il bar degli Se il caffè è la tua ragione di vita, fai una pausa al cafè. La connessione Wi-Fi gratuita disponibile ti permetterà di essere sempre online. Viaggi in auto? Avrai a disposizione l’area parcheggio. Vuoi fare un’escursione? Chiedi consulenza al desk di assistenza agli ospiti di l’hotel. Accessibile agli ospiti con disabilità: l’ascensore li aiuta a raggiungere i piani più alti. Servizi aggiuntivi offerti da l’hotel ai propri ospiti: una lavanderia, un servizio di lavaggio a secco, il servizio di stiro, una cassaforte e un concierge. Lo staff di l’hotel sarà lieto di parlare con te in inglese, spagnolo, italiano e francese. Ecco cosa troverai in camera per rilassarti dopo una lunga giornata: una doccia, una TV e un mini-bar. Ti ricordiamo che i servizi e le dotazioni elencati potrebbero non essere disponibili per tutte le camere.",
+                "id": "galileo_2",
+                "daily_prices": 140.5,
+                "meal": "nomeal",
+                "room_name": "Camera doppia Standard (letto matrimoniale)",
+                "checkin": "29/05/2025",
+                "checkout": "31/05/2025"
+            }
+        },
+        "esperienze_selezionate": {
+            "roma": {
+                "url": [
+                    "https://yookye.com/it/proposte/degustazione-esclusiva-di-vini-tipici-italiani"
+                ],
+                "alias": [
+                    "Degustazione Esclusiva di Vini tipici Italiani"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Roma"
+                ],
+                "citta": [
+                    "Roma"
+                ],
+                "descrizione": "Vivi una degustazione esclusiva nel centro storico di Roma! Gusterai 6 tipologie di vini Italiani con assaggio di formaggi e olive. Durante queste due ore di degustazione, tratteremo le basi di come degustare il vino, come abbinarlo al cibo e come comprendere e riconoscere tutti i diversi stili di vino che vengono prodotti in ciascuna delle 20 diverse regioni del paese. Discuteremo anche cosa sia esattamente un vino naturale o a basso intervento e cosa lo distingue dalla maggior parte delle offerte convenzionali.",
+                "dettagli": {
+                    "dettagli_aggiuntivi": "durata_dell'esperienza: 2 ore",
+                    "tipo_attivita": "Cultura",
+                    "scenario": "Città",
+                    "stagione": [
+                        "Autunno",
+                        "Estate",
+                        "Inverno",
+                        "Primavera"
+                    ],
+                    "durata": "1 day",
+                    "target": [
+                        "Coppia",
+                        "Gruppo",
+                        "Individuale"
+                    ]
+                },
+                "tags": [
+                    "Coppia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Cultura",
+                    "Città",
+                    "Roma"
+                ],
+                "dati_extra": "mappa: Roma Italia",
+                "tipologia": "visite_alle_cantine, corsi_di_cucina"
+            },
+            "firenze": {
+                "url": [
+                    "https://yookye.com/it/proposte/tour-nel-chianti-vespa-con-pasto-km0-e-degustazioni"
+                ],
+                "alias": [
+                    "Tour nel Chianti in Vespa con Pasto Km0 e Degustazioni"
+                ],
+                "stato": [
+                    "Attiva"
+                ],
+                "provincia": [
+                    "Firenze"
+                ],
+                "citta": [
+                    "Firenze"
+                ],
+                "descrizione": "In pochissimo tempo il nostro minibus vi porterà in un luogo meraviglioso, dove aria fresca, panorami mozzafiato, cibo delizioso e vino Chianti saranno i vostri compagni durante questa memorabile giornata. La prima parte dell'attività è dedicata ad una LEZIONE DI ORIENTAMENTO condotta da un tour leader esperto all'interno di un'area apposita in cui potrete testare le vostre Vespe e prenderci confidenza. A seguito di un vero e proprio test di guida il vostro accompagnatore giudicherà se tutti i membri del gruppo hanno la dimestichezza e la confidenza necessaria per guidare in autonomia e soprattutto in sicurezza per i soleggiati sentieri di campagna. Dopo tanta teoria è giunto il momento della pratica! Il giro in Vespa vi condurrà attraverso uno dei più bei paesaggi che il Chianti ha da offrire, DOLCI COLLINE, RIGOGLIOSI VIGNETI e oliveti che danno vita ad un vero e proprio paesaggio da cartolina. Durante il tragitto verranno fatte soste a più riprese per permettervi di scattare delle foto panoramiche. La prima fermata lungo il tragitto sarà presso una FAMOSA CANTINA, dove grazie ad un interessante tour guidato scoprirete tutti i segreti che si celano dietro alla produzione del vino Chianti.",
+                "tags": [
+                    "Azienda",
+                    "Coppia",
+                    "Famiglia",
+                    "Gruppo",
+                    "Individuale",
+                    "1 day",
+                    "Accompagnatore",
+                    "Fotografia",
+                    "Noleggi",
+                    "Vespa",
+                    "Collina",
+                    "Firenze",
+                    "Chi siamo"
+                ],
+                "dati_extra": "servizisinclusi: {'siaconsiglia': 'di indossare scarpe comode.', 'nonsicuriguida': 'Nel caso in cui non vi sentiate sicuri nel guidare da soli potrete avere la possibilità di essere affiancati durante la passeggiata da uno dei nostri esperti accompagnatori.', 'patenteguida': 'Si richiede una patente di guida valida per partecipare al tour.', 'sicurezza': 'Se durante la lezione di preparazione riteniamo che per la vostra sicurezza non sia opportuno che guidiate da soli vi verrà suggerito di avvalervi durante la passeggiata della collaborazione di uno dei nostri accompagnatori oppure di continuare il tour sul minibus. In questi casi non sarà possibile ottenere un rimborso.', 'pioggia': \"Il tour parte anche in caso di pioggia. Faremo di tutto per garantire in ogni caso l'attività in Vespa, ma nel caso in cui le condizioni metereologiche non migliorino il giro in Vespa verrà ridotto drasticamente o annullato. In questo caso, il tour verrà condotto in sicurezza con il nostro minivan. In caso di pioggia non è previsto alcun rimborso, ma qualora rinunciaste a prendere parte al tour potrete spostarlo senza alcuna penale.\"} | mappa: Firenze Italia",
+                "dettagli": {
+                    "scenario": "Collina",
+                    "stagione": "Autunno Estate Inverno Primavera",
+                    "durata": "1 day",
+                    "difficolta": "Facile",
+                    "target": "Azienda Coppia Famiglia Gruppo Individuale",
+                    "dettagli_aggiuntivi": "tipodattività: Accompagnatore Fotografia Noleggi Vespa"
+                },
+                "tipologia": "visite_alle_cantine, vita_locale, soggiorni_nella_wine_country"
+            }
+        }
+    }
+]
