@@ -74,8 +74,11 @@ export default function ResultsPage() {
           const results = await getJobResults(jobId);
           console.log("Risultati ricevuti:", results);
           
-          // Verifica se ci sono pacchetti nei risultati e imposta i pacchetti nello stato
-          if (results && results.packages && Array.isArray(results.packages)) {
+          // Verifica se i risultati sono un array (nuovo formato)
+          if (Array.isArray(results)) {
+            setTravelPackages(results);
+          } else if (results && results.packages && Array.isArray(results.packages)) {
+            // Retrocompatibilità con il vecchio formato
             setTravelPackages(results.packages);
           } else {
             console.warn("I risultati non contengono pacchetti validi");
