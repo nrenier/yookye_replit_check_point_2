@@ -30,7 +30,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center">
               <Link href="/" className="mr-8">
-                <img src="https://yookye.com/wp-content/uploads/2023/12/Logo-yookye.svg" alt="Yookye" className="h-8" />
+                <img src="/attached_assets/LogoYookye.png" alt="Yookye" className="h-8" />
               </Link>
               <nav className="hidden md:flex space-x-8">
                 <Link href="/chi-siamo" className="text-white/80 hover:text-white font-medium">Come funziona</Link>
